@@ -13,9 +13,9 @@
         select * from INTEGRATION.FID_COMPARE where OLD_FID = #{oldId}
     </select>
 
-    <insert id="addFidCompare" parameterType="com.bean.FidCompare">
-        insert into INTEGRATION.FID_COMPARE (ID,OLD_FID) values
-        (#{id},#{oldFid});
+
+    <insert id="addFidCompare" parameterType="map">
+        insert into INTEGRATION.FID_COMPARE (ID, OLD_FID) VALUE (#{ID},#{OID})
     </insert>
 
 </mapper>

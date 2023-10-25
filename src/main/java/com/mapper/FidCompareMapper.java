@@ -2,12 +2,14 @@ package com.mapper;
 
 import com.bean.FidCompare;
 
+import java.util.Map;
+
 
 public interface FidCompareMapper {
 
     FidCompare selectOne(String oldId);
 
-    void addFidCompare(FidCompare fidCompare);
+    int addFidCompare(Map<String,Object> map);
 
 
 }
