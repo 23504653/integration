@@ -38,6 +38,15 @@ public class corpMain {
             cropWriter.write("USE record_corp;");
             cropWriter.newLine();
             cropWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.corp.record.import','从业机构导入',false,true,0,'data');");
+            cropWriter.newLine();
+            cropWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) "
+            +"value (0,'OLD','2023-10-28 18:30:45','2023-10-28 18:30:45','从业机构导入','COMPLETED','2023-10-28 18:30:45','2023-10-28 18:30:45',0,'func.corp.record.create',false,'data');");
+            cropWriter.newLine();
+            cropWriter.write("INSERT work_operator (work_id, type, user_id, user_name, org_name, task_id) "
+                    +"VALUE (0,'TASK','0','admin','从业机构导入','0');");
+            cropWriter.newLine();
+            cropWriter.write("INSERT work_task (TASK_ID, MESSAGE, TASK_NAME, PASS) "
+                    +"VALUE ('0','从业机构导入','从业机构导入',true);");
             cropWriter.flush();
         }catch (IOException e){
             System.out.println("cropWriter 文件创建失败");
@@ -61,7 +70,8 @@ public class corpMain {
         cropStatement = MyConnection.getStatement(DB_CROP_URL,"root","dgsoft");
 
         try {
-            cropResultSet = cropStatement.executeQuery("");
+            cropResultSet = cropStatement.executeQuery("select * from DEVELOPER LEFT JOIN ATTACH_CORPORATION ON DEVELOPER.ATTACH_ID = ATTACH_CORPORATION.ID"
+            +" ");
 
 
         }catch (Exception e){
