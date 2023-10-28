@@ -27,6 +27,8 @@ public class seaweedMain {
 
     private static final String BEGIN_DATE = "2023-10-12";
     //临时保存目录
+
+    private static String DB_SEAWEED_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_OWNER_RECORD?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private static final String directoryPath = "E:\\weedfsPicture";
     private static final String SEAWEED_ERROR_FILE="/SeaweedError.sql";
     private static final String seaweedFSDownloadURL = "http://192.168.1.21:9380";
@@ -56,7 +58,7 @@ public class seaweedMain {
         }
 
 
-        seaweedStatement = MyConnection.getStatement();
+        seaweedStatement = MyConnection.getStatement(DB_SEAWEED_URL,"root","dgsoft");
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         FidCompareMapper fidCompareMapper =  sqlSession.getMapper(FidCompareMapper.class);
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -135,6 +137,8 @@ public class seaweedMain {
             return;
         }finally {
             sqlSession.close();
+            seaweedResultSet.close();
+            MyConnection.closeConnection();
         }
 
 
