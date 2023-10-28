@@ -137,7 +137,12 @@ public class seaweedMain {
             return;
         }finally {
             sqlSession.close();
-            seaweedResultSet.close();
+            if(seaweedResultSet!=null){
+                seaweedResultSet.close();
+            }
+            if(seaweedStatement!=null){
+                seaweedStatement.close();
+            }
             MyConnection.closeConnection();
         }
 
