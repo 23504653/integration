@@ -25,13 +25,13 @@ public class createCorpId1  {
     public static void main(String agr[]) throws SQLException {
 
         cropStatement = MyConnection.getStatement(DB_CROP_URL,"root","dgsoft");
-
+        SqlSession sqlSession = MybatisUtils.getSqlSession();
+        JointCorpDevelopMapper jointCorpDevelopMapper =  sqlSession.getMapper(JointCorpDevelopMapper.class);
         try {
             cropResultSet = cropStatement.executeQuery("select * from DEVELOPER order by name");
-            SqlSession sqlSession = MybatisUtils.getSqlSession();
-            JointCorpDevelopMapper jointCorpDevelopMapper =  sqlSession.getMapper(JointCorpDevelopMapper.class);
-            Map<String,Object> map = new HashMap<>();
-            cropResultSet.last();
+
+             Map<String,Object> map = new HashMap<>();
+             cropResultSet.last();
 
 
             int sumCount = cropResultSet.getRow(),i=0;
@@ -71,6 +71,7 @@ public class createCorpId1  {
             if(cropResultSet!=null){
                 cropResultSet.close();
             }
+            sqlSession.close();
             MyConnection.closeConnection();
 
         }
