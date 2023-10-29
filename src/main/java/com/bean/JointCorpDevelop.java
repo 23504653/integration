@@ -1,5 +1,8 @@
 package com.bean;
 
+import lombok.Data;
+
+@Data
 public class JointCorpDevelop {
     private long corpId;
     private String developerId;
