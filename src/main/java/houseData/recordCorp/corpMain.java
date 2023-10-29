@@ -1,4 +1,4 @@
-package houseData;
+package houseData.recordCorp;
 
 import com.bean.JointCorpDevelop;
 import com.mapper.JointCorpDevelopMapper;
