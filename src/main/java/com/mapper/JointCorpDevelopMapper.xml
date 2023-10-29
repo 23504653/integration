@@ -5,10 +5,16 @@
 <!--命令空间 对应数据接口操作-->
 <mapper namespace="com.mapper.JointCorpDevelopMapper">
     <select id="selectByDevelopId" resultType="com.bean.JointCorpDevelop">
-      select * from INTEGRATION.joint_corp_develop where developerId = #{developId}
+      select * from INTEGRATION.joint_corp_develop where developerId = #{developId};
+    </select>
+    <select id="findAll" resultType="com.bean.JointCorpDevelop">
+         select * from INTEGRATION.joint_corp_develop;
     </select>
     <insert id="addJointCorpDevelopMapper" parameterType="map">
         insert INTO INTEGRATION.joint_corp_develop (corpid, developerId, name)
          VALUE (#{corpid},#{developerId},#{name});
     </insert>
+    <select id="findMaxId" resultType="Integer">
+        select max(INTEGRATION.joint_corp_develop.corpid) from INTEGRATION.joint_corp_develop;
+    </select>
 </mapper>

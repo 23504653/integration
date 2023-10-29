@@ -30,5 +30,6 @@
     <!--sql文件位置-->
     <mappers>
         <mapper resource="com/mapper/FidCompareMapper.xml"/>
+        <mapper resource="com/mapper/JointCorpDevelopMapper.xml"/>
     </mappers>
 </configuration>

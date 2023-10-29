@@ -61,9 +61,10 @@ public class seaweedMain {
         seaweedStatement = MyConnection.getStatement(DB_SEAWEED_URL,"root","dgsoft");
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         FidCompareMapper fidCompareMapper =  sqlSession.getMapper(FidCompareMapper.class);
+        Map<String,Object> map = new HashMap<>();
         CloseableHttpClient httpClient = HttpClients.createDefault();
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        Map<String,Object> map = new HashMap<>();
+
 
 
         try {
