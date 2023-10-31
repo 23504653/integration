@@ -1,9 +1,14 @@
 package houseData.recordBuild;
 
+import com.bean.BusinessId;
+import com.bean.LandEndTimeId;
 import com.bean.ProjectId;
+import com.mapper.BusinessIdMapper;
+import com.mapper.LandEndTimeIdMapper;
 import com.mapper.ProjectIdMapper;
 import com.utils.MyConnection;
 import com.utils.MybatisUtils;
+import com.utils.Q;
 import org.apache.ibatis.session.SqlSession;
 
 import java.io.BufferedWriter;
@@ -27,7 +32,8 @@ public class projectBuildMain1 {
     private static Statement businessStatement;
     private static ResultSet projectResultSet;
     private static ResultSet businessResultSet;
-
+    private static Statement landEndTimeStatement;
+    private static ResultSet landEndTimeResultSet;
 
     public static void main(String agr[]) throws SQLException {
 
@@ -76,13 +82,19 @@ public class projectBuildMain1 {
         }
         projectStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
         businessStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
+        landEndTimeStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         ProjectIdMapper projectIdMapper =  sqlSession.getMapper(ProjectIdMapper.class);
+        LandEndTimeIdMapper landEndTimeIdMapper = sqlSession.getMapper(LandEndTimeIdMapper.class);
+        BusinessIdMapper businessIdMapper = sqlSession.getMapper(BusinessIdMapper.class);
         ProjectId projectId = null;
-        String businessId,pId=null;
+        LandEndTimeId landEndTimeId= null;
+        BusinessId businessId = null;
+        String busId,pId=null;
 
         try {
-            projectResultSet = projectStatement.executeQuery("SELECT * FROM HOUSE_INFO.PROJECT ORDER BY NAME");
+//            projectResultSet = projectStatement.executeQuery("SELECT * FROM HOUSE_INFO.PROJECT ORDER BY NAME");
+            projectResultSet = projectStatement.executeQuery("SELECT * FROM HOUSE_INFO.PROJECT WHERE ID='127' ORDER BY NAME");
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -91,6 +103,7 @@ public class projectBuildMain1 {
 
                 //在码表找到对应的新ID
                 projectId = projectIdMapper.selectByOldProjectId(projectResultSet.getString("ID"));
+
                 if(projectId == null){
                     projectWriterError.newLine();
                     projectWriterError.write("没有找到对应记录检查jproject_Id--:"+projectResultSet.getString("ID"));
@@ -105,7 +118,58 @@ public class projectBuildMain1 {
                 +"ORDER BY P.NAME,O.ID,O.APPLY_TIME;");
 
                 if(businessResultSet.next()){//项目办理过预售业务的
-                    System.out.println(i+"/"+String.valueOf(businessResultSet.getString("BUSINESS")));
+                    businessResultSet.beforeFirst();
+                    while (businessResultSet.next()) {
+                        businessId = businessIdMapper.selectByOldBusinessId(businessResultSet.getString("BUSINESS"));
+                        if (businessId ==null){
+                            projectWriterError.newLine();
+                            projectWriterError.write("没有找到对应记录检查businessId:"+businessResultSet.getString("ID"));
+                            projectWriterError.flush();
+                            System.out.println("没有找到对应记录检查businessId:"+businessResultSet.getString("ID"));
+                            return;
+                        }
+                        //land_snapshot
+                        projectWriter.newLine();
+                        projectWriter.write("INSERT record_building.land_snapshot (CAPARCEL_NUMBER, LAND_NUMBER, PROPERTY, BEGIN_DATE, TAKE_TYPE_KEY, TAKE_TYPE, AREA, ADDRESS, LICENSE_NUMBER, LICENSE_TYPE, LICENSE_TYPE_KEY, LAND_INFO_ID) VALUE ");
+                        projectWriter.write("(" + Q.v(Q.pm("未知"),Q.pm(businessResultSet.getString("NUMBER"))
+                                ,Q.p(businessResultSet.getString("LAND_PROPERTY")),0000
+                                ,Long.toString(landEndTimeId.getId())
+                        )+ ");");
+                        projectWriter.flush();
+
+
+
+                        //land_use_type_snapshot
+                        landEndTimeResultSet = landEndTimeStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.LAND_END_TIME WHERE PROJECT_ID='"+businessResultSet.getString("PID")+"'");
+                        if(landEndTimeResultSet.next()){
+                            landEndTimeResultSet.beforeFirst();
+                            while (landEndTimeResultSet.next()){
+                                landEndTimeId = landEndTimeIdMapper.selectByOldId(landEndTimeResultSet.getString("ID"));
+                                if(landEndTimeId!=null && landEndTimeId.getOid()!=null && !landEndTimeId.getOid().equals("")){
+                                    projectWriter.newLine();
+                                    projectWriter.write("INSERT record_building.land_use_type_snapshot (end_date, use_type, land_info_id, id) value ");
+                                    projectWriter.write("(" + Q.v(Q.pm(landEndTimeResultSet.getTimestamp("END_TIME")),Q.pm(landEndTimeResultSet.getString("USE_TYPE"))
+                                            ,Long.toString(businessId.getId())
+                                            ,Long.toString(landEndTimeId.getId())
+                                    )+ ");");
+                                    projectWriter.flush();
+                                }else {
+                                    projectWriterError.newLine();
+                                    projectWriterError.write("没有找到对应记录检查jlandEndTimeId:"+landEndTimeResultSet.getString("ID"));
+                                    projectWriterError.flush();
+                                    System.out.println("没有找到对应记录检查jlandEndTimeId:"+landEndTimeResultSet.getString("ID"));
+                                    return;
+                                }
+
+
+                            }
+                        }
+
+
+
+
+
+                    }
                 }else{//项目没办理过预售业务的
 
                 }
