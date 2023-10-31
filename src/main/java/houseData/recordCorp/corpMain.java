@@ -17,7 +17,7 @@ import java.sql.Statement;
 
 public class corpMain {
     private static final String BEGIN_DATE = "2023-03-09";
-    private static String DB_CROP_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_INFO?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
+    private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_INFO?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private static final String CORP_ERROR_FILE="/corpError.sql";
     private static final String CORP_FILE="/corpRecord.sql";
     private static BufferedWriter cropWriterError;
@@ -73,7 +73,7 @@ public class corpMain {
             e.printStackTrace();
             return;
         }
-        cropStatement = MyConnection.getStatement(DB_CROP_URL,"root","dgsoft");
+        cropStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         JointCorpDevelopMapper jointCorpDevelopMapper =  sqlSession.getMapper(JointCorpDevelopMapper.class);
         JointCorpDevelop jointCorpDevelop = null;
@@ -161,7 +161,7 @@ public class corpMain {
             System.out.println("id is errer-----id:"+cropResultSet.getString("DID"));
             e.printStackTrace();
         }finally {
-            sqlSession.close();
+
             if (cropResultSet!=null){
                 cropResultSet.close();
             }
