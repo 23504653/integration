@@ -31,5 +31,7 @@
     <mappers>
         <mapper resource="com/mapper/FidCompareMapper.xml"/>
         <mapper resource="com/mapper/JointCorpDevelopMapper.xml"/>
+        <mapper resource="com/mapper/ProjectIdMapper.xml"/>
+        <mapper resource="com/mapper/BuildIdMapper.xml"/>
     </mappers>
 </configuration>

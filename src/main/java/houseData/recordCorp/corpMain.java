@@ -49,7 +49,7 @@ public class corpMain {
             +"value (0,'OLD','2023-10-28 18:30:45','2023-10-28 18:30:45','从业机构导入','COMPLETED','2023-10-28 18:30:45','2023-10-28 18:30:45',0,'func.corp.record.create',false,'data');");
             cropWriter.newLine();
             cropWriter.write("INSERT work_operator (work_id, type, user_id, user_name, org_name, task_id) "
-                    +"VALUE (0,'TASK','0','root','从业机构导入','wxy');");
+                    +"VALUE (0,'CREATE','0','root','从业机构导入','wxy');");
             cropWriter.newLine();
             cropWriter.write("INSERT work_task (TASK_ID, MESSAGE, TASK_NAME, PASS) "
                     +"VALUE ('wxy','从业机构导入','从业机构导入',true);");

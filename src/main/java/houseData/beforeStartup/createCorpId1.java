@@ -1,4 +1,4 @@
-package houseData.recordCorp;
+package houseData.beforeStartup;
 
 import com.bean.JointCorpDevelop;
 import com.mapper.FidCompareMapper;
@@ -18,13 +18,13 @@ import java.util.Map;
 
 public class createCorpId1  {
     private static final String BEGIN_DATE = "2023-03-09";
-    private static String DB_CROP_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_INFO?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
+    private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_INFO?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private static Statement cropStatement;
     private static ResultSet cropResultSet;
 
     public static void main(String agr[]) throws SQLException {
 
-        cropStatement = MyConnection.getStatement(DB_CROP_URL,"root","dgsoft");
+        cropStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         JointCorpDevelopMapper jointCorpDevelopMapper =  sqlSession.getMapper(JointCorpDevelopMapper.class);
         try {
@@ -68,8 +68,8 @@ public class createCorpId1  {
             if (cropResultSet!=null){
                 cropResultSet.close();
             }
-            if(cropResultSet!=null){
-                cropResultSet.close();
+            if(cropStatement!=null){
+                cropStatement.close();
             }
             sqlSession.close();
             MyConnection.closeConnection();

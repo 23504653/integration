@@ -1,7 +1,10 @@
 package com.bean;
 
 import lombok.Data;
-
+/***
+ * 生成开发商ID对应旧记录iD关系表
+ * @author wxy
+ */
 @Data
 public class JointCorpDevelop {
     private long corpId;

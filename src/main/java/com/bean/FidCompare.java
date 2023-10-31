@@ -1,6 +1,10 @@
 package com.bean;
 
 import lombok.Data;
+/***
+ * 记录 seaweed库  下载图片重新传入新的库的生成的id
+ * @author wxy
+ */
 
 @Data
 public class FidCompare {
