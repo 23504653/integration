@@ -9,6 +9,7 @@ import com.mapper.ProjectIdMapper;
 import com.utils.MyConnection;
 import com.utils.MybatisUtils;
 import com.utils.Q;
+import com.utils.FindWorkBook;
 import org.apache.ibatis.session.SqlSession;
 
 import java.io.BufferedWriter;
@@ -34,6 +35,9 @@ public class projectBuildMain1 {
     private static ResultSet businessResultSet;
     private static Statement landEndTimeStatement;
     private static ResultSet landEndTimeResultSet;
+    private static Statement workbookStatement;
+    private static ResultSet workbookResultSet;
+
 
     public static void main(String agr[]) throws SQLException {
 
@@ -83,6 +87,7 @@ public class projectBuildMain1 {
         projectStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
         businessStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
         landEndTimeStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
+        workbookStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         ProjectIdMapper projectIdMapper =  sqlSession.getMapper(ProjectIdMapper.class);
         LandEndTimeIdMapper landEndTimeIdMapper = sqlSession.getMapper(LandEndTimeIdMapper.class);
@@ -132,8 +137,12 @@ public class projectBuildMain1 {
                         projectWriter.newLine();
                         projectWriter.write("INSERT record_building.land_snapshot (CAPARCEL_NUMBER, LAND_NUMBER, PROPERTY, BEGIN_DATE, TAKE_TYPE_KEY, TAKE_TYPE, AREA, ADDRESS, LICENSE_NUMBER, LICENSE_TYPE, LICENSE_TYPE_KEY, LAND_INFO_ID) VALUE ");
                         projectWriter.write("(" + Q.v(Q.pm("未知"),Q.pm(businessResultSet.getString("NUMBER"))
-                                ,Q.p(businessResultSet.getString("LAND_PROPERTY")),0000
-                                ,Long.toString(landEndTimeId.getId())
+                                ,Q.p(FindWorkBook.getWorkValue(businessResultSet.getString("LAND_PROPERTY"))),Q.pm(businessResultSet.getTimestamp("BEGIN_USE_TIME"))
+                                ,Q.pm(businessResultSet.getString("LAND_GET_MODE")),Q.p(FindWorkBook.getWorkValue(businessResultSet.getString("LAND_PROPERTY")))
+                                ,Q.pm(businessResultSet.getBigDecimal("LAND_AREA")),Q.pm(businessResultSet.getString("LAND_ADDRESS"))
+                                ,Q.pm(businessResultSet.getString("LAND_CARD_NO")),Q.pm(FindWorkBook.getWorkValue(businessResultSet.getString("LAND_CARD_TYPE")))
+                                ,Q.pm(businessResultSet.getString("LAND_CARD_TYPE"))
+                                ,Long.toString(businessId.getId())
                         )+ ");");
                         projectWriter.flush();
 

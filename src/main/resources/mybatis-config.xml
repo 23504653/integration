@@ -34,5 +34,7 @@
         <mapper resource="com/mapper/ProjectIdMapper.xml"/>
         <mapper resource="com/mapper/BuildIdMapper.xml"/>
         <mapper resource="com/mapper/BusinessIdMapper.xml"/>
+        <mapper resource="com/mapper/LandEndTimeIdMapper.xml"/>
+        <mapper resource="com/mapper/HouseUseTypeMapper.xml"/>
     </mappers>
 </configuration>
