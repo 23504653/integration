@@ -25,13 +25,8 @@ public class createHouseUseType0 {
         HouseUseTypeMapper houseUseTypeMapper = sqlSession.getMapper(HouseUseTypeMapper.class);
         HouseUseType houseUseType = null;
         try{
-            List<HouseUseType> houseUseTypeList = houseUseTypeMapper.findAll();
+            //List<HouseUseType> houseUseTypeList = houseUseTypeMapper.findAll();
             Map<String,Object> map = new HashMap<>();
-
-            for(HouseUseType houseUseType1:houseUseTypeList){
-//                System.out.println("8888---"+houseUseType.getDesignUseType());
-
-            }
             resultSet = statement.executeQuery("select DESIGN_USE_TYPE from HOUSE_INFO.HOUSE group by HOUSE.DESIGN_USE_TYPE order by length(HOUSE.DESIGN_USE_TYPE)");
             resultSet.last();
             int i=0,sumCount = resultSet.getRow();
@@ -43,16 +38,14 @@ public class createHouseUseType0 {
                 if (houseUseType == null){
                     map.put("designUseType",resultSet.getString("DESIGN_USE_TYPE"));
                     houseUseTypeMapper.addHouseUseType(map);
-                    System.out.println("addhouseUseType--"+resultSet.getString("DESIGN_USE_TYPE"));
+                    System.out.println("add 记录 houseUseType--"+resultSet.getString("DESIGN_USE_TYPE"));
                     sqlSession.commit();
-                }else {
-                    System.out.println("111111--"+resultSet.getString("DESIGN_USE_TYPE"));
                 }
-
-
                 i++;
-                System.out.println("Count --"+sumCount+"/"+i+"--"+resultSet.getString(1));
+                System.out.println("Count --"+sumCount+"/"+i);
             }
+
+
 
         }catch (Exception e){
             e.printStackTrace();
