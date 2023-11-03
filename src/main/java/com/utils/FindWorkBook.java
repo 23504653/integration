@@ -1,40 +1,149 @@
 package com.utils;
 
+import com.bean.WorkBook;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * 无用
+ * 字典转换
+ *
  */
-public class FindWorkBook {
-    private static final String BEGIN_DATE = "2023-03-09";
-    private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/DB_PLAT_SYSTEM?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
-    private static Statement bookStatement;
-    private static ResultSet bookResultSet;
 
-    public static String getWorkValue(String workId) throws SQLException {
-        try {
-            bookStatement = MyConnection.getStatement(DB_URL, "root", "dgsoft");
-            bookResultSet = bookStatement.executeQuery("SELECT * FROM DB_PLAT_SYSTEM.WORD WHERE ID='" + workId + "'");
-            if (bookResultSet.next() && bookResultSet.getString("_VALUE") != null) {
-                return bookResultSet.getString("_VALUE");
-            } else {
-                return "未知";
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            return "未知";
-        }finally {
-           if (bookResultSet != null){
-               bookResultSet.close();
-           }
-           if (bookStatement != null){
-               bookStatement.close();
-           }
-           MyConnection.closeConnection();
+public class FindWorkBook {
+
+    /**
+     * @param id
+     * @return 转换正价类型，个人和企业的证件类型转换
+     */
+
+    public static WorkBook changeIdType(String id){
+        WorkBook workBook = new WorkBook();
+        workBook.setId("OTHER");
+        workBook.setValue("其它证件");
+        if(id == null || id.equals("") || id.isBlank()){
+            return workBook;
+        }
+        if(id.equals("SOLDIER_CARD")) { //士兵证
+            workBook.setId("SOLDIER");
+            workBook.setValue("士兵证");
+            return workBook;
+        }else if(id.equals("MASTER_ID")){//身份证
+            workBook.setId("RESIDENT_ID");
+            workBook.setValue("身份证");
+            return workBook;
+        }else if(id.equals("COMPANY_CODE")){//营业执照
+            workBook.setId("COMPANY");
+            workBook.setValue("营业执照");
+            return workBook;
+        }else if(id.equals("CORP_CODE")){//机构代码证
+            workBook.setId("ORGANIZATION");
+            workBook.setValue("机构代码证");
+            return workBook;
+        }else if(id.equals("PASSPORT")){//护照
+            workBook.setId("PASSPORT");
+            workBook.setValue("护照");
+            return workBook;
+        }else if(id.equals("TW_ID")){//台湾通行证
+            workBook.setId("TAIWAN");
+            workBook.setValue("台湾通行证");
+            return workBook;
+        }else if(id.equals("OTHER")){//无证件
+            workBook.setId("OTHER");
+            workBook.setValue("其它证件");
+            return workBook;
+        }else if(id.equals("OFFICER_CARD")){//军官证
+            workBook.setId("OFFICER");
+            workBook.setValue("军官证");
+            return workBook;
+        }else if(id.equals("GA_ID")){//港澳通行证
+            workBook.setId("SPECIAL");
+            workBook.setValue("港澳通行证");
+            return workBook;
+        }else {
+            return workBook;
         }
     }
+
+    /**
+     * @param id
+     * @return 土地权证类型转换
+     */
+    public static WorkBook changeLandCardType(String id){
+        WorkBook workBook = new WorkBook();
+        workBook.setId(null);
+        workBook.setValue(null);
+        if(id.equals("landCardType.collective")){
+            workBook.setId("3");
+            workBook.setValue("集体土地使用证");
+            return workBook;
+        }else {
+            workBook.setId("2");
+            workBook.setValue("国有土地使用证");
+            return workBook;
+        }
+
+    }
+    /**
+     * @param id
+     * @return 土地性质转换 允许为空
+     */
+    public static WorkBook changeLandProperty(String id){
+        WorkBook workBook = new WorkBook();
+        workBook.setId(null);
+        workBook.setValue(null);
+        if(id == null || id.equals("") || id.isBlank()){
+            return workBook;
+        }
+        if(id.equals("100")){
+            workBook.setId("2");
+            workBook.setValue("集体");
+            return workBook;
+        }else if(id.equals("870")){
+            workBook.setId("1");
+            workBook.setValue("国有");
+            return workBook;
+        }else {
+            return workBook;
+        }
+    }
+    /**
+     * @param id
+     * @return 土地取得方式 不能为空
+     */
+    public static WorkBook changeLandTakeType(String id){
+        WorkBook workBook = new WorkBook();
+        workBook.setId("6");
+        workBook.setValue("其它");
+        if(id == null || id.equals("") || id.isBlank()){
+            return workBook;
+        }
+        if(id.equals("180")) {
+            workBook.setId("1");
+            workBook.setValue("出让");
+            return workBook;
+        }else if(id.equals("181")) {
+            workBook.setId("2");
+            workBook.setValue("划拨");
+            return workBook;
+        }else if(id.equals("182")) {
+            workBook.setId("3");
+            workBook.setValue("集体建设用地");
+            return workBook;
+        }else if(id.equals("183")) {
+            workBook.setId("4");
+            workBook.setValue("出租");
+            return workBook;
+        }else if(id.equals("184")) {
+            workBook.setId("5");
+            workBook.setValue("宅基地使用权");
+            return workBook;
+        }else {
+            return workBook;
+        }
+    }
+
 }
 /**
  除了houseType useType外的字典处理， 通过调用workbookMapper 通过就字典的ID 取出新字典的ID
@@ -51,9 +160,6 @@ public class FindWorkBook {
  INSERT dictionary.dictionary_word (category, value, label, seq, report_value, _group, enabled) value
  ('land_property',3,'其它',3,'03',null,true);
  INSERT dictionary.dictionary_word (category, value, label, seq, report_value, _group, enabled) value
- ('land_licenseType',4,'其它',4,'04',null,true);
-
- INSERT dictionary.dictionary_word (category, value, label, seq, report_value, _group, enabled) value
  ('structure',8,'剪力结构',8,'08',null,true);
  INSERT dictionary.dictionary_word (category, value, label, seq, report_value, _group, enabled) value
  ('structure',9,'土木结构',9,'09',null,true);
@@ -61,14 +167,14 @@ public class FindWorkBook {
  ('structure',10,'花岗石结构',10,'10',null,true);
  INSERT dictionary.dictionary_word (category, value, label, seq, report_value, _group, enabled) value
  ('structure',11,'砖混结构',11,'11',null,true);
- INSERT dictionary.dictionary_word (category, value, label, seq, report_value, _group, enabled) value
- ('structure',11,'砖混结构',11,'11',null,true);
+
 
 
  INSERT INTEGRATION.workBook(id, oid, value) value (3,'landCardType.collective','集体土地使用证');
  INSERT INTEGRATION.workBook(id, oid, value) value (2,'landCardType.stateOwned','国有土地使用证');
  INSERT INTEGRATION.workBook(id, oid, value) value (1,'870','国有');
  INSERT INTEGRATION.workBook(id, oid, value) value (2,'100','集体');
+
  INSERT INTEGRATION.workBook(id, oid, value) value (1,'180','出让');
  INSERT INTEGRATION.workBook(id, oid, value) value (2,'181','划拨');
  INSERT INTEGRATION.workBook(id, oid, value) value (3,'182','集体建设用地');
