@@ -14,7 +14,7 @@ import java.util.Map;
 public class createWorkBook0 {
 
     /**
-     除了houseType useType外的字典处理，
+     除了houseType useType外的字典处理， 通过调用workbookMapper 通过就字典的ID 取出新字典的ID
      use INTEGRATION;
      -- 'layer_type 户型结构','layout 户型居室 为空不导入'，orientation	房屋朝向 么有
      INSERT dictionary.dictionary_word (category, value, label, seq, report_value, _group, enabled) value
