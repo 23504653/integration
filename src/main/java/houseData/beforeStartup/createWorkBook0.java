@@ -74,6 +74,16 @@ public class createWorkBook0 {
      INSERT INTEGRATION.workBook(id, oid, value) value (10,'90','花岗石结构');
      INSERT INTEGRATION.workBook(id, oid, value) value (11,'1559','砖混结构');
 
+     INSERT INTEGRATION.workBook(id, oid, value) value ('SOLDIER','SOLDIER_CARD','士兵证');
+     INSERT INTEGRATION.workBook(id, oid, value) value ('RESIDENT_ID','MASTER_ID','身份证');
+     INSERT INTEGRATION.workBook(id, oid, value) value ('COMPANY','COMPANY_CODE','营业执照');
+     INSERT INTEGRATION.workBook(id, oid, value) value ('ORGANIZATION','CORP_CODE','机构代码证');
+     INSERT INTEGRATION.workBook(id, oid, value) value ('PASSPORT','PASSPORT','护照');
+     INSERT INTEGRATION.workBook(id, oid, value) value ('TAIWAN','TW_ID','台湾通行证');
+     INSERT INTEGRATION.workBook(id, oid, value) value ('OTHER','OTHER','无证件');
+     INSERT INTEGRATION.workBook(id, oid, value) value ('OFFICER','OFFICER_CARD','军官证');
+     INSERT INTEGRATION.workBook(id, oid, value) value ('SPECIAL','GA_ID','港澳通行证');
+
      */
 
     public static void main(String agr[]) throws SQLException {
