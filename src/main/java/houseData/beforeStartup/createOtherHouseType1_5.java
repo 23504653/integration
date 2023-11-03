@@ -89,6 +89,11 @@ public class createOtherHouseType1_5 {
              and ID not IN(SELECT houseId FROM INTEGRATION.other_house_type)
              group by IN_FLOOR_NAME;
 
+             select * from HOUSE_INFO.HOUSE where DESIGN_USE_TYPE='其它' and (IN_FLOOR_NAME='1层住宅及网点'
+             or IN_FLOOR_NAME='1层商场　网点　车库' OR IN_FLOOR_NAME='1层商场　网点　车库' OR IN_FLOOR_NAME='1层网点　商场　车库'
+             OR IN_FLOOR_NAME='1层网点库房' OR IN_FLOOR_NAME='2F    网点  住宅' or IN_FLOOR_NAME='2F 网点住宅'
+             OR IN_FLOOR_NAME='2F 网点及住宅'  OR IN_FLOOR_NAME='2层　住宅　网点' or IN_FLOOR_NAME='2F 网点住宅'
+             ) order by length(ID);
              */
             //1 车库跑出来
 //            resultSet = statement.executeQuery("select * from HOUSE_INFO.HOUSE where DESIGN_USE_TYPE='其它' and  HOUSE_ORDER like '闷顶%' order by length(ID)");
