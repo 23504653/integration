@@ -1,24 +1,24 @@
 package com.bean;
 
 public class WorkBook {
-    private long id;
+    private String id;
     private String oid;
     private String value;
 
     public WorkBook() {
     }
 
-    public WorkBook(long id, String oid, String value) {
+    public WorkBook(String id, String oid, String value) {
         this.id = id;
         this.oid = oid;
         this.value = value;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
