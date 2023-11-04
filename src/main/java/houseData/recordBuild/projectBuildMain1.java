@@ -137,11 +137,11 @@ public class projectBuildMain1 {
                         projectWriter.newLine();
                         projectWriter.write("INSERT record_building.land_snapshot (CAPARCEL_NUMBER, LAND_NUMBER, PROPERTY, BEGIN_DATE, TAKE_TYPE_KEY, TAKE_TYPE, AREA, ADDRESS, LICENSE_NUMBER, LICENSE_TYPE, LICENSE_TYPE_KEY, LAND_INFO_ID) VALUE ");
                         projectWriter.write("(" + Q.v(Q.pm("未知"),Q.pm(businessResultSet.getString("NUMBER"))
-                                ,Q.p(FindWorkBook.getWorkValue(businessResultSet.getString("LAND_PROPERTY"))),Q.pm(businessResultSet.getTimestamp("BEGIN_USE_TIME"))
-                                ,Q.pm(businessResultSet.getString("LAND_GET_MODE")),Q.p(FindWorkBook.getWorkValue(businessResultSet.getString("LAND_PROPERTY")))
+                                ,Q.p(FindWorkBook.changeLandProperty(businessResultSet.getString("LAND_PROPERTY")).getValue()),Q.pm(businessResultSet.getTimestamp("BEGIN_USE_TIME"))
+                                ,Q.pm(FindWorkBook.changeLandTakeType(businessResultSet.getString("LAND_GET_MODE")).getId()),Q.p(FindWorkBook.changeLandTakeType(businessResultSet.getString("LAND_GET_MODE")).getValue())
                                 ,Q.pm(businessResultSet.getBigDecimal("LAND_AREA")),Q.pm(businessResultSet.getString("LAND_ADDRESS"))
-                                ,Q.pm(businessResultSet.getString("LAND_CARD_NO")),Q.pm(FindWorkBook.getWorkValue(businessResultSet.getString("LAND_CARD_TYPE")))
-                                ,Q.pm(businessResultSet.getString("LAND_CARD_TYPE"))
+                                ,Q.pm(businessResultSet.getString("LAND_CARD_NO")),Q.pm(FindWorkBook.changeLandCardType(businessResultSet.getString("LAND_CARD_TYPE")).getValue())
+                                ,Q.pm(FindWorkBook.changeLandCardType(businessResultSet.getString("LAND_CARD_TYPE")).getId())
                                 ,Long.toString(businessId.getId())
                         )+ ");");
                         projectWriter.flush();

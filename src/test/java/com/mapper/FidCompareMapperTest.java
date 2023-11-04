@@ -1,13 +1,9 @@
 package com.mapper;
 
-import com.bean.*;
+import com.bean.WorkBook;
 import com.utils.MybatisUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class FidCompareMapperTest {
     @Test
@@ -18,24 +14,26 @@ public class FidCompareMapperTest {
 //              map.put("id",1);
 //              map.put("oid","22");
 
-            HouseUseTypeMapper houseUseTypeMapper= sqlSession.getMapper(HouseUseTypeMapper.class);
-            JointCorpDevelopMapper jointCorpDevelopMapper = sqlSession.getMapper(JointCorpDevelopMapper.class);
-//            buildIdMapper.addBuildId(map);
+        WorkBook workBook = new WorkBook();
+        workBook.setId(null);
+        workBook.setValue(null);
+        System.out.println(workBook.getId());
+//            HouseUseTypeMapper houseUseTypeMapper= sqlSession.getMapper(HouseUseTypeMapper.class);
+//            JointCorpDevelopMapper jointCorpDevelopMapper = sqlSession.getMapper(JointCorpDevelopMapper.class);
+////            buildIdMapper.addBuildId(map);
 ////            BuildId buildId =   buildIdMapper.selectByOldBuildId("22");
-            List<HouseUseType> list = houseUseTypeMapper.findAll();
-            List<JointCorpDevelop> list1 = jointCorpDevelopMapper.findAll();
+//            List<HouseUseType> list = houseUseTypeMapper.findAll();
+//            List<JointCorpDevelop> list1 = jointCorpDevelopMapper.findAll();
 //            System.out.println(jointCorpDevelop.toString());
 //            FidCompareMapper fidCompareMapper =  sqlSession.getMapper(FidCompareMapper.class);
 //            FidCompare fidCompare = fidCompareMapper.selectOne("1");
 //        for(HouseUseType houseUseType:list){
 //            System.out.println(houseUseType.getDesignUseType());
 //        }
-        HouseUseType houseUseType = houseUseTypeMapper.selectByDesignUseType("1");
-        if (houseUseType!=null){
-            System.out.println(houseUseType.getDesignUseType());
-        }
-
-
+//        HouseUseType houseUseType = houseUseTypeMapper.selectByDesignUseType("1");
+//        if (houseUseType!=null){
+//            System.out.println(houseUseType.getDesignUseType());
+//        }
 //            System.out.println(fidCompare.toString());
 //            System.out.println(fidCompare.getBusinessFileId());
 //            FidCompare fidCompare2 = new FidCompare();

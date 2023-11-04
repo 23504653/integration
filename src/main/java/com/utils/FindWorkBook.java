@@ -18,10 +18,18 @@ public class FindWorkBook {
      * @return 转换正价类型，个人和企业的证件类型转换
      */
 
-    public static WorkBook changeIdType(String id){
+    public static WorkBook changeIdType(String id,String cardType){
+        //cardType 1,机构，2个人
         WorkBook workBook = new WorkBook();
-        workBook.setId("OTHER");
-        workBook.setValue("其它证件");
+        if(cardType.equals(1)){
+            workBook.setId("RESIDENT_ID");
+            workBook.setValue("身份证");
+        }else {
+            workBook.setId("COMPANY");
+            workBook.setValue("营业执照");
+        }
+
+
         if(id == null || id.equals("") || id.isBlank()){
             return workBook;
         }
@@ -48,10 +56,6 @@ public class FindWorkBook {
         }else if(id.equals("TW_ID")){//台湾通行证
             workBook.setId("TAIWAN");
             workBook.setValue("台湾通行证");
-            return workBook;
-        }else if(id.equals("OTHER")){//无证件
-            workBook.setId("OTHER");
-            workBook.setValue("其它证件");
             return workBook;
         }else if(id.equals("OFFICER_CARD")){//军官证
             workBook.setId("OFFICER");
@@ -110,7 +114,7 @@ public class FindWorkBook {
     }
     /**
      * @param id
-     * @return 土地取得方式 不能为空
+     * @return 土地取得方式 不能为空 字典
      */
     public static WorkBook changeLandTakeType(String id){
         WorkBook workBook = new WorkBook();
