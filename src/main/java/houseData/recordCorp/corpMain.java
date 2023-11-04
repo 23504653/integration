@@ -91,67 +91,30 @@ public class corpMain {
                 if (jointCorpDevelop!=null && jointCorpDevelop.getDeveloperId()!=null && !jointCorpDevelop.getDeveloperId().equals("")){
 
                     cropWriter.newLine();
+
                     UNIFIED_ID = cropResultSet.getString("LICENSE_NUMBER");
                     if (UNIFIED_ID==null || UNIFIED_ID.isBlank()){
                         UNIFIED_ID = Long.toString(jointCorpDevelop.getCorpId());
                     }
                     cropWriter.write("INSERT corp_snapshot(CORP_NAME, TEL, OWNER_NAME, OWNER_ID_TYPE, OWNER_ID_NUMBER, ADDRESS, UNIFIED_ID, SNAPSHOT_ID) VALUE ");
                     cropWriter.write("(" +Q.v(Q.pm(cropResultSet.getString("NAME")),Q.pm(cropResultSet.getString("PHONE"))
-                            ,Q.pm(cropResultSet.getString("OWNER_NAME")),Q.pm(FindWorkBook.changeIdType(cropResultSet.getString("CREDENTIALS_TYPE")).getId())
+                            ,Q.pm(cropResultSet.getString("OWNER_NAME")),Q.pm(FindWorkBook.changeIdType(cropResultSet.getString("CREDENTIALS_TYPE"),"2").getId())
                             ,Q.pm(cropResultSet.getString("COMPANY_CER_CODE")),Q.pm(cropResultSet.getString("ADDRESS"))
                             ,Q.pm(UNIFIED_ID),Long.toString(jointCorpDevelop.getCorpId())
                     )+ ");");
 
                     cropWriter.newLine();
                     cropWriter.write("INSERT corp (UNIFIED_ID, VERSION, UPDATED_AT, CREATED_AT, SNAPSHOT_ID) VALUE ");
-                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"0"
+                    cropWriter.write("(" +Q.v(Q.pm(UNIFIED_ID),"0"
                             ,Q.pm("2023-10-28 18:30:45"),Q.pm("2023-10-28 18:30:45")
                             ,Long.toString(jointCorpDevelop.getCorpId())
                     )+ ");");
-
-
-//                    cropWriter.newLine();
-//                    cropWriter.write("INSERT qualification_snapshot (QUALIFICATION_ID, LEVEL, LEVEL_NUMBER, EXPIRE_AT, REGISTER_GOV) VALUE ");
-//                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"0"
-//                            ,Q.pm(cropResultSet.getString("COMPANY_CER_CODE")),Q.pm("2023-10-28 18:30:45"),Q.pm("未知")
-//                    )+ ");");
-//
-//                    cropWriter.newLine();
-//                    cropWriter.write("INSERT corp_record_snapshot (INFO_ID, QUALIFICATION_ID, RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE ");
-//                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
-//                            ,Long.toString(jointCorpDevelop.getCorpId()),"0",Long.toString(jointCorpDevelop.getCorpId())
-//                            ,Q.pm("DEVELOPER")
-//                    )+ ");");
-//
-//                    cropWriter.newLine();
-//                    cropWriter.write("INSERT joint_corp (record_id, unified_id, type, enabled, version, updated_at, created_at, info_id, pin) VALUE ");
-//                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
-//                            ,Q.pm("DEVELOPER"),"true","0",Q.pm("2023-10-28 18:30:45"),Q.pm("2023-10-28 18:30:45")
-//                            ,Long.toString(jointCorpDevelop.getCorpId()),Q.pm(cropResultSet.getString("PYCODE"))
-//                    )+ ");");
-//
-//                    cropWriter.newLine();
-//                    cropWriter.write("INSERT corp_business(business_id, work_id, before_info_id, info_id, type, unified_id, updated_at, work_type) VALUE ");
-//                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"0"
-//                            ,Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
-//                            ,Q.pm("DEVELOPER"),Long.toString(jointCorpDevelop.getCorpId())
-//                            ,Q.pm("2023-10-28 18:30:45"),Q.pm("BUSINESS")
-//
-//                    )+ ");");
-
-
                     cropWriter.flush();
                 }else{
                     cropWriterError.newLine();
                     cropWriterError.write("没有找到对应记录检查jointCorpDevelop--:"+cropResultSet.getString("DID"));
                     cropWriterError.flush();
                 }
-
-
-
-
-
-
 
                 i++;
                 System.out.println(i+"/"+String.valueOf(sumCount));
