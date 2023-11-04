@@ -2,6 +2,7 @@ package houseData.recordCorp;
 
 import com.bean.JointCorpDevelop;
 import com.mapper.JointCorpDevelopMapper;
+import com.utils.FindWorkBook;
 import com.utils.MyConnection;
 import com.utils.MybatisUtils;
 import com.utils.Q;
@@ -42,17 +43,17 @@ public class corpMain {
             FileWriter fw = new FileWriter(cropFile.getAbsoluteFile());
             cropWriter = new BufferedWriter(fw);
             cropWriter.write("USE record_corp;");
-            cropWriter.newLine();
-            cropWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.corp.record.import','从业机构导入',false,true,0,'data');");
-            cropWriter.newLine();
-            cropWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) "
-            +"value (0,'OLD','2023-10-28 18:30:45','2023-10-28 18:30:45','从业机构导入','COMPLETED','2023-10-28 18:30:45','2023-10-28 18:30:45',0,'func.corp.record.create',false,'data');");
-            cropWriter.newLine();
-            cropWriter.write("INSERT work_operator (work_id, type, user_id, user_name, org_name, task_id) "
-                    +"VALUE (0,'CREATE','0','root','从业机构导入','wxy');");
-            cropWriter.newLine();
-            cropWriter.write("INSERT work_task (TASK_ID, MESSAGE, TASK_NAME, PASS) "
-                    +"VALUE ('wxy','从业机构导入','从业机构导入',true);");
+//            cropWriter.newLine();
+//            cropWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.corp.record.import','从业机构导入',false,true,0,'data');");
+//            cropWriter.newLine();
+//            cropWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) "
+//            +"value (0,'OLD','2023-10-28 18:30:45','2023-10-28 18:30:45','从业机构导入','COMPLETED','2023-10-28 18:30:45','2023-10-28 18:30:45',0,'func.corp.record.create',false,'data');");
+//            cropWriter.newLine();
+//            cropWriter.write("INSERT work_operator (work_id, type, user_id, user_name, org_name, task_id) "
+//                    +"VALUE (0,'CREATE','0','root','从业机构导入','wxy');");
+//            cropWriter.newLine();
+//            cropWriter.write("INSERT work_task (TASK_ID, MESSAGE, TASK_NAME, PASS) "
+//                    +"VALUE ('wxy','从业机构导入','从业机构导入',true);");
             cropWriter.flush();
         }catch (IOException e){
             System.out.println("cropWriter 文件创建失败");
@@ -96,7 +97,7 @@ public class corpMain {
                     }
                     cropWriter.write("INSERT corp_snapshot(CORP_NAME, TEL, OWNER_NAME, OWNER_ID_TYPE, OWNER_ID_NUMBER, ADDRESS, UNIFIED_ID, SNAPSHOT_ID) VALUE ");
                     cropWriter.write("(" +Q.v(Q.pm(cropResultSet.getString("NAME")),Q.pm(cropResultSet.getString("PHONE"))
-                            ,Q.pm(cropResultSet.getString("OWNER_NAME")),Q.pm(cropResultSet.getString("CREDENTIALS_TYPE"))
+                            ,Q.pm(cropResultSet.getString("OWNER_NAME")),Q.pm(FindWorkBook.changeIdType(cropResultSet.getString("CREDENTIALS_TYPE")).getId())
                             ,Q.pm(cropResultSet.getString("COMPANY_CER_CODE")),Q.pm(cropResultSet.getString("ADDRESS"))
                             ,Q.pm(UNIFIED_ID),Long.toString(jointCorpDevelop.getCorpId())
                     )+ ");");
@@ -109,35 +110,35 @@ public class corpMain {
                     )+ ");");
 
 
+//                    cropWriter.newLine();
+//                    cropWriter.write("INSERT qualification_snapshot (QUALIFICATION_ID, LEVEL, LEVEL_NUMBER, EXPIRE_AT, REGISTER_GOV) VALUE ");
+//                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"0"
+//                            ,Q.pm(cropResultSet.getString("COMPANY_CER_CODE")),Q.pm("2023-10-28 18:30:45"),Q.pm("未知")
+//                    )+ ");");
+//
+//                    cropWriter.newLine();
+//                    cropWriter.write("INSERT corp_record_snapshot (INFO_ID, QUALIFICATION_ID, RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE ");
+//                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
+//                            ,Long.toString(jointCorpDevelop.getCorpId()),"0",Long.toString(jointCorpDevelop.getCorpId())
+//                            ,Q.pm("DEVELOPER")
+//                    )+ ");");
+//
+//                    cropWriter.newLine();
+//                    cropWriter.write("INSERT joint_corp (record_id, unified_id, type, enabled, version, updated_at, created_at, info_id, pin) VALUE ");
+//                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
+//                            ,Q.pm("DEVELOPER"),"true","0",Q.pm("2023-10-28 18:30:45"),Q.pm("2023-10-28 18:30:45")
+//                            ,Long.toString(jointCorpDevelop.getCorpId()),Q.pm(cropResultSet.getString("PYCODE"))
+//                    )+ ");");
+//
+//                    cropWriter.newLine();
+//                    cropWriter.write("INSERT corp_business(business_id, work_id, before_info_id, info_id, type, unified_id, updated_at, work_type) VALUE ");
+//                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"0"
+//                            ,Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
+//                            ,Q.pm("DEVELOPER"),Long.toString(jointCorpDevelop.getCorpId())
+//                            ,Q.pm("2023-10-28 18:30:45"),Q.pm("BUSINESS")
+//
+//                    )+ ");");
 
-                    cropWriter.newLine();
-                    cropWriter.write("INSERT qualification_snapshot (QUALIFICATION_ID, LEVEL, LEVEL_NUMBER, EXPIRE_AT, REGISTER_GOV) VALUE ");
-                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"0"
-                            ,Q.pm(cropResultSet.getString("COMPANY_CER_CODE")),Q.pm("2023-10-28 18:30:45"),Q.pm("未知")
-                    )+ ");");
-
-                    cropWriter.newLine();
-                    cropWriter.write("INSERT corp_record_snapshot (INFO_ID, QUALIFICATION_ID, RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE ");
-                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
-                            ,Long.toString(jointCorpDevelop.getCorpId()),"0",Long.toString(jointCorpDevelop.getCorpId())
-                            ,Q.pm("DEVELOPER")
-                    )+ ");");
-
-                    cropWriter.newLine();
-                    cropWriter.write("INSERT joint_corp (record_id, unified_id, type, enabled, version, updated_at, created_at, info_id, pin) VALUE ");
-                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
-                            ,Q.pm("DEVELOPER"),"true","0",Q.pm("2023-10-28 18:30:45"),Q.pm("2023-10-28 18:30:45")
-                            ,Long.toString(jointCorpDevelop.getCorpId()),Q.pm(cropResultSet.getString("PYCODE"))
-                    )+ ");");
-
-                    cropWriter.newLine();
-                    cropWriter.write("INSERT corp_business(business_id, work_id, before_info_id, info_id, type, unified_id, updated_at, work_type) VALUE ");
-                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"0"
-                            ,Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
-                            ,Q.pm("DEVELOPER"),Long.toString(jointCorpDevelop.getCorpId())
-                            ,Q.pm("2023-10-28 18:30:45"),Q.pm("BUSINESS")
-
-                    )+ ");");
 
                     cropWriter.flush();
                 }else{
