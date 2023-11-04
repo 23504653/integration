@@ -96,7 +96,7 @@ public class corpMain {
                     if (UNIFIED_ID==null || UNIFIED_ID.isBlank()){
                         UNIFIED_ID = Long.toString(jointCorpDevelop.getCorpId());
                     }
-                    cropWriter.write("INSERT corp_snapshot(CORP_NAME, TEL, OWNER_NAME, OWNER_ID_TYPE, OWNER_ID_NUMBER, ADDRESS, UNIFIED_ID, SNAPSHOT_ID) VALUE ");
+                    cropWriter.write("INSERT corp_snapshot(CORP_NAME,TEL,OWNER_NAME,OWNER_ID_TYPE,OWNER_ID_NUMBER,ADDRESS,UNIFIED_ID,SNAPSHOT_ID) VALUE ");
                     cropWriter.write("(" +Q.v(Q.pm(cropResultSet.getString("NAME")),Q.pm(cropResultSet.getString("PHONE"))
                             ,Q.pm(cropResultSet.getString("OWNER_NAME")),Q.pm(FindWorkBook.changeIdType(cropResultSet.getString("CREDENTIALS_TYPE"),"2").getId())
                             ,Q.pm(cropResultSet.getString("COMPANY_CER_CODE")),Q.pm(cropResultSet.getString("ADDRESS"))
@@ -104,7 +104,7 @@ public class corpMain {
                     )+ ");");
 
                     cropWriter.newLine();
-                    cropWriter.write("INSERT corp (UNIFIED_ID, VERSION, UPDATED_AT, CREATED_AT, SNAPSHOT_ID) VALUE ");
+                    cropWriter.write("INSERT corp (UNIFIED_ID,VERSION,UPDATED_AT,CREATED_AT,SNAPSHOT_ID) VALUE ");
                     cropWriter.write("(" +Q.v(Q.pm(UNIFIED_ID),"0"
                             ,Q.pm("2023-10-28 18:30:45"),Q.pm("2023-10-28 18:30:45")
                             ,Long.toString(jointCorpDevelop.getCorpId())
