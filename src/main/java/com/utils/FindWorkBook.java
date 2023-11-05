@@ -187,6 +187,17 @@ public class FindWorkBook {
         }
     }
 
+    public static String projectSizeType(String id){
+        if(id.equals("buildSize.small")){
+            return "小";
+        }else if(id.equals("buildSize.big")){
+            return "大";
+        }else {
+            return null;
+        }
+
+    }
+
 }
 /**
  除了houseType useType外的字典处理， 通过调用workbookMapper 通过就字典的ID 取出新字典的ID

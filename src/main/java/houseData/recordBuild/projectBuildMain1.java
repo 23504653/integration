@@ -102,7 +102,7 @@ public class projectBuildMain1 {
 //          projectResultSet = projectStatement.executeQuery("SELECT * FROM HOUSE_INFO.PROJECT ORDER BY NAME");
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='1' ORDER BY P.NAME");
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='1' ORDER BY P.NAME");//N6477
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -136,7 +136,7 @@ public class projectBuildMain1 {
                 +"LEFT JOIN HOUSE_OWNER_RECORD.PROJECT_SELL_INFO AS PI ON P.ID = PI.ID LEFT JOIN HOUSE_OWNER_RECORD.OWNER_BUSINESS AS O ON P.BUSINESS = O.ID "
                 +"WHERE O.STATUS IN('COMPLETE','COMPLETE_CANCEL','MODIFYING','RUNNING') AND DEFINE_ID='WP50' "
                 +"AND P.PROJECT_CODE='"+projectResultSet.getString("ID")+"' "
-                +"ORDER BY P.NAME,O.ID,O.APPLY_TIME;");
+                +"ORDER BY P.NAME,O.ID,O.APPLY_TIME desc;");
 
                 if(businessResultSet.next()){//项目办理过预售业务的  HOUSE_INFO.PROJECT.ID =HOUSE_OWNER_RECORD.PROJECT.PROJECT_CODE
                     businessResultSet.beforeFirst();
@@ -197,12 +197,43 @@ public class projectBuildMain1 {
                         //project_construct_snapshot
                         projectWriter.newLine();
                         projectWriter.write("INSERT record_building.project_construct_snapshot (build_count, size_type, project_design_license, design_license_date, construct_license, land_design_license, construct_info_id, total_area) value ");
-                        projectWriter.write("(" + Q.v(Q.p(businessResultSet.getString("BUILD_COUNT")),Q.p(businessResultSet.getString("BUILD_SIZE"))
+                        projectWriter.write("(" + Q.v(Q.p(businessResultSet.getString("BUILD_COUNT")),Q.p(FindWorkBook.projectSizeType(businessResultSet.getString("BUILD_SIZE")))
                                 ,Q.pm(businessResultSet.getString("CREATE_PREPARE_CARD_CODE")),Q.pm(businessResultSet.getTimestamp("CREATE_TIME"))
                                 ,Q.pm(businessResultSet.getString("CREATE_CARD_CODE")),Q.pm(businessResultSet.getString("CREATE_PREPARE_CARD_CODE"))
                                 ,Long.toString(businessId.getId()),Q.pm(businessResultSet.getBigDecimal("AREA"))
                         )+ ");");
                         projectWriter.flush();
+
+
+                        //project_base_snapshot
+                        workbookResultSet = workbookStatement.executeQuery("SELECT S.DISTRICT FROM HOUSE_INFO.PROJECT AS P LEFT JOIN HOUSE_INFO.SECTION AS S " +
+                                "ON P.SECTIONID=S.ID " +
+                                "WHERE P.ID='"+projectResultSet.getString("ID")+"'");
+                        if(workbookResultSet.next()){
+                            projectWriter.newLine();
+                            districtCode = workbookResultSet.getString("DISTRICT");
+                            projectWriter.write("INSERT record_building.project_base_snapshot (base_info_id, project_name, district_code) value ");
+                            projectWriter.write("(" + Q.v(Long.toString(businessId.getId())
+                                    ,Q.pm(projectResultSet.getString("NAME"))
+                                    ,Q.pm(districtCode)
+                            )+ ");");
+                            projectWriter.flush();
+                        }else {
+                            System.out.println("项目id--："+projectResultSet.getString("ID")+ "--没有对应的DISTRICT");
+                            return;
+                        }
+
+
+                        //project_snapshot
+                        projectWriter.newLine();
+                        projectWriter.write("INSERT record_building.project_snapshot (project_info_id, project_id, base_info_id, construct_info_id, land_info_id, work_id) VALUE ");
+                        projectWriter.write("(" + Q.v(Long.toString(businessId.getId()),Long.toString(projectId.getId())
+                                ,Long.toString(businessId.getId()),Long.toString(businessId.getId())
+                                ,Long.toString(businessId.getId()),"1"
+                        )+ ");");
+                        projectWriter.flush();
+
+
                     }
                 }else{//项目没办理过预售业务的 project_snapshot 写空记录 相关表写对应的空记录 用projectId 做个表主键ID
                     //land_snapshot land_info_id
@@ -237,41 +268,43 @@ public class projectBuildMain1 {
                             ,Long.toString(projectId.getId()),"0"
                     )+ ");");
                     projectWriter.flush();
-                }
 
-                //project_base_snapshot
-                workbookResultSet = workbookStatement.executeQuery("SELECT S.DISTRICT FROM HOUSE_INFO.PROJECT AS P LEFT JOIN HOUSE_INFO.SECTION AS S " +
-                        "ON P.SECTIONID=S.ID " +
-                        "WHERE P.ID='"+projectResultSet.getString("ID")+"'");
-                if(workbookResultSet.next()){
+
+                    //project_base_snapshot
+                    workbookResultSet = workbookStatement.executeQuery("SELECT S.DISTRICT FROM HOUSE_INFO.PROJECT AS P LEFT JOIN HOUSE_INFO.SECTION AS S " +
+                            "ON P.SECTIONID=S.ID " +
+                            "WHERE P.ID='"+projectResultSet.getString("ID")+"'");
+                    if(workbookResultSet.next()){
+                        projectWriter.newLine();
+                        districtCode = workbookResultSet.getString("DISTRICT");
+                        projectWriter.write("INSERT record_building.project_base_snapshot (base_info_id, project_name, district_code) value ");
+                        projectWriter.write("(" + Q.v(Long.toString(businessId.getId())
+                                ,Q.pm(projectResultSet.getString("NAME"))
+                                ,Q.pm(districtCode)
+                        )+ ");");
+                        projectWriter.flush();
+                    }else {
+                        System.out.println("项目id--："+projectResultSet.getString("ID")+ "--没有对应的DISTRICT");
+                        return;
+                    }
+
+                    //project_snapshot
                     projectWriter.newLine();
-                    districtCode = workbookResultSet.getString("DISTRICT");
-                    projectWriter.write("INSERT record_building.project_base_snapshot (base_info_id, project_name, district_code) value ");
-                    projectWriter.write("(" + Q.v(Long.toString(businessId.getId())
-                            ,Q.pm(projectResultSet.getString("NAME"))
-                            ,Q.pm(districtCode)
+                    projectWriter.write("INSERT record_building.project_snapshot (project_info_id, project_id, base_info_id, construct_info_id, land_info_id, work_id) VALUE ");
+                    projectWriter.write("(" + Q.v(Long.toString(businessId.getId()),Long.toString(projectId.getId())
+                            ,Long.toString(businessId.getId()),Long.toString(businessId.getId())
+                            ,Long.toString(businessId.getId()),"1"
                     )+ ");");
                     projectWriter.flush();
-                }else {
-                    System.out.println("项目id--："+projectResultSet.getString("ID")+ "--没有对应的DISTRICT");
-                    return;
                 }
 
 
-               //project_snapshot
-                projectWriter.newLine();
-                projectWriter.write("INSERT record_building.project_snapshot (project_info_id, project_id, base_info_id, construct_info_id, land_info_id, work_id) VALUE ");
-                projectWriter.write("(" + Q.v(Long.toString(businessId.getId()),Long.toString(projectId.getId())
-                        ,Long.toString(businessId.getId()),Long.toString(businessId.getId())
-                        ,Long.toString(businessId.getId()),"1"
-                )+ ");");
-                projectWriter.flush();
 
                 //project
                 projectWriter.newLine(); // 建立一个未知开发商将没有开发商的项目都挂上去 project_business 没写
-                projectWriter.write("INSERT record_building.project (project_id, developer_id, developer_name, project_info_id, status, " +
+                projectWriter.write("INSERT record_building.project (project_id, developer_id,updated_at, developer_name, project_info_id, status, " +
                         "version, address, project_name, district_code, pin) value ");
-                projectWriter.write("(" + Q.v(Long.toString(projectId.getId()),UNIFIED_ID
+                projectWriter.write("(" + Q.v(Long.toString(projectId.getId()),UNIFIED_ID,Q.pm(projectResultSet.getString("CREATE_TIME"))
                         ,Q.pm(developName),Long.toString(businessId.getId())
                         ,Q.p("PUBLIC"),"0"
                         ,Q.pm(projectResultSet.getString("ADDRESS")),Q.pm(projectResultSet.getString("NAME"))
