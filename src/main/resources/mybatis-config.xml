@@ -37,5 +37,6 @@
         <mapper resource="com/mapper/LandEndTimeIdMapper.xml"/>
         <mapper resource="com/mapper/HouseUseTypeMapper.xml"/>
         <mapper resource="com/mapper/OtherHouseTypeMapper.xml"/>
+        <mapper resource="com/mapper/OwnerRecordBuildIdMapper.xml"/>
     </mappers>
 </configuration>

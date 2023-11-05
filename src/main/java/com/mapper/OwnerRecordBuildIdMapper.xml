@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命令空间 对应数据接口操作-->
+<mapper namespace="com.mapper.OwnerRecordBuildIdMapper">
+    <select id="selectByOldBuildId" resultType="com.bean.OwnerRecordBuildId">
+      select * from INTEGRATION.ownerRecordBuild_Id where oid = #{BuildIdOldId};
+    </select>
+    <insert id="addBuildId" parameterType="map">
+        insert INTO INTEGRATION.ownerRecordBuild_Id (id, oid,name)
+         VALUE (#{id},#{oid},#{name});
+    </insert>
+    <select id="findMaxId" resultType="Integer">
+        select max(INTEGRATION.ownerRecordBuild_Id.id) from INTEGRATION.ownerRecordBuild_Id;
+    </select>
+</mapper>
