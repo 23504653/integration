@@ -43,6 +43,10 @@ public class corpMain {
             FileWriter fw = new FileWriter(cropFile.getAbsoluteFile());
             cropWriter = new BufferedWriter(fw);
             cropWriter.write("USE record_corp;");
+            cropWriter.newLine();
+            //创建一个空开发商用于挂没有开发商的项目
+            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('未知','13333333333','未知','RESIDENT_ID','未知','未知','011',0);");
+            cropWriter.write("INSERT corp (unified_id, version, corp.created_at,snapshot_id) VALUE (0,0,'1980-01-01:08:00:00',0);");
 //            cropWriter.newLine();
 //            cropWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.corp.record.import','从业机构导入',false,true,0,'data');");
 //            cropWriter.newLine();
@@ -115,6 +119,7 @@ public class corpMain {
                     cropWriterError.write("没有找到对应记录检查jointCorpDevelop--:"+cropResultSet.getString("DID"));
                     cropWriterError.flush();
                 }
+
 
                 i++;
                 System.out.println(i+"/"+String.valueOf(sumCount));

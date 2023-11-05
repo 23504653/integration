@@ -13,6 +13,45 @@ import java.sql.Statement;
 
 public class FindWorkBook {
 
+    public static String landUseType(String id){
+        if(id ==null || id.equals("") || id.equals("2") || id.equals("住宅") || id.equals("住宅用地")
+                || id.equals("公寓") || id.equals("公寓") ){
+            return "DWELLING";
+
+        }else if(id.equals("商业") || id.equals("商业/车库") || id.equals("商业用地") || id.equals("商服用地") || id.equals("网点") || id.equals("车库、库房")){
+            return "SHOP";
+        }else {
+            return "DWELLING";
+        }
+    }
+
+
+
+    public static WorkBook changeLandSnapshot(String id){
+        // 没有默认是住宅
+        WorkBook workBook = new WorkBook();
+        workBook.setId("DWELLING");
+        workBook.setValue("住宅");
+        if(id == null || id.equals("") || id.isBlank()){
+            return workBook;
+        }
+        if(id.equals("DWELLING_KEY")){
+            workBook.setId("DWELLING");
+            workBook.setValue("住宅");
+            return workBook;
+        }else if(id.equals("SHOP_HOUSE_KEY")){
+            workBook.setId("SHOP");
+            workBook.setValue("商业用房");
+            return workBook;
+        }else if(id.equals("CAR_STORE")) {
+            workBook.setId("GARAGE");
+            workBook.setValue("车库");
+            return workBook;
+        }else {
+            return workBook;
+        }
+    }
+
     /**
      * @param id
      * @return 转换正价类型，个人和企业的证件类型转换

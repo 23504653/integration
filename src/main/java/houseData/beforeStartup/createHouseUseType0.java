@@ -13,6 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * house DESIGN_USE_TYPE 分组 统计 用途 添加房屋的USETYPE HOUSETYPE  DESIGN_USE_TYPE=其它的 通过houseOrder ，floorName 判断
+ * 对应的记录 写在INTEGRATION 的use_type，other_house_type
+ */
 public class createHouseUseType0 {
     private static final String BEGIN_DATE = "2023-03-09";
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_INFO?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";

@@ -38,8 +38,8 @@ public class createCorpId1  {
             Integer j = jointCorpDevelopMapper.findMaxId();
             if (j!=null){
                 j = j.intValue()+1;
-            }else {
-                j = 0;
+            }else {//流出俩个给建立一个空开发商
+                j = 2;
             }
 
             System.out.println("记录总数-"+sumCount);
