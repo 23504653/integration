@@ -35,7 +35,7 @@ public class createOwnerRecordBuildId3_1 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 500;
+                j = 17000;
             }
 
             System.out.println("记录总数-"+sumCount);

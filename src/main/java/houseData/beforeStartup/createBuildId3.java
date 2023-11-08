@@ -35,7 +35,7 @@ public class createBuildId3 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 500;
+                j = 3500;
             }
 
             System.out.println("记录总数-"+sumCount);

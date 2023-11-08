@@ -34,7 +34,7 @@ public class createBusiness4 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j =5000;
+                j =25200;
             }
 
             System.out.println("记录总数-"+sumCount);

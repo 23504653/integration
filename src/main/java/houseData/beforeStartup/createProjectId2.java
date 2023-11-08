@@ -35,7 +35,7 @@ public class createProjectId2 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 0;
+                j = 300;
             }
 
             System.out.println("记录总数-"+sumCount);

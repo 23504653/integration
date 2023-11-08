@@ -187,16 +187,103 @@ public class FindWorkBook {
         }
     }
 
-    public static String projectSizeType(String id){
-        if(id.equals("buildSize.small")){
-            return "小";
-        }else if(id.equals("buildSize.big")){
-            return "大";
-        }else {
-            return null;
-        }
 
+    public static WorkBook projectSizeType(String id){
+        WorkBook workBook = new WorkBook();
+        if(id.equals("buildSize.small")){
+            workBook.setId("SMALL");
+            workBook.setValue("小");
+            return workBook;
+        }else if(id.equals("buildSize.big")){
+            workBook.setId("BIG");
+            workBook.setValue("大");
+            return workBook;
+        }else {
+            workBook.setId("MIDDLE");
+            workBook.setValue("中等");
+            return workBook;
+        }
     }
+    public static WorkBook structure(String id){
+        WorkBook workBook = new WorkBook();
+        workBook.setId("0");
+        workBook.setValue("其他结构");
+
+        if(id.equals("88")){
+            workBook.setId("1");
+            workBook.setValue("钢结构");
+            return workBook;
+        }else if(id.equals("822") || id.equals("89")){
+            workBook.setId("2");
+            workBook.setValue("钢、钢筋混凝土结构");
+            return workBook;
+        }else if(id.equals("823") || id.equals("915")){
+            workBook.setId("3");
+            workBook.setValue("钢筋混凝土结构");
+            return workBook;
+        }else if(id.equals("824")){
+            workBook.setId("4");
+            workBook.setValue("混合结构");
+            return workBook;
+        }else if(id.equals("825")){
+            workBook.setId("5");
+            workBook.setValue("砖木结构");
+            return workBook;
+        }else if(id.equals("4113")){
+            workBook.setId("8");
+            workBook.setValue("剪力结构");
+            return workBook;
+        }else if(id.equals("826")){
+            workBook.setId("9");
+            workBook.setValue("土木结构");
+            return workBook;
+        }else if(id.equals("90")){
+            workBook.setId("10");
+            workBook.setValue("花岗石结构");
+            return workBook;
+        }else if(id.equals("1559")){
+            workBook.setId("11");
+            workBook.setValue("砖混结构");
+            return workBook;
+        }else if(id.equals("框剪")){
+            workBook.setId("12");
+            workBook.setValue("框剪");
+            return workBook;
+        }else if(id.equals("框架")){
+            workBook.setId("13");
+            workBook.setValue("框架");
+            return workBook;
+        }else{
+            return workBook;
+        }
+    }
+
+    public static WorkBook buildType(String id){
+        WorkBook workBook = new WorkBook();
+        workBook.setId("MULTI");
+        workBook.setValue("多层");
+        if (id.equals("202")){
+            workBook.setId("MULTI");
+            workBook.setValue("多层");
+            return workBook;
+        }else if(id.equals("203")){
+            workBook.setId("HIGH");
+            workBook.setValue("高层");
+            return workBook;
+        }else if(id.equals("204")){
+            workBook.setId("VILLA");
+            workBook.setValue("别墅");
+            return workBook;
+        }else if(id.equals("2772")){
+            workBook.setId("BUNGALOW");
+            workBook.setValue("平房");
+            return workBook;
+        }else{
+            return workBook;
+        }
+    }
+
+
 
 }
 /**
