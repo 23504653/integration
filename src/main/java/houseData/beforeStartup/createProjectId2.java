@@ -35,7 +35,7 @@ public class createProjectId2 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 300;
+                j = 300; //共2176 条 下一其实2500
             }
 
             System.out.println("记录总数-"+sumCount);

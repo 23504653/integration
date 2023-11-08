@@ -23,6 +23,8 @@ public class createHouseUseType0 {
     private static Statement statement;
     private static ResultSet resultSet;
 
+
+    // 用 SELECT DESIGN_USE_TYPE FROM HOUSE_INFO.HOUSE GROUP BY DESIGN_USE_TYPE 总数238 多了就添加
     public static void main(String agr[]) throws SQLException {
         statement = MyConnection.getStatement(DB_URL,"root","dgsoft");
         SqlSession sqlSession = MybatisUtils.getSqlSession();

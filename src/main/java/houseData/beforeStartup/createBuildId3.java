@@ -35,7 +35,7 @@ public class createBuildId3 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 3500;
+                j = 3500;//共 8131条 下一起始 11000
             }
 
             System.out.println("记录总数-"+sumCount);

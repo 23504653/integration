@@ -5,6 +5,9 @@ import com.utils.MybatisUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class FidCompareMapperTest {
     @Test
     public void test(){
@@ -18,6 +21,20 @@ public class FidCompareMapperTest {
         workBook.setId(null);
         workBook.setValue(null);
         System.out.println(workBook.getId());
+
+
+
+
+        LocalDateTime dateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = dateTime.format(formatter);
+        System.out.println("格式化后的日期时间: " + formattedDateTime);
+
+        String dateString = "2023-10-27 15:30:00";
+        LocalDateTime parsedDateTime = LocalDateTime.parse(dateString, formatter);
+        System.out.println("解析后的日期时间: " + parsedDateTime);
+
+
 //            HouseUseTypeMapper houseUseTypeMapper= sqlSession.getMapper(HouseUseTypeMapper.class);
 //            JointCorpDevelopMapper jointCorpDevelopMapper = sqlSession.getMapper(JointCorpDevelopMapper.class);
 ////            buildIdMapper.addBuildId(map);

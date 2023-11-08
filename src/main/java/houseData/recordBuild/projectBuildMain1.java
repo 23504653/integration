@@ -1,12 +1,8 @@
 package houseData.recordBuild;
 
 
-import com.bean.BuildId;
-import com.bean.JointCorpDevelop;
-import com.bean.ProjectId;
-import com.mapper.BuildIdMapper;
-import com.mapper.JointCorpDevelopMapper;
-import com.mapper.ProjectIdMapper;
+import com.bean.*;
+import com.mapper.*;
 import com.utils.*;
 import org.apache.ibatis.session.SqlSession;
 
@@ -21,6 +17,8 @@ import java.sql.Statement;
 public class projectBuildMain1 {
     private static final String BEGIN_DATE = "2023-03-09";
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_INFO?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
+    private final static String USER ="root";
+    private final static String PASSWORD ="dgsoft";
     private static final String PROJECT_ERROR_FILE="/projectError1.sql";
     private static final String PROJECT_FILE="/projectRecord1.sql";
     private static BufferedWriter projectWriterError;
@@ -33,6 +31,10 @@ public class projectBuildMain1 {
     private static ResultSet buildResultSet;
     private static Statement workbookStatement;
     private static ResultSet workbookResultSet;
+
+    private static Statement houseStatement;
+    private static ResultSet houseResultSet;
+
 
 
     public static void main(String agr[]) throws SQLException {
@@ -77,17 +79,23 @@ public class projectBuildMain1 {
             e.printStackTrace();
             return;
         }
-        projectStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
-        buildStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
-        workbookStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
+        projectStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
+        buildStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
+        workbookStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
+        houseStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
+
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         ProjectIdMapper projectIdMapper =  sqlSession.getMapper(ProjectIdMapper.class);
         JointCorpDevelopMapper jointCorpDevelopMapper =  sqlSession.getMapper(JointCorpDevelopMapper.class);
         BuildIdMapper buildIdMapper = sqlSession.getMapper(BuildIdMapper.class);
+        HouseIdMapper houseIdMapper = sqlSession.getMapper(HouseIdMapper.class);
+        HouseUseTypeMapper houseUseTypeMapper = sqlSession.getMapper(HouseUseTypeMapper.class);
 
         ProjectId projectId = null;
         BuildId buildId =null;
+        HouseId houseId = null;
         JointCorpDevelop jointCorpDevelop = new JointCorpDevelop();
+        HouseUseType houseUseType= new HouseUseType();
         String developName=null,UNIFIED_ID=null,districtCode=null;
 
 
@@ -261,7 +269,7 @@ public class projectBuildMain1 {
 
                         //build_snapshot
                         projectWriter.newLine();
-                        projectWriter.write("IINSERT build_snapshot (build_info_id, location_info_id, construct_info_id, " +
+                        projectWriter.write("INSERT build_snapshot (build_info_id, location_info_id, construct_info_id, " +
                                 "build_id, work_id) VALUE ");
                         projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Long.toString(buildId.getId())
                                         ,Long.toString(buildId.getId()),Long.toString(buildId.getId())
@@ -303,12 +311,53 @@ public class projectBuildMain1 {
                                 ,Long.toString(buildId.getId()),Q.pm("CREATE")
                                 ,Long.toString(buildId.getId())
                         )+ ");");
-
-
-
-
-
                         projectWriter.flush();
+
+                        //house
+                        houseResultSet = houseStatement.executeQuery("select * from HOUSE_INFO.HOUSE WHERE BUILDID ='"+buildResultSet.getString("ID")+"'");
+                        if(houseResultSet.next()){
+                            houseResultSet.beforeFirst();
+                            while(houseResultSet.next()){
+                                houseId = houseIdMapper.selectByOldHouseId(houseResultSet.getString("ID"));
+                                if(houseId==null){
+                                    projectWriterError.newLine();
+                                    projectWriterError.write("没有找到对应记录检查houseID:"+houseResultSet.getString("ID"));
+                                    projectWriterError.flush();
+                                    System.out.println("没有找到对应记录检查houseID:"+houseResultSet.getString("ID"));
+                                    return;
+                                }
+                                houseUseType = houseUseTypeMapper.selectByDesignUseType(houseResultSet.getString("DESIGN_USE_TYPE"));
+                                if(houseUseType ==null){
+                                    projectWriterError.newLine();
+                                    projectWriterError.write("没有找到对应记录检查houseUseType:"+houseResultSet.getString("ID"));
+                                    projectWriterError.flush();
+                                    System.out.println("没有找到对应记录检查houseUseType:"+houseResultSet.getString("ID"));
+                                    return;
+                                }
+
+                                // workid,work_operator 用build的workId，和defineID
+
+                                projectWriter.newLine();
+                                projectWriter.write("INSERT work (INSERT apartment_snapshot (apartment_info_id,layer_type, layer_type_key," +
+                                        " house_type, floor_begin, floor_end, floor_name," +
+                                        "unit, use_type, use_type_key, apartment_number) value ");
+                                projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Q.p(FindWorkBook.structure(houseResultSet.getString("STRUCTURE")).getValue())
+                                        ,Q.p(FindWorkBook.structure(houseResultSet.getString("STRUCTURE")).getId()),Q.pm(houseUseType.getHouseType())
+                                        ,Q.pm(houseResultSet.getString(""))
+                                )+ ");");
+
+
+
+
+
+                            }
+                        }
+
+
+
+
+
+
 
 
                     }
