@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命令空间 对应数据接口操作-->
+<mapper namespace="com.mapper.FloorBeginEndMapper">
+    <select id="selectByName" resultType="com.bean.FloorBeginEnd">
+      select * from INTEGRATION.FloorBeginEnd where inFloorName = #{name};
+    </select>
+    <insert id="addFloorBeginEnd" parameterType="map">
+        insert INTO INTEGRATION.FloorBeginEnd (inFloorName,beginFloor, endFloor)
+         VALUE (#{name},#{upf},#{downf});
+    </insert>
+
+    <insert id="addFloorName" parameterType="map">
+        insert INTO INTEGRATION.FloorBeginEnd (inFloorName)
+         VALUE (#{name});
+    </insert>
+</mapper>
