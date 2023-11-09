@@ -90,12 +90,17 @@ public class projectBuildMain1 {
         BuildIdMapper buildIdMapper = sqlSession.getMapper(BuildIdMapper.class);
         HouseIdMapper houseIdMapper = sqlSession.getMapper(HouseIdMapper.class);
         HouseUseTypeMapper houseUseTypeMapper = sqlSession.getMapper(HouseUseTypeMapper.class);
+        FloorBeginEndMapper floorBeginEndMapper = sqlSession.getMapper(FloorBeginEndMapper.class);
+        OtherHouseTypeMapper otherHouseTypeMapper = sqlSession.getMapper(OtherHouseTypeMapper.class);
 
         ProjectId projectId = null;
         BuildId buildId =null;
         HouseId houseId = null;
         JointCorpDevelop jointCorpDevelop = new JointCorpDevelop();
         HouseUseType houseUseType= new HouseUseType();
+        OtherHouseType otherHouseType = null;
+        FloorBeginEnd floorBeginEnd = new FloorBeginEnd();
+
         String developName=null,UNIFIED_ID=null,districtCode=null;
 
 
@@ -327,29 +332,72 @@ public class projectBuildMain1 {
                                     return;
                                 }
                                 houseUseType = houseUseTypeMapper.selectByDesignUseType(houseResultSet.getString("DESIGN_USE_TYPE"));
-                                if(houseUseType ==null){
+                                if(houseUseType ==null){//房屋类型不是其它
                                     projectWriterError.newLine();
                                     projectWriterError.write("没有找到对应记录检查houseUseType:"+houseResultSet.getString("ID"));
                                     projectWriterError.flush();
                                     System.out.println("没有找到对应记录检查houseUseType:"+houseResultSet.getString("ID"));
                                     return;
                                 }
+                                if(houseUseType.getHouseType().equals("Null")){//DesignUseType 用途是其它 需要调 otherHouseType表 进行房屋类型的取值
+                                    otherHouseType = otherHouseTypeMapper.selectByHouseId(houseResultSet.getString("ID"));
+                                    if (otherHouseType == null){
+                                        projectWriterError.newLine();
+                                        projectWriterError.write("没有找到对应记录检查otherHouseTypeMapper:"+houseResultSet.getString("ID"));
+                                        projectWriterError.flush();
+                                        System.out.println("没有找到对应记录检查otherHouseTypeMapper:"+houseResultSet.getString("ID"));
+                                        return;
+                                    }else {
+                                        houseUseType.setHouseType(otherHouseType.getHouseType());
+                                    }
+                                }
 
-                                // workid,work_operator 用build的workId，和defineID
-
+                                // workid,用build的workId，和defineID buildid z
+                                floorBeginEnd = floorBeginEndMapper.selectByName(houseResultSet.getString("IN_FLOOR_NAME"));
+                                if(floorBeginEnd==null){
+                                    projectWriterError.newLine();
+                                    projectWriterError.write("没有找到对应记录检查floorBeginEndMapper:"+houseResultSet.getString("ID"));
+                                    projectWriterError.flush();
+                                    System.out.println("没有找到对应记录检查floorBeginEndMapper:"+houseResultSet.getString("ID"));
+                                    return;
+                                }
+                                //apartment_snapshot
                                 projectWriter.newLine();
-                                projectWriter.write("INSERT work (INSERT apartment_snapshot (apartment_info_id,layer_type, layer_type_key," +
+                                projectWriter.write("INSERT apartment_snapshot (apartment_info_id,layer_type, layer_type_key," +
                                         " house_type, floor_begin, floor_end, floor_name," +
                                         "unit, use_type, use_type_key, apartment_number) value ");
                                 projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Q.p(FindWorkBook.structure(houseResultSet.getString("STRUCTURE")).getValue())
                                         ,Q.p(FindWorkBook.structure(houseResultSet.getString("STRUCTURE")).getId()),Q.pm(houseUseType.getHouseType())
-                                        ,Q.pm(houseResultSet.getString(""))
+                                        ,Integer.toString(floorBeginEnd.getBeginFloor())
+                                        ,Integer.toString(floorBeginEnd.getEndFloor()),Q.pm(houseResultSet.getString("IN_FLOOR_NAME"))
+                                        ,Q.pm(houseResultSet.getString("HOUSE_UNIT_NAME")),Q.pm(houseUseType.getLabel())
+                                        ,Integer.toString(houseUseType.getValue()),Q.pm(houseResultSet.getString("HOUSE_ORDER"))
                                 )+ ");");
 
+                                //apartment_snapshot
+                                projectWriter.newLine();
+                                projectWriter.write("INSERT apartment_mapping_snapshot (mapping_info_id, area, area_use, area_share, area_loft,mapping_corp_info_id) VALUE ");
+                                projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Q.pm(houseResultSet.getBigDecimal("HOUSE_AREA"))
+                                        ,Q.pm(houseResultSet.getBigDecimal("USE_AREA")),Q.pm(houseResultSet.getBigDecimal("COMM_AREA"))
+                                        ,Q.pm(houseResultSet.getBigDecimal("LOFT_AREA")),Q.p(FindWorkBook.getMappingCorpId(buildResultSet.getString("MAP_CORP")).getId())
+                                )+ ");");
 
+                                //house_snapshot
+                                projectWriter.newLine();
+                                projectWriter.write("INSERT house_snapshot (HOUSE_INFO_ID, HOUSE_ID, MAPPING_INFO_ID, APARTMENT_INFO_ID, WORK_ID, UNIT_CODE) value  ");
+                                projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Long.toString(houseId.getId())
+                                        ,Long.toString(houseId.getId()),Long.toString(houseId.getId())
+                                        ,Long.toString(buildId.getId()),Q.p(houseResultSet.getString("UNIT_NUMBER"))
+                                )+ ");");
+                                //house
+                                projectWriter.newLine();
+                                projectWriter.write("INSERT house (HOUSE_ID, BUILD_ID, HOUSE_INFO_ID, STATUS, MAPPING_CORP_ID, MAPPING_CORP_NAME, VERSION) value ");
+                                projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Long.toString(buildId.getId())
+                                        ,Long.toString(houseId.getId()),Q.pm("SALE"),Q.p(FindWorkBook.getMappingCorpId(buildResultSet.getString("MAP_CORP")).getId())
+                                        ,Q.p(FindWorkBook.getMappingCorpId(buildResultSet.getString("MAP_CORP")).getValue()),"0"
+                                )+ ");");
 
-
-
+                                projectWriter.flush();
                             }
                         }
 
@@ -365,7 +413,7 @@ public class projectBuildMain1 {
 
 
 
-
+                projectWriter.flush();
                 i++;
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
