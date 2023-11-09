@@ -216,10 +216,11 @@ public class projectBuildMain1 {
                 //project_business
                 projectWriter.newLine();
                 projectWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                        "developer_name, work_type) VALUE ");
+                        "developer_name, work_type,business_id) VALUE ");
                 projectWriter.write("(" + Q.v(Long.toString(projectId.getId()),Long.toString(projectId.getId())
                         ,UNIFIED_ID,Long.toString(projectId.getId())
                         ,Q.pm(developName),Q.pm("CREATE")
+                        ,Long.toString(projectId.getId())
                 )+ ");");
                 projectWriter.flush();
                 //HOUSE_INFO.BUILD.ID 作为build表主键
@@ -301,11 +302,13 @@ public class projectBuildMain1 {
                         //project_business
                         projectWriter.newLine();
                         projectWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                                "developer_name, work_type) VALUE ");
+                                "developer_name, work_type,business_id) VALUE ");
                         projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Long.toString(projectId.getId())
                                 ,UNIFIED_ID,Long.toString(projectId.getId())
                                 ,Q.pm(developName),Q.pm("REFER")
+                                ,Long.toString(buildId.getId())
                         )+ ");");
+
 
 
                         //build_business
@@ -316,7 +319,11 @@ public class projectBuildMain1 {
                                 ,Long.toString(buildId.getId()),Q.pm("CREATE")
                                 ,Long.toString(buildId.getId())
                         )+ ");");
+
+
+
                         projectWriter.flush();
+
 
                         //house
                         houseResultSet = houseStatement.executeQuery("select * from HOUSE_INFO.HOUSE WHERE BUILDID ='"+buildResultSet.getString("ID")+"'");
@@ -397,22 +404,57 @@ public class projectBuildMain1 {
                                         ,Q.p(FindWorkBook.getMappingCorpId(buildResultSet.getString("MAP_CORP")).getValue()),"0"
                                 )+ ");");
 
+
+                                projectWriter.newLine();
+                                projectWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
+                                projectWriter.write("(" + Q.v(Q.pm(Long.toString(houseId.getId())),Q.pm("OLD")
+                                        ,Q.pm(buildResultSet.getString("MAP_TIME")),Q.pm(buildResultSet.getString("MAP_TIME"))
+                                        ,Q.pm("导入房屋"),Q.pm("COMPLETED")
+                                        ,Q.pm(buildResultSet.getString("MAP_TIME")),Q.pm(buildResultSet.getString("MAP_TIME"))
+                                        ,"0",Q.pm("func.building.build.import")
+                                        ,"true",Q.pm("data")
+                                )+ ");");
+                                //work_operator projectId 作为task_id
+                                projectWriter.newLine();
+                                projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, org_name, task_id) VALUE ");
+                                projectWriter.write("(" + Q.v(Q.pm(Long.toString(houseId.getId())),Q.pm("CREATE")
+                                        ,"0",Q.pm("root"),Q.pm("导入房屋"),Q.pm(Long.toString(houseId.getId()))
+                                )+ ");");
+
+                                //project_business
+                                projectWriter.newLine();
+                                projectWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
+                                        "developer_name, work_type,business_id) VALUE ");
+                                projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Long.toString(projectId.getId())
+                                        ,UNIFIED_ID,Long.toString(projectId.getId())
+                                        ,Q.pm(developName),Q.pm("REFER")
+                                        ,Long.toString(houseId.getId())
+                                )+ ");");
+
+
+
+                                //build_business
+                                projectWriter.newLine();
+                                projectWriter.write("INSERT build_business (work_id, build_id,project_id, updated_at, info_id, work_type, business_id) value ");
+                                projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Long.toString(buildId.getId())
+                                        ,Long.toString(projectId.getId()),Q.pm(Q.nowFormatTime())
+                                        ,Long.toString(buildId.getId()),Q.pm("REFER")
+                                        ,Long.toString(houseId.getId())
+                                )+ ");");
+
+                                //house_business
+                                projectWriter.newLine();
+                                projectWriter.write("INSERT house_business (work_id, house_id, build_id, updated_at, info_id, business_id, work_type) VALUE ");
+                                projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Long.toString(houseId.getId())
+                                        ,Long.toString(buildId.getId()),Q.pm(Q.nowFormatTime())
+                                        ,Long.toString(houseId.getId()),Long.toString(houseId.getId())
+                                        ,Q.pm("CREATE")
+                                )+ ");");
                                 projectWriter.flush();
                             }
                         }
-
-
-
-
-
-
-
-
                     }
                 }
-
-
-
                 projectWriter.flush();
                 i++;
                 System.out.println(i+"/"+String.valueOf(sumCount));
@@ -439,6 +481,18 @@ public class projectBuildMain1 {
             }
             if(buildStatement!=null){
                 buildStatement.close();
+            }
+            if(workbookResultSet!=null){
+                workbookResultSet.close();
+            }
+            if(workbookStatement!=null){
+                workbookStatement.close();
+            }
+            if(houseResultSet!=null){
+                houseResultSet.close();
+            }
+            if(houseStatement!=null){
+                houseStatement.close();
             }
             MyConnection.closeConnection();
         }
