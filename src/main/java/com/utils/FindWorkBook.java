@@ -283,8 +283,26 @@ public class FindWorkBook {
         }
     }
 
+    public static WorkBook getMappingCorpId(String id){
+        WorkBook workBook = new WorkBook();
+        workBook.setId("3");
+        workBook.setValue("未知测绘机构");
+        if(id==null || id.equals("")){
+            return workBook;
+        }
+        if(id.equals("1")){
+            workBook.setId("1");
+            workBook.setValue("东港市房产测绘中心");
+            return workBook;
+        }else if(id.equals("2")){
+            workBook.setId("2");
+            workBook.setValue("东港市村镇建设管理处测绘队");
+            return workBook;
+        }else {
+            return workBook;
+        }
 
-
+    }
 }
 /**
  除了houseType useType外的字典处理， 通过调用workbookMapper 通过就字典的ID 取出新字典的ID

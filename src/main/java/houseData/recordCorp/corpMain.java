@@ -45,8 +45,26 @@ public class corpMain {
             cropWriter.write("USE record_corp;");
             cropWriter.newLine();
             //创建一个空开发商用于挂没有开发商的项目
-            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('未知','13333333333','未知','RESIDENT_ID','未知','未知','011',0);");
+            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('未知开发商','13333333333','未知','RESIDENT_ID','未知','未知','011',0);");
+            cropWriter.newLine();
             cropWriter.write("INSERT corp (unified_id, version, corp.created_at,snapshot_id) VALUE (0,0,'1980-01-01:08:00:00',0);");
+
+            cropWriter.newLine();
+            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('东港市房产测绘中心','13333333333','未知','RESIDENT_ID','未知','未知','012',1);");
+            cropWriter.newLine();
+            cropWriter.write("INSERT corp (unified_id, version, corp.created_at,snapshot_id) VALUE (1,0,'1980-01-01:08:00:00',1);");
+            cropWriter.newLine();
+            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('东港市村镇建设管理处测绘队','13333333333','未知','RESIDENT_ID','未知','未知','013',2);");
+            cropWriter.newLine();
+            cropWriter.write("INSERT corp (unified_id, version, corp.created_at,snapshot_id) VALUE (2,0,'1980-01-01:08:00:00',2);");
+
+            cropWriter.newLine();
+            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('未知测绘机构','13333333333','未知','RESIDENT_ID','未知','未知','014',3);");
+            cropWriter.newLine();
+            cropWriter.write("INSERT corp (unified_id, version, corp.created_at,snapshot_id) VALUE (3,0,'1980-01-01:08:00:00',3);");
+            cropWriter.flush();
+
+
 //            cropWriter.newLine();
 //            cropWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.corp.record.import','从业机构导入',false,true,0,'data');");
 //            cropWriter.newLine();
@@ -58,7 +76,7 @@ public class corpMain {
 //            cropWriter.newLine();
 //            cropWriter.write("INSERT work_task (TASK_ID, MESSAGE, TASK_NAME, PASS) "
 //                    +"VALUE ('wxy','从业机构导入','从业机构导入',true);");
-            cropWriter.flush();
+
         }catch (IOException e){
             System.out.println("cropWriter 文件创建失败");
             e.printStackTrace();
@@ -118,6 +136,7 @@ public class corpMain {
                     cropWriterError.newLine();
                     cropWriterError.write("没有找到对应记录检查jointCorpDevelop--:"+cropResultSet.getString("DID"));
                     cropWriterError.flush();
+                    System.out.println("jointCorpDevelop表么有对应的ID");
                 }
 
 

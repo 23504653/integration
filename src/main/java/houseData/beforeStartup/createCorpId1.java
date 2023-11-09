@@ -39,7 +39,7 @@ public class createCorpId1  {
             if (j!=null){
                 j = j.intValue()+1;
             }else {//流出俩个给建立一个空开发商
-                j = 2;
+                j = 100;
             }
 
             System.out.println("记录总数-"+sumCount);

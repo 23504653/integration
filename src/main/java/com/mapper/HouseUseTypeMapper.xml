@@ -10,7 +10,7 @@
         resultType:表示返回的数据类型（java类型）
     -->
     <select id="selectByDesignUseType" parameterType="java.lang.String" resultType="com.bean.HouseUseType">
-        select designUseType from INTEGRATION.use_type where INTEGRATION.use_type.designUseType = #{designUseType};
+        select * from INTEGRATION.use_type where INTEGRATION.use_type.designUseType = #{designUseType};
     </select>
     <insert id="addHouseUseType" parameterType="map">
         insert into INTEGRATION.use_type (designUseType) VALUE (#{designUseType});
