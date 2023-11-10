@@ -41,5 +41,7 @@
         <mapper resource="com/mapper/HouseIdMapper.xml"/>
         <mapper resource="com/mapper/FloorBeginEndMapper.xml"/>
         <mapper resource="com/mapper/OwnerRecordProjectIdMapper.xml"/>
+        <mapper resource="com/mapper/OwnerRecordHouseIdMapper.xml"/>
+
     </mappers>
 </configuration>
