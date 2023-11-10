@@ -34,7 +34,7 @@ public class createBusiness4 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j =25200;//共3090条 下一其实 30000
+                j =250000;//共385597条 下一其实  690000
             }
 
             System.out.println("记录总数-"+sumCount);

@@ -1,7 +1,7 @@
 package houseData.beforeStartup;
 
 import com.mapper.BuildIdMapper;
-import com.mapper.HouseIdMapper;
+import com.mapper.OwnerRecordProjectIdMapper;
 import com.utils.MyConnection;
 import com.utils.MybatisUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -12,43 +12,42 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-public class createHouseId6 {
+public class createOwnerRecordProjectId7 {
     private static final String BEGIN_DATE = "2023-03-09";
-    private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_INFO?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
+    private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_OWNER_RECORD?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private static Statement statement;
     private static ResultSet resultSet;
-
 
     public static void main(String agr[]) throws SQLException {
         statement = MyConnection.getStatement(DB_URL,"root","dgsoft");
         SqlSession sqlSession = MybatisUtils.getSqlSession();
-        HouseIdMapper houseIdMapper =  sqlSession.getMapper(HouseIdMapper.class);
+        OwnerRecordProjectIdMapper ownerRecordProjectIdMapper =  sqlSession.getMapper(OwnerRecordProjectIdMapper.class);
 
         try {
-            resultSet = statement.executeQuery("select * from HOUSE_INFO.HOUSE order by HOUSE_INFO.HOUSE.BUILDID,HOUSE_INFO.HOUSE.IN_FLOOR_NAME,HOUSE_ORDER,HOUSE.ID");
+            resultSet = statement.executeQuery("select * from PROJECT order by name");
 
             Map<String,Object> map = new HashMap<>();
             resultSet.last();
 
 
             int sumCount = resultSet.getRow(),i=0;
-            Integer j = houseIdMapper.findMaxId();
+            Integer j = ownerRecordProjectIdMapper.findMaxId();
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 30000; //共175456 条 下一 250000
+                j = 690000;//共 2998 下一起始 695000
             }
 
             System.out.println("记录总数-"+sumCount);
             resultSet.beforeFirst();
             while(resultSet.next()){
                 map.clear();
-                if(houseIdMapper.selectByOldHouseId(resultSet.getString("ID")) == null) {
+                if(ownerRecordProjectIdMapper.selectByOldId(resultSet.getString("ID")) == null) {
                     System.out.println("j-"+j);
 
                     map.put("id",j.intValue());
                     map.put("oid",resultSet.getString("ID"));
-                    houseIdMapper.addHouseId(map);
+                    ownerRecordProjectIdMapper.addProjectId(map);
                     sqlSession.commit();
 
                 }
@@ -73,4 +72,5 @@ public class createHouseId6 {
         }
 
     }
+
 }

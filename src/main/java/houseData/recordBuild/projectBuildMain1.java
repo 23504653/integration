@@ -35,7 +35,11 @@ public class projectBuildMain1 {
     private static Statement houseStatement;
     private static ResultSet houseResultSet;
 
-
+    /**
+     * 导入空间库信息
+     * @param agr
+     * @throws SQLException
+     */
 
     public static void main(String agr[]) throws SQLException {
 
