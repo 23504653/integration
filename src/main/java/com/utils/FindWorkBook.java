@@ -190,6 +190,11 @@ public class FindWorkBook {
 
     public static WorkBook projectSizeType(String id){
         WorkBook workBook = new WorkBook();
+        if(id == null || id.isBlank()){
+            workBook.setId(null);
+            workBook.setValue(null);
+            return workBook;
+        }
         if(id.equals("buildSize.small")){
             workBook.setId("SMALL");
             workBook.setValue("小");

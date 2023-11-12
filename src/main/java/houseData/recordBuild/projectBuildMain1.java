@@ -198,6 +198,7 @@ public class projectBuildMain1 {
                     System.out.println("项目id--："+projectResultSet.getString("ID")+ "--没有对应的DISTRICT");
                     return;
                 }
+
                 //project_snapshot
                 projectWriter.newLine();
                 projectWriter.write("INSERT record_building.project_snapshot (project_info_id, project_id, base_info_id, construct_info_id, land_info_id, work_id) VALUE ");
