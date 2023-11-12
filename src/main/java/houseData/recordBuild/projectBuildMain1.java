@@ -58,8 +58,6 @@ public class projectBuildMain1 {
             projectWriter = new BufferedWriter(fw);
             projectWriter.write("USE record_building;");
             projectWriter.newLine();
-            projectWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_project_import','预销售许可证业务导入',false,true,0,'data');");
-            projectWriter.newLine();
             projectWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.building.project.import','导入工程项目',false,true,0,'data');");
             projectWriter.newLine();
             projectWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.building.build.import','导入楼幢',false,true,0,'data');");
@@ -151,9 +149,9 @@ public class projectBuildMain1 {
                 )+ ");");
                //work_operator projectId 作为task_id
                 projectWriter.newLine();
-                projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, org_name, task_id) VALUE ");
+                projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id) VALUE ");
                 projectWriter.write("(" + Q.v(Q.pm(Long.toString(projectId.getId())),Q.pm("CREATE")
-                        ,"0",Q.pm("root"),Q.pm("导入工程项目"),Q.pm(Long.toString(projectId.getId()))
+                        ,"0",Q.pm("root"),Q.pm(Long.toString(projectId.getId()))
                 )+ ");");
 
                 //land_snapshot
@@ -255,9 +253,9 @@ public class projectBuildMain1 {
                         )+ ");");
                         //work_operator projectId 作为task_id
                         projectWriter.newLine();
-                        projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, org_name, task_id) VALUE ");
+                        projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id) VALUE ");
                         projectWriter.write("(" + Q.v(Q.pm(Long.toString(buildId.getId())),Q.pm("CREATE")
-                                ,"0",Q.pm("root"),Q.pm("导入楼幢"),Q.pm(Long.toString(buildId.getId()))
+                                ,"0",Q.pm("root"),Q.pm(Long.toString(buildId.getId()))
                         )+ ");");
 
                         //build_construct_snapshot
@@ -420,9 +418,9 @@ public class projectBuildMain1 {
                                 )+ ");");
                                 //work_operator projectId 作为task_id
                                 projectWriter.newLine();
-                                projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, org_name, task_id) VALUE ");
+                                projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id) VALUE ");
                                 projectWriter.write("(" + Q.v(Q.pm(Long.toString(houseId.getId())),Q.pm("CREATE")
-                                        ,"0",Q.pm("root"),Q.pm("导入房屋"),Q.pm(Long.toString(houseId.getId()))
+                                        ,"0",Q.pm("root"),Q.pm(Long.toString(houseId.getId()))
                                 )+ ");");
 
                                 //project_business
