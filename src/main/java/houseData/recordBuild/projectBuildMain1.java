@@ -273,7 +273,7 @@ public class projectBuildMain1 {
                         projectWriter.write("INSERT build_location_snapshot(LOCATION_INFO_ID, MAP_ID, BLOCK_ID, BUILD_NUMBER, DOOR_NUMBER) VALUE ");
                         projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Q.p(buildResultSet.getString("MAP_NUMBER"))
                                 ,Q.p(buildResultSet.getString("BLOCK_NO")),Q.pm(buildResultSet.getString("BUILD_NO"))
-                                ,Q.pm(buildResultSet.getString("DEVELOPER_NUMBER"))
+                                ,Q.pm(buildResultSet.getString("DOOR_NO"))
                         )+ ");");
 
                         //build_snapshot
@@ -285,9 +285,9 @@ public class projectBuildMain1 {
                                         ,Long.toString(buildId.getId())
 
                         )+ ");");
-                        //BUILD_ID
+                        //BUILD
                         projectWriter.newLine();
-                        projectWriter.write("INSERT build (BUILD_ID, PROJECT_ID, STATUS, BUILD_INFO_ID, BUILD_NAME, VERSION, MAPPING_NAME, DOOR_NUMBER) VALUE");
+                        projectWriter.write("INSERT build (BUILD_ID, PROJECT_ID, STATUS, BUILD_INFO_ID, BUILD_NAME, VERSION, created_at, DOOR_NUMBER) VALUE");
                         projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Long.toString(projectId.getId())
                                 ,Q.pm("SALE"),Long.toString(buildId.getId())
                                 ,Q.pm(buildResultSet.getString("NAME")),"0"
