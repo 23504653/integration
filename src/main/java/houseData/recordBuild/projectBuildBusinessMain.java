@@ -1,9 +1,6 @@
 package houseData.recordBuild;
 
-import com.bean.JointCorpDevelop;
-import com.bean.LandEndTimeId;
-import com.bean.OwnerRecordProjectId;
-import com.bean.ProjectId;
+import com.bean.*;
 import com.mapper.*;
 import com.utils.FindWorkBook;
 import com.utils.MyConnection;
@@ -19,6 +16,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Calendar;
 
 public class projectBuildBusinessMain {
     private static final String BEGIN_DATE = "2023-03-09";
@@ -100,25 +98,30 @@ public class projectBuildBusinessMain {
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         ProjectIdMapper projectIdMapper =  sqlSession.getMapper(ProjectIdMapper.class);
         OwnerRecordProjectIdMapper ownerRecordProjectIdMapper = sqlSession.getMapper(OwnerRecordProjectIdMapper.class);
+        OwnerRecordBuildIdMapper ownerRecordBuildIdMapper = sqlSession.getMapper(OwnerRecordBuildIdMapper.class);
         JointCorpDevelopMapper jointCorpDevelopMapper =  sqlSession.getMapper(JointCorpDevelopMapper.class);
         LandEndTimeIdMapper landEndTimeIdMapper = sqlSession.getMapper(LandEndTimeIdMapper.class);
         HouseUseTypeMapper houseUseTypeMapper = sqlSession.getMapper(HouseUseTypeMapper.class);
         FloorBeginEndMapper floorBeginEndMapper = sqlSession.getMapper(FloorBeginEndMapper.class);
         OtherHouseTypeMapper otherHouseTypeMapper = sqlSession.getMapper(OtherHouseTypeMapper.class);
+        BuildIdMapper buildIdMapper = sqlSession.getMapper(BuildIdMapper.class);
 
         ProjectId projectId = null;
+        BuildId buildId =null;
         JointCorpDevelop jointCorpDevelop = new JointCorpDevelop();
         OwnerRecordProjectId ownerRecordProjectId = null;
+        OwnerRecordBuildId ownerRecordBuildId=null;
         OwnerRecordProjectId selectBizBusiness =new OwnerRecordProjectId();
         LandEndTimeId landEndTimeId =null;
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null;
+        Calendar calendar = Calendar.getInstance();
 
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
                     "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='N6477' ORDER BY P.NAME");//N6477
             projectResultSet.last();
-            int sumCount = projectResultSet.getRow(),i=0;
+            int sumCount = projectResultSet.getRow(),i=0,onNumber=1;;
             System.out.println("记录总数-"+sumCount);
             projectResultSet.beforeFirst();
             while (projectResultSet.next()){
@@ -135,7 +138,7 @@ public class projectBuildBusinessMain {
                         +"LEFT JOIN HOUSE_OWNER_RECORD.PROJECT_SELL_INFO AS PI ON P.ID = PI.ID LEFT JOIN HOUSE_OWNER_RECORD.OWNER_BUSINESS AS O ON P.BUSINESS = O.ID "
                         +"WHERE O.STATUS IN('COMPLETE','COMPLETE_CANCEL','MODIFYING') AND DEFINE_ID='WP50' "
                         +"AND P.PROJECT_CODE='"+projectResultSet.getString("ID")+"' "
-                        +"ORDER BY P.NAME,O.ID,O.APPLY_TIME desc;");
+                        +"ORDER BY P.NAME,O.ID,O.APPLY_TIME;");
 
                 if(projectBusinessResultSet.next()){
                     projectBusinessResultSet.beforeFirst();
@@ -158,7 +161,7 @@ public class projectBuildBusinessMain {
                                 ,Q.pm("预销售许可证业务导入"),Q.pm("COMPLETED")
                                 ,Q.pm(projectResultSet.getString("CREATE_TIME")),Q.pm(projectResultSet.getString("CREATE_TIME"))
                                 ,"0",Q.pm("process_project_import")
-                                ,"true",Q.pm("data")
+                                ,"true",Q.pm("business")
                         )+ ");");
                         //操作人员记录
                         taskOperBusinessResultSet = taskOperBusinessStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.BUSINESS_EMP WHERE BUSINESS_ID='"+projectBusinessResultSet.getString("BUSINESS")+"'");
@@ -286,24 +289,20 @@ public class projectBuildBusinessMain {
                         //work_business.before_info_id 获取
                         if(projectBusinessResultSet.getString("SELECT_BUSINESS")!=null
                                 &&  !projectBusinessResultSet.getString("SELECT_BUSINESS").isBlank()){
-                            System.out.println("33333--"+projectBusinessResultSet.getString("SELECT_BUSINESS"));
                             workbookResultSet = workbookStatement.executeQuery("SELECT O.*,P.ID AS PID FROM HOUSE_OWNER_RECORD.PROJECT AS P LEFT JOIN HOUSE_OWNER_RECORD.OWNER_BUSINESS AS O ON P.BUSINESS = O.ID" +
                                     " WHERE O.STATUS IN('COMPLETE','COMPLETE_CANCEL','MODIFYING','RUNNING') AND DEFINE_ID='WP50'" +
                                     " AND O.ID='"+projectBusinessResultSet.getString("SELECT_BUSINESS")+"'");
-
-                            System.out.println("1111--"+projectBusinessResultSet.getString("SELECT_BUSINESS"));
-
                             if(workbookResultSet.next()){
                                 selectBizBusiness = ownerRecordProjectIdMapper.selectByOldId(workbookResultSet.getString("PID"));
-                                System.out.println("2222--"+workbookResultSet.getString("PID"));
                                 if(selectBizBusiness==null){
+                                    before_info_id = null;
                                     System.out.println("没有找到对应记录检查ownerRecordProjectIdMapper --- selectBizBusiness:"+workbookResultSet.getString("PID"));
                                     return;
                                 }else {
                                     before_info_id = Long.toString(selectBizBusiness.getId());
                                 }
-
                             }else{
+                               before_info_id = null;
                               System.out.println("NOT_FIND_HOUSE_OWNER_RECORD.PROJECT.ID:--"+projectBusinessResultSet.getString("PID")+"--SELECT_BUSINESS--"+projectBusinessResultSet.getString("SELECT_BUSINESS"));
                               return;
                             }
@@ -319,6 +318,140 @@ public class projectBuildBusinessMain {
                                 ,Q.pm(developName),Q.pm("BUSINESS")
                                 ,Long.toString(ownerRecordProjectId.getId()),Q.p(before_info_id)
                         )+ ");");
+                        projectBusinessWriter.flush();
+                        //record_BUILD ownerRecordBuildId 作为ID
+                        buildBusinessResultSet = buildBusinessStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.BUILD AS OB WHERE OB.PROJECT='"+projectBusinessResultSet.getString("PID")+"'");
+                        if(buildBusinessResultSet.next()){
+                            buildBusinessResultSet.beforeFirst();
+                            while (buildBusinessResultSet.next()){
+                                ownerRecordBuildId = ownerRecordBuildIdMapper.selectByOldBuildId(buildBusinessResultSet.getString("ID"));
+                                if(ownerRecordBuildId==null){
+                                    System.out.println("没有找到对应记录检查ownerRecordBuildId:"+buildBusinessResultSet.getString("ID"));
+                                    return;
+                                }
+                                buildId = buildIdMapper.selectByOldBuildId(buildBusinessResultSet.getString("BUILD_CODE"));
+                                if(buildId==null){
+                                    System.out.println("没有找到对应记录检查buildId--ownerRecordBuildId:--:"+buildBusinessResultSet.getString("BUILD_CODE"));
+                                    return;
+                                }
+
+                                // build work
+                                projectBusinessWriter.newLine();
+                                projectBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
+                                projectBusinessWriter.write("(" + Q.v(Q.pm(Long.toString(ownerRecordBuildId.getId())),Q.pm("OLD")
+                                        ,Q.pm(buildBusinessResultSet.getTimestamp("MAP_TIME")),Q.pm(buildBusinessResultSet.getTimestamp("MAP_TIME"))
+                                        ,Q.pm("导入预售许可证楼幢"),Q.pm("COMPLETED")
+                                        ,Q.pm(buildBusinessResultSet.getTimestamp("MAP_TIME")),Q.pm(buildBusinessResultSet.getTimestamp("MAP_TIME"))
+                                        ,"0",Q.pm("func.building.build.import")
+                                        ,"true",Q.pm("business")
+                                )+ ");");
+
+                                //work_operator
+                                projectBusinessWriter.newLine();
+                                projectBusinessWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id) VALUE ");
+                                projectBusinessWriter.write("(" + Q.v(Q.pm(Long.toString(ownerRecordBuildId.getId())),Q.pm("CREATE")
+                                        ,"0",Q.pm("root"),Q.pm(Long.toString(ownerRecordBuildId.getId()))
+                                )+ ");");
+
+                                //build_construct_snapshot
+                                projectBusinessWriter.newLine();
+                                projectBusinessWriter.write("INSERT build_construct_snapshot (CONSTRUCT_INFO_ID, STRUCTURE, STRUCTURE_KEY,BUILD_ORDER, TYPE, FLOOR_COUNT, FLOOR_DOWN) VALUE ");
+                                projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Q.pm(FindWorkBook.structure(buildBusinessResultSet.getString("STRUCTURE")).getValue())
+                                        ,FindWorkBook.structure(buildBusinessResultSet.getString("STRUCTURE")).getId(),Q.pm(buildBusinessResultSet.getString("BUILD_DEVELOPER_NUMBER"))
+                                        ,Q.pm(FindWorkBook.buildType(buildBusinessResultSet.getString("BUILD_TYPE")).getId()),Integer.toString(buildBusinessResultSet.getInt("UP_FLOOR_COUNT"))
+                                        ,Integer.toString(buildBusinessResultSet.getInt("DOWN_FLOOR_COUNT"))
+                                )+ ");");
+
+                                //build_location_snapshot
+                                projectBusinessWriter.newLine();
+                                projectBusinessWriter.write("INSERT build_location_snapshot(LOCATION_INFO_ID, MAP_ID, BLOCK_ID, BUILD_NUMBER, DOOR_NUMBER) VALUE ");
+                                projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Q.p(buildBusinessResultSet.getString("MAP_NUMBER"))
+                                        ,Q.p(buildBusinessResultSet.getString("BLOCK_NO")),Q.pm(buildBusinessResultSet.getString("BUILD_NO"))
+                                        ,Q.pm(buildBusinessResultSet.getString("DOOR_NO"))
+                                )+ ");");
+
+                                //build_snapshot
+                                projectBusinessWriter.newLine();
+                                projectBusinessWriter.write("INSERT build_snapshot (build_info_id, location_info_id, construct_info_id, " +
+                                        "build_id, work_id) VALUE ");
+                                projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Long.toString(ownerRecordBuildId.getId())
+                                        ,Long.toString(ownerRecordBuildId.getId()),Long.toString(ownerRecordBuildId.getId())
+                                        ,Long.toString(ownerRecordBuildId.getId())
+
+                                )+ ");");
+
+
+                                //BUILD
+                                projectBusinessWriter.newLine();
+                                //PROJECT updated_at project_info_id
+                                projectBusinessWriter.write("update build set updated_at = '" + buildBusinessResultSet.getTimestamp("MAP_TIME") +"',build_info_id='"+ownerRecordBuildId.getId()+"' WHERE build_id='" + buildId.getId() + "';");
+
+                                //project_builds_snapshot
+                                projectBusinessWriter.newLine();
+                                projectBusinessWriter.write("INSERT project_builds_snapshot (project_info_id, build_info_id) VALUE");
+                                projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordProjectId.getId()),Long.toString(ownerRecordBuildId.getId())
+                                )+ ");");
+
+                                //project_business
+                                projectBusinessWriter.newLine();
+                                projectBusinessWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
+                                        "developer_name, work_type,business_id) VALUE ");
+                                projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Long.toString(projectId.getId())
+                                        ,UNIFIED_ID,Long.toString(ownerRecordProjectId.getId())
+                                        ,Q.pm(developName),Q.pm("REFER")
+                                        ,Long.toString(ownerRecordBuildId.getId())
+                                )+ ");");
+
+
+
+                                //build_business
+                                projectBusinessWriter.newLine();
+                                projectBusinessWriter.write("INSERT build_business (work_id, build_id,project_id, updated_at, info_id, work_type, business_id) value ");
+                                projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Long.toString(ownerRecordBuildId.getId())
+                                        ,Long.toString(projectId.getId()),Q.pm(Q.nowFormatTime())
+                                        ,Long.toString(ownerRecordBuildId.getId()),Q.pm("BUSINESS")
+                                        ,Long.toString(ownerRecordBuildId.getId())
+                                )+ ");");
+                                //project_sell_license
+
+
+                                workbookResultSet = workbookStatement.executeQuery("SELECT MA.*,PC.*,P.* FROM HOUSE_OWNER_RECORD.PROJECT_CARD AS PC LEFT JOIN HOUSE_OWNER_RECORD.MAKE_CARD AS MA ON PC.ID = MA.ID " +
+                                        "LEFT  JOIN  PROJECT AS P ON PC.PROJECT= P.ID WHERE MA.TYPE='PROJECT_RSHIP' AND P.ID='"+projectBusinessResultSet.getString("PID")+"' ORDER BY PRINT_TIME" );
+                                if(workbookResultSet.next()){
+                                    workbookResultSet.beforeFirst();
+                                    while (workbookResultSet.next()){
+                                        if (workbookResultSet.getString("NUMBER")!=null
+                                                && !workbookResultSet.getString("NUMBER").isBlank()){
+                                            System.out.println(FindWorkBook.getYearFromDate(workbookResultSet.getTimestamp("PRINT_TIME")));
+                                            int year = FindWorkBook.getYearFromDate(workbookResultSet.getTimestamp("PRINT_TIME"));
+
+                                            //project_sell_license
+                                            projectBusinessWriter.newLine();
+                                            projectBusinessWriter.write("INSERT project_sell_license (license_id, status, project_id, year_number, " +
+                                                    "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area) value ");
+                                            projectBusinessWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("NUMBER")),Q.pm(FindWorkBook.getCardStatus(projectBusinessResultSet.getString("STATUS")))
+                                                    ,Long.toString(ownerRecordProjectId.getId()),Integer.toString(year)
+                                                    ,Integer.toString(onNumber),Q.pm(projectBusinessResultSet.getString("SELL_OBJECT"))
+                                                    ,Q.pm(projectBusinessResultSet.getString("GOV_NAME")),Q.pm("东港字")
+                                                    ,projectBusinessResultSet.getString("BUILD_COUNT"),projectBusinessResultSet.getString("HOUSE_COUNT")
+                                                    ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA"))
+                                                    ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA"))
+
+                                            )+ ");");
+
+                                            onNumber++;
+                                        }
+
+                                    }
+                                }
+
+
+
+
+                                projectBusinessWriter.flush();
+                            }
+                        }
+
 
                         projectBusinessWriter.flush();
 
