@@ -412,9 +412,7 @@ public class projectBuildBusinessMain {
                                         ,Long.toString(ownerRecordBuildId.getId()),Q.pm("BUSINESS")
                                         ,Long.toString(ownerRecordBuildId.getId())
                                 )+ ");");
-                                //project_sell_license
-
-
+                                //project_sell_license project_license_builds
                                 workbookResultSet = workbookStatement.executeQuery("SELECT MA.*,PC.*,P.* FROM HOUSE_OWNER_RECORD.PROJECT_CARD AS PC LEFT JOIN HOUSE_OWNER_RECORD.MAKE_CARD AS MA ON PC.ID = MA.ID " +
                                         "LEFT  JOIN  PROJECT AS P ON PC.PROJECT= P.ID WHERE MA.TYPE='PROJECT_RSHIP' AND P.ID='"+projectBusinessResultSet.getString("PID")+"' ORDER BY PRINT_TIME" );
                                 if(workbookResultSet.next()){
@@ -440,12 +438,29 @@ public class projectBuildBusinessMain {
                                             )+ ");");
 
                                             onNumber++;
+
+                                            projectBusinessWriter.newLine();
+                                            projectBusinessWriter.write("INSERT project_license_builds (license_id, build_id) value ");
+                                            projectBusinessWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("NUMBER")),Long.toString(buildId.getId())
+                                            )+ ");");
                                         }
+                                    }
+                                }
+                                //build_use_type_total_snapshot USEtYPE = 'other' 如何处理
+                                workbookResultSet = workbookStatement.executeQuery("select * from SELL_TYPE_TOTAL where BUILD_ID='"+buildBusinessResultSet.getString("ID")+"'");
+                                if(workbookResultSet.next()){
+                                    workbookResultSet.beforeFirst();
+                                    while (workbookResultSet.next()){
+                                        projectBusinessWriter.newLine();
+                                        projectBusinessWriter.write("INSERT build_use_type_total_snapshot (count, area, use_area, house_type, build_id, work_id) VALUE ");
+                                        projectBusinessWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("COUNT")),Q.pm(workbookResultSet.getBigDecimal("AREA"))
+                                                ,Q.pm(workbookResultSet.getBigDecimal("AREA")),Q.pm(FindWorkBook.changeLandSnapshot(workbookResultSet.getString("USE_TYPE")).getId())
+                                                ,Long.toString(buildId.getId()),Long.toString(ownerRecordBuildId.getId())
+                                        )+ ");");
+
 
                                     }
                                 }
-
-
 
 
                                 projectBusinessWriter.flush();
