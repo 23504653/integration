@@ -2,9 +2,11 @@ package com.utils;
 
 import com.bean.WorkBook;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Calendar;
 
 /**
  * 字典转换
@@ -286,6 +288,24 @@ public class FindWorkBook {
         }else{
             return workBook;
         }
+    }
+
+    public static int getYearFromDate(java.sql.Timestamp date) {
+        // 使用Date对象获取年份
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.YEAR);
+    }
+
+    public static String getCardStatus(String id){
+        if (id.equals("COMPLETE")){
+            return "VALID";
+        }else if(id.equals("COMPLETE_CANCEL")){
+            return "DESTROY";
+        }else{
+            return "WORKING";
+        }
+
     }
 
     public static WorkBook getMappingCorpId(String id){
