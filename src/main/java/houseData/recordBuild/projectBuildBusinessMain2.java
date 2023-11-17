@@ -13,12 +13,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
 
-public class projectBuildBusinessMain {
+public class projectBuildBusinessMain2 {
     private static final String BEGIN_DATE = "2023-03-09";
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_OWNER_RECORD?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
@@ -105,13 +106,17 @@ public class projectBuildBusinessMain {
         FloorBeginEndMapper floorBeginEndMapper = sqlSession.getMapper(FloorBeginEndMapper.class);
         OtherHouseTypeMapper otherHouseTypeMapper = sqlSession.getMapper(OtherHouseTypeMapper.class);
         BuildIdMapper buildIdMapper = sqlSession.getMapper(BuildIdMapper.class);
+        OwnerRecordHouseIdMapper ownerRecordHouseIdMapper = sqlSession.getMapper(OwnerRecordHouseIdMapper.class);
+        HouseIdMapper houseIdMapper = sqlSession.getMapper(HouseIdMapper.class);
 
         ProjectId projectId = null;
         BuildId buildId =null;
+        HouseId houseId = null;
         JointCorpDevelop jointCorpDevelop = new JointCorpDevelop();
         OwnerRecordProjectId ownerRecordProjectId = null;
         OwnerRecordBuildId ownerRecordBuildId=null;
         OwnerRecordProjectId selectBizBusiness =new OwnerRecordProjectId();
+        OwnerRecordHouseId ownerRecordHouseId=null;
         LandEndTimeId landEndTimeId =null;
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null;
         Calendar calendar = Calendar.getInstance();
@@ -318,6 +323,9 @@ public class projectBuildBusinessMain {
                                 ,Q.pm(developName),Q.pm("BUSINESS")
                                 ,Long.toString(ownerRecordProjectId.getId()),Q.p(before_info_id)
                         )+ ");");
+
+
+
                         projectBusinessWriter.flush();
                         //record_BUILD ownerRecordBuildId 作为ID
                         buildBusinessResultSet = buildBusinessStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.BUILD AS OB WHERE OB.PROJECT='"+projectBusinessResultSet.getString("PID")+"'");
@@ -446,8 +454,9 @@ public class projectBuildBusinessMain {
                                         }
                                     }
                                 }
-                                //build_use_type_total_snapshot USEtYPE = 'other' 如何处理
-                                workbookResultSet = workbookStatement.executeQuery("select * from SELL_TYPE_TOTAL where BUILD_ID='"+buildBusinessResultSet.getString("ID")+"'");
+
+                                //build_use_type_total_snapshot USEtYPE = 'other'  判断不出来具体，不倒了，遇到时在处理
+                                workbookResultSet = workbookStatement.executeQuery("select * from SELL_TYPE_TOTAL where BUILD_ID='"+buildBusinessResultSet.getString("ID")+"' and AREA>0 and USE_TYPE<>'OTHER'");
                                 if(workbookResultSet.next()){
                                     workbookResultSet.beforeFirst();
                                     while (workbookResultSet.next()){
@@ -457,16 +466,46 @@ public class projectBuildBusinessMain {
                                                 ,Q.pm(workbookResultSet.getBigDecimal("AREA")),Q.pm(FindWorkBook.changeLandSnapshot(workbookResultSet.getString("USE_TYPE")).getId())
                                                 ,Long.toString(buildId.getId()),Long.toString(ownerRecordBuildId.getId())
                                         )+ ");");
-
-
                                     }
                                 }
+
+
+                                //project_license_business
+                                projectBusinessWriter.newLine();
+                                projectBusinessWriter.write("INSERT project_license_business (work_id, sell_object, version, valid) value ");
+                                projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordProjectId.getId()),Q.pm("国内")
+                                        ,"0","true"
+                                )+ ");");
+                                workbookResultSet = workbookStatement.executeQuery("select * from EXCEPT_HOUSE WHERE BUILD ='"+buildBusinessResultSet.getString("ID")+"'");
+                                //license_limit_snapshot
+                                if(workbookResultSet.next()){
+                                    workbookResultSet.beforeFirst();
+                                    while (workbookResultSet.next()){
+                                        projectBusinessWriter.newLine();
+                                        houseId = houseIdMapper.selectByOldHouseId(workbookResultSet.getString("HOUSE_CODE"));
+                                        if(houseId==null){
+                                            System.out.println("license_limit_snapshot没有找到对应HOUSE_CODE记录检查:--:"+workbookResultSet.getString("HOUSE_CODE"));
+                                            return;
+                                        }
+                                        projectBusinessWriter.newLine();
+                                        projectBusinessWriter.write("INSERT license_limit_snapshot (business_id, work_id, build_id, house_id, house_info_id) VALUE ");
+                                        projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Long.toString(ownerRecordBuildId.getId())
+                                                ,Long.toString(buildId.getId()),Long.toString(houseId.getId())
+                                                ,Long.toString(houseId.getId())
+                                        )+ ");");
+                                    }
+                                }
+
+
+
+
+
+
 
 
                                 projectBusinessWriter.flush();
                             }
                         }
-
 
                         projectBusinessWriter.flush();
 
