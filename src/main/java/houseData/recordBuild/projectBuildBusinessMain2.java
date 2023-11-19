@@ -119,12 +119,14 @@ public class projectBuildBusinessMain2 {
         JointCorpDevelop jointCorpDevelop = new JointCorpDevelop();
         OwnerRecordProjectId ownerRecordProjectId = null;
         OwnerRecordBuildId ownerRecordBuildId=null;
+        OwnerRecordBuildId beforeId = null;
         OwnerRecordProjectId selectBizBusiness =new OwnerRecordProjectId();
         OwnerRecordHouseId ownerRecordHouseId=null;
         LandEndTimeId landEndTimeId =null;
         ExceptHouseId exceptHouseId =null;
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null;
         Calendar calendar = Calendar.getInstance();
+        String before_info_id_build = null,oldProjectId=null;
 
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
@@ -303,13 +305,17 @@ public class projectBuildBusinessMain2 {
                                     " WHERE O.STATUS IN('COMPLETE','COMPLETE_CANCEL','MODIFYING','RUNNING') AND DEFINE_ID='WP50'" +
                                     " AND O.ID='"+projectBusinessResultSet.getString("SELECT_BUSINESS")+"'");
                             if(workbookResultSet.next()){
+                                //System.out.println(projectBusinessResultSet.getString("SELECT_BUSINESS")+"--"+workbookResultSet.getString("PID"));
                                 selectBizBusiness = ownerRecordProjectIdMapper.selectByOldId(workbookResultSet.getString("PID"));
+
                                 if(selectBizBusiness==null){
                                     before_info_id = null;
                                     System.out.println("没有找到对应记录检查ownerRecordProjectIdMapper --- selectBizBusiness:"+workbookResultSet.getString("PID"));
                                     return;
                                 }else {
                                     before_info_id = Long.toString(selectBizBusiness.getId());
+                                    oldProjectId = workbookResultSet.getString("PID");
+
                                 }
                             }else{
                                before_info_id = null;
@@ -326,7 +332,7 @@ public class projectBuildBusinessMain2 {
                         projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordProjectId.getId()),Long.toString(projectId.getId())
                                 ,Q.pm(UNIFIED_ID),Long.toString(ownerRecordProjectId.getId())
                                 ,Q.pm(developName),Q.pm("BUSINESS")
-                                ,Long.toString(ownerRecordProjectId.getId()),Q.p(before_info_id)
+                                ,Long.toString(ownerRecordProjectId.getId()),before_info_id
                         )+ ");");
 
                         //project_license_business
@@ -413,26 +419,51 @@ public class projectBuildBusinessMain2 {
                                 projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordProjectId.getId()),Long.toString(ownerRecordBuildId.getId())
                                 )+ ");");
 
+
                                 //project_business
                                 projectBusinessWriter.newLine();
                                 projectBusinessWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                                        "developer_name, work_type,business_id) VALUE ");
+                                        "developer_name, work_type,business_id,before_info_id) VALUE ");
                                 projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Long.toString(projectId.getId())
                                         ,Q.pm(UNIFIED_ID),Long.toString(ownerRecordProjectId.getId())
                                         ,Q.pm(developName),Q.pm("REFER")
-                                        ,Long.toString(ownerRecordBuildId.getId())
+                                        ,Long.toString(ownerRecordBuildId.getId()),before_info_id
                                 )+ ");");
 
 
 
                                 //build_business
+                                workbookResultSet = workbookStatement.executeQuery("SELECT HB.* FROM HOUSE_OWNER_RECORD.PROJECT AS P LEFT JOIN HOUSE_OWNER_RECORD.OWNER_BUSINESS AS O ON P.BUSINESS = O.ID " +
+                                        "LEFT JOIN BUILD AS HB ON P.ID= HB.PROJECT " +
+                                        "WHERE O.STATUS IN('COMPLETE','COMPLETE_CANCEL','MODIFYING') AND DEFINE_ID='WP50' " +
+                                        " AND O.ID='"+projectBusinessResultSet.getString("SELECT_BUSINESS")+"'"+
+                                        "AND P.ID='"+oldProjectId+"' AND BUILD_CODE='"+buildBusinessResultSet.getString("BUILD_CODE")+"'");
+                                if(workbookResultSet.next()) {
+                                    if (workbookResultSet.getString("ID") != null &&
+                                            !workbookResultSet.getString("ID").equals("")) {
+                                        beforeId = ownerRecordBuildIdMapper.selectByOldBuildId(workbookResultSet.getString("ID"));
+                                        if (beforeId == null) {
+                                            System.out.println("没有找到对应beforeBuildId记录检查:--BUILD_CODE:" + buildBusinessResultSet.getString("BUILD_CODE") + "---oldProjectId:" + oldProjectId);
+                                            return;
+                                        } else {
+                                            before_info_id_build = Long.toString(beforeId.getId());
+                                        }
+                                    }
+                                }
+
+                                System.out.println("id--:"+ownerRecordBuildId.getId()+"--before_info_id_build--"+before_info_id_build);
                                 projectBusinessWriter.newLine();
-                                projectBusinessWriter.write("INSERT build_business (work_id, build_id,project_id, updated_at, info_id, work_type, business_id) value ");
-                                projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Long.toString(ownerRecordBuildId.getId())
+                                projectBusinessWriter.write("INSERT build_business (work_id, build_id,project_id, updated_at, info_id, work_type, business_id,before_info_id) value ");
+                                projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Long.toString(buildId.getId())
                                         ,Long.toString(projectId.getId()),Q.pm(Q.nowFormatTime())
                                         ,Long.toString(ownerRecordBuildId.getId()),Q.pm("BUSINESS")
-                                        ,Long.toString(ownerRecordBuildId.getId())
+                                        ,Long.toString(ownerRecordBuildId.getId()),Q.p(before_info_id_build)
                                 )+ ");");
+
+
+
+
+
                                 //project_sell_license project_license_builds
                                 workbookResultSet = workbookStatement.executeQuery("SELECT MA.*,PC.*,P.* FROM HOUSE_OWNER_RECORD.PROJECT_CARD AS PC LEFT JOIN HOUSE_OWNER_RECORD.MAKE_CARD AS MA ON PC.ID = MA.ID " +
                                         "LEFT  JOIN  PROJECT AS P ON PC.PROJECT= P.ID WHERE MA.TYPE='PROJECT_RSHIP' AND P.ID='"+projectBusinessResultSet.getString("PID")+"' ORDER BY PRINT_TIME" );
@@ -549,19 +580,19 @@ public class projectBuildBusinessMain2 {
                                         //project_business
                                         projectBusinessWriter.newLine();
                                         projectBusinessWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                                                "developer_name, work_type,business_id) VALUE ");
+                                                "developer_name, work_type,business_id,before_info_id) VALUE ");
                                         projectBusinessWriter.write("(" + Q.v(Long.toString(exceptHouseId.getId()),Long.toString(projectId.getId())
                                                 ,Q.pm(UNIFIED_ID),Long.toString(ownerRecordProjectId.getId())
                                                 ,Q.pm(developName),Q.pm("REFER")
-                                                ,Long.toString(exceptHouseId.getId())
+                                                ,Long.toString(exceptHouseId.getId()),before_info_id
                                         )+ ");");
                                         //build_business
                                         projectBusinessWriter.newLine();
-                                        projectBusinessWriter.write("INSERT build_business (work_id, build_id,project_id, updated_at, info_id, work_type, business_id) value ");
+                                        projectBusinessWriter.write("INSERT build_business (work_id, build_id,project_id, updated_at, info_id, work_type, business_id,before_info_id) value ");
                                         projectBusinessWriter.write("(" + Q.v(Long.toString(exceptHouseId.getId()),Long.toString(buildId.getId())
                                                 ,Long.toString(projectId.getId()),Q.pm(Q.nowFormatTime())
-                                                ,Long.toString(buildId.getId()),Q.pm("REFER")
-                                                ,Long.toString(exceptHouseId.getId())
+                                                ,Long.toString(ownerRecordBuildId.getId()),Q.pm("REFER")
+                                                ,Long.toString(exceptHouseId.getId()),Q.p(before_info_id_build)
                                         )+ ");");
                                         //house_business
                                         projectBusinessWriter.newLine();
