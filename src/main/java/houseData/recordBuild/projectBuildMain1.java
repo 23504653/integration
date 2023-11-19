@@ -110,7 +110,7 @@ public class projectBuildMain1 {
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='1' ORDER BY P.NAME");//N6477
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='115' ORDER BY P.NAME");//N6477 115 1
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -210,7 +210,7 @@ public class projectBuildMain1 {
                 projectWriter.newLine(); // 建立一个未知开发商将没有开发商的项目都挂上去
                 projectWriter.write("INSERT record_building.project (project_id, developer_id,updated_at, developer_name, project_info_id, status, " +
                         "version, address, project_name, district_code, pin) value ");
-                projectWriter.write("(" + Q.v(Long.toString(projectId.getId()),UNIFIED_ID,Q.pm(projectResultSet.getString("CREATE_TIME"))
+                projectWriter.write("(" + Q.v(Long.toString(projectId.getId()),Q.pm(UNIFIED_ID),Q.pm(projectResultSet.getString("CREATE_TIME"))
                         ,Q.pm(developName),Long.toString(projectId.getId())
                         ,Q.p("PUBLIC"),"0"
                         ,Q.pm(projectResultSet.getString("ADDRESS")),Q.pm(projectResultSet.getString("NAME"))
@@ -221,7 +221,7 @@ public class projectBuildMain1 {
                 projectWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
                         "developer_name, work_type,business_id) VALUE ");
                 projectWriter.write("(" + Q.v(Long.toString(projectId.getId()),Long.toString(projectId.getId())
-                        ,UNIFIED_ID,Long.toString(projectId.getId())
+                        ,Q.pm(UNIFIED_ID),Long.toString(projectId.getId())
                         ,Q.pm(developName),Q.pm("CREATE")
                         ,Long.toString(projectId.getId())
                 )+ ");");
@@ -307,7 +307,7 @@ public class projectBuildMain1 {
                         projectWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
                                 "developer_name, work_type,business_id) VALUE ");
                         projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Long.toString(projectId.getId())
-                                ,UNIFIED_ID,Long.toString(projectId.getId())
+                                ,Q.pm(UNIFIED_ID),Long.toString(projectId.getId())
                                 ,Q.pm(developName),Q.pm("REFER")
                                 ,Long.toString(buildId.getId())
                         )+ ");");
@@ -429,7 +429,7 @@ public class projectBuildMain1 {
                                 projectWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
                                         "developer_name, work_type,business_id) VALUE ");
                                 projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Long.toString(projectId.getId())
-                                        ,UNIFIED_ID,Long.toString(projectId.getId())
+                                        ,Q.pm(UNIFIED_ID),Long.toString(projectId.getId())
                                         ,Q.pm(developName),Q.pm("REFER")
                                         ,Long.toString(houseId.getId())
                                 )+ ");");
