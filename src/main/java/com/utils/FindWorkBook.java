@@ -32,22 +32,30 @@ public class FindWorkBook {
     public static WorkBook changeLandSnapshot(String id){
         // 没有默认是住宅
         WorkBook workBook = new WorkBook();
-        workBook.setId("DWELLING");
+        workBook.setId("01");
         workBook.setValue("住宅");
         if(id == null || id.equals("") || id.isBlank()){
             return workBook;
         }
         if(id.equals("DWELLING_KEY")){
-            workBook.setId("DWELLING");
+            workBook.setId("01");
             workBook.setValue("住宅");
             return workBook;
         }else if(id.equals("SHOP_HOUSE_KEY")){
-            workBook.setId("SHOP");
+            workBook.setId("02");
             workBook.setValue("商业用房");
             return workBook;
         }else if(id.equals("CAR_STORE")) {
-            workBook.setId("GARAGE");
+            workBook.setId("06");
             workBook.setValue("车库");
+            return workBook;
+        }else if(id.equals("OFFICE")) {
+            workBook.setId("03");
+            workBook.setValue("办公");
+            return workBook;
+        }else if(id.equals("STORE_HOUSE")) {
+            workBook.setId("05");
+            workBook.setValue("仓储");
             return workBook;
         }else {
             return workBook;
@@ -269,6 +277,10 @@ public class FindWorkBook {
         WorkBook workBook = new WorkBook();
         workBook.setId("MULTI");
         workBook.setValue("多层");
+        if(id==null || id.equals("")){
+            return workBook;
+        }
+
         if (id.equals("202")){
             workBook.setId("MULTI");
             workBook.setValue("多层");
