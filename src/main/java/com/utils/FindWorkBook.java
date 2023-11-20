@@ -319,6 +319,28 @@ public class FindWorkBook {
         }
 
     }
+    public static String getEmpType(String id){
+
+        if (id.equals("APPLY_EMP")){
+            return "受理人";
+        }else if(id.equals("CHECK_EMP")){
+            return "审核人";
+        }else if(id.equals("CREATE_EMP")){
+            return "建立人";
+        }else if(id.equals("FIRST_CHECK")){
+            return "初审人";
+        }else if(id.equals("LAST_CHECK_EMP")){
+            return "审批人";
+        }else if(id.equals("PATCH_EMP")){
+            return "补录人";
+        }else if(id.equals("RECORD_EMP")){
+            return "归档人";
+        }else if(id.equals("REG_EMP")){
+            return "登薄人";
+        }else{
+            return "未知";
+        }
+    }
 
     public static WorkBook getMappingCorpId(String id){
         WorkBook workBook = new WorkBook();

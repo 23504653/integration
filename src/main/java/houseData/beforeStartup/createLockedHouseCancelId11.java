@@ -23,7 +23,7 @@ public class createLockedHouseCancelId11 {
         LockedHouseCancelIdMapper lockedHouseCancelIdMapper = sqlSession.getMapper(LockedHouseCancelIdMapper.class);
 
         try {
-            businessResultSet = businessStatement.executeQuery("select * from HOUSE_OWNER_RECORD.LOCKED_HOUSE_CANCEL order by HOUSE_CODE");
+            businessResultSet = businessStatement.executeQuery("select * from HOUSE_OWNER_RECORD.LOCKED_HOUSE_CANCEL  order by HOUSE_CODE");
 
             Map<String, Object> map = new HashMap<>();
             businessResultSet.last();

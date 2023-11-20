@@ -1,9 +1,11 @@
 package com.mapper;
 
+import com.bean.LockedHouseId;
+
 import java.util.Map;
 
 public interface LockedHouseIdMapper {
-    LockedHouseIdMapper selectByOldId(String OId);
+    LockedHouseId selectByOldId(String OId);
     int addLockedHouseId(Map<String,Object> map);
     Integer findMaxId();
 }

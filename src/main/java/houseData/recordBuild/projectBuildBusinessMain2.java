@@ -126,7 +126,7 @@ public class projectBuildBusinessMain2 {
         ExceptHouseId exceptHouseId =null;
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null;
         Calendar calendar = Calendar.getInstance();
-        String before_info_id_build = null,oldProjectId=null;
+        String before_info_id_build = null,oldProjectId=null,APPLY_EMP=null,EMP_NAME=null;
 
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
@@ -188,10 +188,13 @@ public class projectBuildBusinessMain2 {
                                 ,Q.pm(taskOperBusinessResultSet.getString("ID")),Q.pm(taskOperBusinessResultSet.getTimestamp("OPER_TIME"))
                                 )+ ");");
 
+                                if(taskOperBusinessResultSet.getString("TYPE").equals("APPLY_EMP")){
+                                    EMP_NAME = taskOperBusinessResultSet.getString("EMP_NAME");
+                                }
                                 projectBusinessWriter.newLine();
                                 projectBusinessWriter.write("INSERT work_task (task_id, message, task_name, pass) VALUE ");
                                 projectBusinessWriter.write("(" + Q.v(Q.pm(taskOperBusinessResultSet.getString("ID")),Q.pm("同意")
-                                        ,Q.pm(taskOperBusinessResultSet.getString("TYPE")),Q.p(true)
+                                        ,Q.pm(FindWorkBook.getEmpType(taskOperBusinessResultSet.getString("TYPE"))),Q.p(true)
                                 )+ ");");
 
                             }
@@ -549,7 +552,7 @@ public class projectBuildBusinessMain2 {
                                         projectBusinessWriter.newLine();
                                         projectBusinessWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id) VALUE ");
                                         projectBusinessWriter.write("(" + Q.v(Long.toString(exceptHouseId.getId()),Q.pm("CREATE")
-                                                ,"0",Q.pm("root"),Long.toString(exceptHouseId.getId())
+                                                ,"0",Q.pm(EMP_NAME),Long.toString(exceptHouseId.getId())
                                         )+ ");");
 
                                         //limit_business
@@ -571,7 +574,7 @@ public class projectBuildBusinessMain2 {
                                         projectBusinessWriter.write("INSERT sale_limit (limit_id, house_id,  type, status, version, " +
                                                 "created_at, explanation, date_to, limit_begin, work_id) value ");
                                         projectBusinessWriter.write("(" + Q.v(Long.toString(exceptHouseId.getId()),Long.toString(houseId.getId())
-                                                ,Q.pm(" FREEZE"),Q.pm(" VALID"),"0"
+                                                ,Q.pm("FREEZE"),Q.pm("VALID"),"0"
                                                 ,Q.pm(projectResultSet.getString("CREATE_TIME")),Q.pm("预售不可售")
                                                 ,Q.pm("2123-01-01:08:00:00"),Q.pm(projectResultSet.getString("CREATE_TIME"))
                                                 ,Long.toString(exceptHouseId.getId())
