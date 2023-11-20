@@ -33,7 +33,7 @@ public class createExceptHouseId9 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 1300000;//共 2998 下一起始 695000
+                j = 1300000;//共 2998 下一起始 1350000
             }
             System.out.println("记录总数-"+sumCount);
             resultSet.beforeFirst();

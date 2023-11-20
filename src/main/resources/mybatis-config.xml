@@ -43,5 +43,7 @@
         <mapper resource="com/mapper/OwnerRecordProjectIdMapper.xml"/>
         <mapper resource="com/mapper/OwnerRecordHouseIdMapper.xml"/>
         <mapper resource="com/mapper/ExceptHouseIdMapper.xml"/>
+        <mapper resource="com/mapper/LockedHouseIdMapper.xml"/>
+        <mapper resource="com/mapper/LockedHouseCancelIdMapper.xml"/>
     </mappers>
 </configuration>

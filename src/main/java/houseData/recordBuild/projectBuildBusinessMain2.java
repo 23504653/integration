@@ -451,7 +451,7 @@ public class projectBuildBusinessMain2 {
                                     }
                                 }
 
-                                System.out.println("id--:"+ownerRecordBuildId.getId()+"--before_info_id_build--"+before_info_id_build);
+//                                System.out.println("id--:"+ownerRecordBuildId.getId()+"--before_info_id_build--"+before_info_id_build);
                                 projectBusinessWriter.newLine();
                                 projectBusinessWriter.write("INSERT build_business (work_id, build_id,project_id, updated_at, info_id, work_type, business_id,before_info_id) value ");
                                 projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Long.toString(buildId.getId())
