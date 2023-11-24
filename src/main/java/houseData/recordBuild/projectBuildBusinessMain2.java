@@ -599,11 +599,11 @@ public class projectBuildBusinessMain2 {
                                         )+ ");");
                                         //house_business
                                         projectBusinessWriter.newLine();
-                                        projectBusinessWriter.write("INSERT house_business (work_id, house_id, build_id, updated_at, info_id, business_id, work_type) VALUE ");
+                                        projectBusinessWriter.write("INSERT house_business (work_id, house_id, build_id, updated_at, info_id, business_id, work_type,before_info_id) VALUE ");
                                         projectBusinessWriter.write("(" + Q.v(Long.toString(exceptHouseId.getId()),Long.toString(houseId.getId())
                                                 ,Long.toString(buildId.getId()),Q.pm(Q.nowFormatTime())
                                                 ,Long.toString(houseId.getId()),Long.toString(exceptHouseId.getId())
-                                                ,Q.pm("BUSINESS")
+                                                ,Q.pm("BUSINESS"),Long.toString(houseId.getId())
                                         )+ ");");
 
 

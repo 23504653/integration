@@ -63,7 +63,7 @@ public class limitBusinessMain3 {
 
             limitBusinessWriter.flush();
         }catch (IOException e){
-            System.out.println("limitBusinessRecord 文件创建失败");
+            System.out.println("limitBusinessFile 文件创建失败");
             e.printStackTrace();
             return;
         }
@@ -77,7 +77,7 @@ public class limitBusinessMain3 {
             limitBusinessWriterError.newLine();
             limitBusinessWriterError.flush();
         }catch (IOException e){
-            System.out.println("limitBusinessWriterError 文件创建失败");
+            System.out.println("limitBusinessFileError 文件创建失败");
             e.printStackTrace();
             return;
         }
@@ -209,29 +209,29 @@ public class limitBusinessMain3 {
                 //project_business
                 limitBusinessWriter.newLine();
                 limitBusinessWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                        "developer_name, work_type,business_id) VALUE ");
+                        "developer_name, work_type,business_id,before_info_id) VALUE ");
                 limitBusinessWriter.write("(" + Q.v(Long.toString(lockedHouseId.getId()),Long.toString(projectId.getId())
                         ,Q.pm(UNIFIED_ID),Long.toString(projectId.getId())
                         ,Q.pm(developName),Q.pm("REFER")
-                        ,Long.toString(lockedHouseId.getId())
+                        ,Long.toString(lockedHouseId.getId()),Long.toString(projectId.getId())
                 )+ ");");
 
                 //build_business
                 limitBusinessWriter.newLine();
-                limitBusinessWriter.write("INSERT build_business (work_id, build_id,project_id, updated_at, info_id, work_type, business_id) value ");
+                limitBusinessWriter.write("INSERT build_business (work_id, build_id,project_id, updated_at, info_id, work_type, business_id,before_info_id) value ");
                 limitBusinessWriter.write("(" + Q.v(Long.toString(lockedHouseId.getId()),Long.toString(buildId.getId())
                         ,Long.toString(projectId.getId()),Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME"))
                         ,Long.toString(buildId.getId()),Q.pm("REFER")
-                        ,Long.toString(lockedHouseId.getId())
+                        ,Long.toString(lockedHouseId.getId()),Long.toString(buildId.getId())
                 )+ ");");
 
                 //house_business
                 limitBusinessWriter.newLine();
-                limitBusinessWriter.write("INSERT house_business (work_id, house_id, build_id, updated_at, info_id, business_id, work_type) VALUE ");
+                limitBusinessWriter.write("INSERT house_business (work_id, house_id, build_id, updated_at, info_id, business_id, work_type,before_info_id) VALUE ");
                 limitBusinessWriter.write("(" + Q.v(Long.toString(lockedHouseId.getId()),Long.toString(houseId.getId())
                         ,Long.toString(buildId.getId()),Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME"))
                         ,Long.toString(houseId.getId()),Long.toString(lockedHouseId.getId())
-                        ,Q.pm("BUSINESS")
+                        ,Q.pm("BUSINESS"),Long.toString(houseId.getId())
                 )+ ");");
 
 
@@ -249,8 +249,31 @@ public class limitBusinessMain3 {
             return;
 
         }finally {
-
-
+            if(houseResultSet!=null){
+                houseResultSet.close();
+            }
+            if(houseStatement!=null){
+                houseStatement.close();
+            }
+            if(buildResultSet!=null){
+                buildResultSet.close();
+            }
+            if(buildStatement!=null){
+                buildStatement.close();
+            }
+            if(lockedHouseResultSet!=null){
+                lockedHouseResultSet.close();
+            }
+            if(lockedHouseStatement!=null){
+                lockedHouseStatement.close();
+            }
+            if(projectResultSet!=null){
+                projectResultSet.close();
+            }
+            if(projectStatement!=null){
+                projectStatement.close();
+            }
+            sqlSession.close();
         }
     }
 
