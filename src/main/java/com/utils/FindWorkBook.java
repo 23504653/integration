@@ -320,7 +320,9 @@ public class FindWorkBook {
 
     }
     public static String getEmpType(String id){
-
+        if(id==null || id.equals("")){
+            return "未知";
+        }
         if (id.equals("APPLY_EMP")){
             return "受理人";
         }else if(id.equals("CHECK_EMP")){
@@ -361,6 +363,26 @@ public class FindWorkBook {
             return workBook;
         }
 
+    }
+    public static String getLockedHouseType(String id){
+        if(id==null || id.equals("")){
+            return "FREEZE";
+        }
+        if(id.equals("CANT_SALE")){
+            return "FREEZE";
+        }else if(id.equals("CLOSE_REG")){
+            return "SEIZURE";
+        }else if(id.equals("HOUSE_LOCKED")){
+            return "FREEZE";
+        }if(id.equals("MORTGAGE_REEG")){
+            return "MORTGAGE";
+        }if(id.equals("OTHER_REG")){
+            return "FREEZE";
+        }if(id.equals("PREAPRE_MORTGAGE")){
+            return "MORTGAGE";
+        }else {
+            return "FREEZE";
+        }
     }
 }
 /**

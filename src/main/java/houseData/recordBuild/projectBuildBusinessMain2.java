@@ -148,7 +148,7 @@ public class projectBuildBusinessMain2 {
                 }
                 projectBusinessResultSet = projectBusinessStatement.executeQuery("SELECT P.ID AS PID,P.*,PI.*,O.* FROM HOUSE_OWNER_RECORD.PROJECT AS P "
                         +"LEFT JOIN HOUSE_OWNER_RECORD.PROJECT_SELL_INFO AS PI ON P.ID = PI.ID LEFT JOIN HOUSE_OWNER_RECORD.OWNER_BUSINESS AS O ON P.BUSINESS = O.ID "
-                        +"WHERE O.STATUS IN('COMPLETE','COMPLETE_CANCEL','MODIFYING') AND DEFINE_ID='WP50' "
+                        +"WHERE O.STATUS IN('COMPLETE','COMPLETE_CANCEL') AND DEFINE_ID='WP50' "
                         +"AND P.PROJECT_CODE='"+projectResultSet.getString("ID")+"' "
                         +"ORDER BY P.NAME,O.ID,O.APPLY_TIME;");
 

@@ -39,6 +39,8 @@ public class projectBuildMain1 {
      * 导入空间库信息
      * @param agr
      * @throws SQLException
+     *
+     * select * from OWNER_BUSINESS where DEFINE_ID='WP50' and STATUS='MODIFYING'; 处理预售业务
      */
 
     public static void main(String agr[]) throws SQLException {
