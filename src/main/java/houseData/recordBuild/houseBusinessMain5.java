@@ -97,43 +97,37 @@ public class houseBusinessMain5 {
         ProjectId projectId = null;
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null,DEFINE_ID=null;
         String nowId=null,beforeId=null;
-        // 保存前一条记录的 house_code
-        String previousHouseCode = null;
+
 
         try{
-            houseBusinessResultSet = houseBusinessStatement.executeQuery("SELECT O.ID,O.DEFINE_ID,BH.* FROM OWNER_BUSINESS AS O LEFT JOIN BUSINESS_HOUSE AS BH ON O.ID=BH.BUSINESS_ID " +
-                    "LEFT JOIN HOUSE H ON BH.AFTER_HOUSE=H.ID " +
-                    "WHERE O.STATUS IN ('COMPLETE','COMPLETE_CANCEL','MODIFYING') AND DEFINE_ID NOT IN ('WP50') " +
-                    "AND BH.BUSINESS_ID IS NOT NULL AND BH.HOUSE_CODE IN ('B544N1-4-02','0020-25','0030-0')" +
-                    "ORDER BY H.HOUSE_CODE,O.CREATE_TIME;");
-            houseBusinessResultSet.last();
-            int sumCount = houseBusinessResultSet.getRow(),i=0;
+            houseResultSet = houseStatement.executeQuery("SELECT HH.ID AS HID,HH.BUILDID,HB.PROJECT_ID,HP.DEVELOPERID,HS.DISTRICT FROM " +
+                    "HOUSE_INFO.HOUSE AS HH LEFT JOIN HOUSE_INFO.BUILD AS HB ON HH.BUILDID=HB.ID " +
+                    "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " +
+                    "WHERE HH.ID IN ('B544N1-4-02','0020-25','0030-0');");
+            houseResultSet.last();
+            int sumCount = houseResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
-            houseBusinessResultSet.beforeFirst();
-            while(houseBusinessResultSet.next()){
-                DEFINE_ID = houseBusinessResultSet.getString("DEFINE_ID");
-                // 获取当前记录的 house_code
-                String currentHouseCode = houseBusinessResultSet.getString("HOUSE_CODE");
+            houseResultSet.beforeFirst();
+            while (houseResultSet.next()){
+                houseBusinessResultSet = houseBusinessStatement.executeQuery("SELECT O.ID,O.DEFINE_ID,BH.* FROM OWNER_BUSINESS AS O LEFT JOIN BUSINESS_HOUSE AS BH ON O.ID=BH.BUSINESS_ID " +
+                        "LEFT JOIN HOUSE H ON BH.AFTER_HOUSE=H.ID " +
+                        "WHERE O.STATUS IN ('COMPLETE','COMPLETE_CANCEL','MODIFYING') AND DEFINE_ID NOT IN ('WP50') " +
+                        "AND BH.BUSINESS_ID IS NOT NULL AND BH.HOUSE_CODE ='"+houseResultSet.getString("HID")+"'"+
+                        "ORDER BY H.HOUSE_CODE,O.CREATE_TIME;");
+                if(houseBusinessResultSet.next()){
+                    houseBusinessResultSet.beforeFirst();
+                    nowId = null;
+                    beforeId  = null;
+                    while (houseBusinessResultSet.next()){
+                        nowId = houseBusinessResultSet.getString("ID");
 
-                if (previousHouseCode == null || !previousHouseCode.equals(currentHouseCode)) {
-
-                    System.out.println("当前currentHouseCode： " + currentHouseCode+"--- 钱一手previousHouseCode： " + previousHouseCode);
-                    System.out.println();
+                        System.out.println("houseCode--:"+houseResultSet.getString("HID")+"----nowID--:"+nowId+"---beforeId--"+beforeId);
+                        beforeId = nowId;
+                    }
                 }
-
-                    previousHouseCode = currentHouseCode;
-
-                if(DEFINE_ID.equals("WP42") || DEFINE_ID.equals("BL42")){
-
-                }
-
-
-
-
                 houseBusinessWriter.flush();
                 i++;
                 System.out.println(i+"/"+String.valueOf(sumCount));
-
             }
 
         }catch (Exception e){
