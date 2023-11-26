@@ -184,10 +184,10 @@ public class houseBusinessMain5 {
                     houseBusinessResultSet.beforeFirst();
                     while (houseBusinessResultSet.next()){
                         //HOUSE.PROJECT_CODE 查询预售许可证的业务的项目楼幢信息
-                        projectCardResultSet = projectCardStatement.executeQuery("select P.ID,P.PROJECT_CODE,H.ID AS HOSUE_ID,H.HOUSE_CODE,O.ID AS OID,B.ID AS BID FROM OWNER_BUSINESS AS O " +
-                                ",HOUSE_OWNER_RECORD.PROJECT AS P,HOUSE_OWNER_RECORD.PROJECT_SELL_INFO AS PSI,HOUSE_OWNER_RECORD.BUILD B,HOUSE_OWNER_RECORD.HOUSE H " +
-                                "WHERE O.ID=P.BUSINESS AND P.ID=PSI.ID AND P.ID=B.PROJECT AND P.PROJECT_CODE=H.PROJECT_CODE " +
-                                "AND  O.DEFINE_ID IN ('WP50') AND STATUS='COMPLETE' and H.PROJECT_CODE ='"+houseBusinessResultSet.getString("PROJECT_CODE")+"'");
+                        projectCardResultSet = projectCardStatement.executeQuery("select P.ID,P.PROJECT_CODE,O.ID AS OID,B.ID AS BID FROM OWNER_BUSINESS AS O " +
+                                ",HOUSE_OWNER_RECORD.PROJECT AS P,HOUSE_OWNER_RECORD.PROJECT_SELL_INFO AS PSI,HOUSE_OWNER_RECORD.BUILD B " +
+                                "WHERE O.ID=P.BUSINESS AND P.ID=PSI.ID AND P.ID=B.PROJECT " +
+                                "AND  O.DEFINE_ID IN ('WP50') AND STATUS IN ('COMPLETE') and P.PROJECT_CODE ='"+houseBusinessResultSet.getString("PROJECT_CODE")+"'");
                         //查询到用HOUSE_OWNER_RECORD的表的ID主键 没有用HOUSE_INFO库的表id
                         if(projectCardResultSet.next()){
                             ownerRecordProjectId = ownerRecordProjectIdMapper.selectByOldId(projectCardResultSet.getString("ID"));
@@ -207,14 +207,17 @@ public class houseBusinessMain5 {
                             ownerRecordProjectId.setOid(projectId.getOid());
                             ownerRecordBuildId.setId(buildId.getId());
                             ownerRecordBuildId.setOid(buildId.getOid());
+
+
+
                         }
                         //查询预售许可证号 没有预售许可证的，已办产权 项目怎么办？？？
 
-                        workbookResultSet = workbookStatement.executeQuery("SELECT MA.*,PC.*,P.* FROM HOUSE_OWNER_RECORD.PROJECT_CARD AS PC LEFT JOIN HOUSE_OWNER_RECORD.MAKE_CARD AS MA ON PC.ID = MA.ID " +
-                                "LEFT  JOIN  PROJECT AS P ON PC.PROJECT= P.ID " +
-                                "LEFT JOIN  OWNER_BUSINESS O ON P.BUSINESS = O.ID " +
-                                "WHERE MA.TYPE='PROJECT_RSHIP' AND DEFINE_ID = 'WP50' AND P.ID='"+projectCardResultSet.getString("ID")+"' ORDER BY PRINT_TIME");
-
+//                        workbookResultSet = workbookStatement.executeQuery("SELECT MA.*,PC.*,P.* FROM HOUSE_OWNER_RECORD.PROJECT_CARD AS PC LEFT JOIN HOUSE_OWNER_RECORD.MAKE_CARD AS MA ON PC.ID = MA.ID " +
+//                                "LEFT  JOIN  PROJECT AS P ON PC.PROJECT= P.ID " +
+//                                "LEFT JOIN  OWNER_BUSINESS O ON P.BUSINESS = O.ID " +
+//                                "WHERE MA.TYPE='PROJECT_RSHIP' AND DEFINE_ID = 'WP50' AND P.ID='"+projectCardResultSet.getString("ID")+"' ORDER BY PRINT_TIME");
+//
 
 
                         //house_owner_record.house.id = ownerRecordHouseId
