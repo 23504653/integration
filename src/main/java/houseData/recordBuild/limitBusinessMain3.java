@@ -101,9 +101,11 @@ public class limitBusinessMain3 {
         ProjectId projectId = null;
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null;
         try {
+
             lockedHouseResultSet = lockedHouseStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.LOCKED_HOUSE where HOUSE_CODE='10001' ORDER BY HOUSE_CODE");
             lockedHouseResultSet.last();
             int sumCount = lockedHouseResultSet.getRow(),i=0;
+
             System.out.println("记录总数-"+sumCount);
             lockedHouseResultSet.beforeFirst();
             while (lockedHouseResultSet.next()){

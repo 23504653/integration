@@ -481,14 +481,15 @@ public class projectBuildBusinessMain2 {
                                             //project_sell_license
                                             projectBusinessWriter.newLine();
                                             projectBusinessWriter.write("INSERT project_sell_license (license_id, status, project_id, year_number, " +
-                                                    "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area) value ");
+                                                    "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area,updated_at,updated_at) value ");
                                             projectBusinessWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("NUMBER")),Q.pm(FindWorkBook.getCardStatus(projectBusinessResultSet.getString("STATUS")))
                                                     ,Long.toString(ownerRecordProjectId.getId()),Integer.toString(year)
                                                     ,Integer.toString(onNumber),Q.pm(projectBusinessResultSet.getString("SELL_OBJECT"))
                                                     ,Q.pm(projectBusinessResultSet.getString("GOV_NAME")),Q.pm("东港字")
                                                     ,projectBusinessResultSet.getString("BUILD_COUNT"),projectBusinessResultSet.getString("HOUSE_COUNT")
-                                                    ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA"))
-                                                    ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA"))
+                                                    ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA")) ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA"))
+                                                    ,Q.pm(projectBusinessResultSet.getTimestamp("PRINT_TIME")),Q.pm(projectBusinessResultSet.getTimestamp("PRINT_TIME"))
+
                                             )+ ");");
 
                                             onNumber++;
