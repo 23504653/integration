@@ -9,6 +9,7 @@ import com.utils.Q;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionException;
 
+import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,6 +19,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 public class projectBuildBusinessMain2 {
     private static final String BEGIN_DATE = "2023-03-09";
@@ -127,7 +130,8 @@ public class projectBuildBusinessMain2 {
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null;
         Calendar calendar = Calendar.getInstance();
         String before_info_id_build = null,oldProjectId=null,APPLY_EMP=null,EMP_NAME=null;
-
+        Set<String> projectCardNumber = new HashSet<>();
+        String cardNmuber = null;
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
@@ -468,6 +472,7 @@ public class projectBuildBusinessMain2 {
 
 
                                 //project_sell_license project_license_builds
+                                projectCardNumber.clear();
                                 workbookResultSet = workbookStatement.executeQuery("SELECT MA.*,PC.*,P.* FROM HOUSE_OWNER_RECORD.PROJECT_CARD AS PC LEFT JOIN HOUSE_OWNER_RECORD.MAKE_CARD AS MA ON PC.ID = MA.ID " +
                                         "LEFT  JOIN  PROJECT AS P ON PC.PROJECT= P.ID WHERE MA.TYPE='PROJECT_RSHIP' AND P.ID='"+projectBusinessResultSet.getString("PID")+"' ORDER BY PRINT_TIME" );
                                 if(workbookResultSet.next()){
@@ -479,24 +484,28 @@ public class projectBuildBusinessMain2 {
                                             int year = FindWorkBook.getYearFromDate(workbookResultSet.getTimestamp("PRINT_TIME"));
 
                                             //project_sell_license
-                                            projectBusinessWriter.newLine();
-                                            projectBusinessWriter.write("INSERT project_sell_license (license_id, status, project_id, year_number, " +
-                                                    "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area,updated_at,updated_at) value ");
-                                            projectBusinessWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("NUMBER")),Q.pm(FindWorkBook.getCardStatus(projectBusinessResultSet.getString("STATUS")))
-                                                    ,Long.toString(ownerRecordProjectId.getId()),Integer.toString(year)
-                                                    ,Integer.toString(onNumber),Q.pm(projectBusinessResultSet.getString("SELL_OBJECT"))
-                                                    ,Q.pm(projectBusinessResultSet.getString("GOV_NAME")),Q.pm("东港字")
-                                                    ,projectBusinessResultSet.getString("BUILD_COUNT"),projectBusinessResultSet.getString("HOUSE_COUNT")
-                                                    ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA")) ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA"))
-                                                    ,Q.pm(projectBusinessResultSet.getTimestamp("PRINT_TIME")),Q.pm(projectBusinessResultSet.getTimestamp("PRINT_TIME"))
+                                            cardNmuber = workbookResultSet.getString("NUMBER");
+                                            if(!projectCardNumber.contains(cardNmuber)){ //判断同一个项目下有多个楼幢，预售许可信息只取一次
+                                                projectBusinessWriter.newLine();
+                                                projectBusinessWriter.write("INSERT project_sell_license (license_id, status, project_id, year_number, " +
+                                                        "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area,updated_at,updated_at) value ");
+                                                projectBusinessWriter.write("(" + Q.v(cardNmuber,Q.pm(FindWorkBook.getCardStatus(projectBusinessResultSet.getString("STATUS")))
+                                                        ,Long.toString(ownerRecordProjectId.getId()),Integer.toString(year)
+                                                        ,Integer.toString(onNumber),Q.pm(projectBusinessResultSet.getString("SELL_OBJECT"))
+                                                        ,Q.pm(projectBusinessResultSet.getString("GOV_NAME")),Q.pm("东港字")
+                                                        ,projectBusinessResultSet.getString("BUILD_COUNT"),projectBusinessResultSet.getString("HOUSE_COUNT")
+                                                        ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA")) ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA"))
+                                                        ,Q.pm(workbookResultSet.getTimestamp("PRINT_TIME")),Q.pm(workbookResultSet.getTimestamp("PRINT_TIME"))
 
-                                            )+ ");");
+                                                )+ ");");
+                                                onNumber++;
+                                                projectCardNumber.add(cardNmuber);
+                                            }
 
-                                            onNumber++;
 
                                             projectBusinessWriter.newLine();
                                             projectBusinessWriter.write("INSERT project_license_builds (license_id, build_id) value ");
-                                            projectBusinessWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("NUMBER")),Long.toString(buildId.getId())
+                                            projectBusinessWriter.write("(" + Q.v(cardNmuber,Long.toString(buildId.getId())
                                             )+ ");");
                                         }
                                     }

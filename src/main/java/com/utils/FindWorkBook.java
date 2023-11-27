@@ -315,7 +315,7 @@ public class FindWorkBook {
         }else if(id.equals("COMPLETE_CANCEL")){
             return "DESTROY";
         }else{
-            return "WORKING";
+            return "DESTROY";
         }
 
     }

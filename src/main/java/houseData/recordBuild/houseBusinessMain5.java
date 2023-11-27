@@ -211,6 +211,7 @@ public class houseBusinessMain5 {
 
 
                         }
+
                         //查询预售许可证号 没有预售许可证的，已办产权 项目怎么办？？？
 
 //                        workbookResultSet = workbookStatement.executeQuery("SELECT MA.*,PC.*,P.* FROM HOUSE_OWNER_RECORD.PROJECT_CARD AS PC LEFT JOIN HOUSE_OWNER_RECORD.MAKE_CARD AS MA ON PC.ID = MA.ID " +
