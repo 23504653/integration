@@ -163,13 +163,11 @@ public class houseBusinessMain5 {
                     System.out.println("houseBusinessMain5没有找到对应记录检查BUILDID:--:"+houseResultSet.getString("BUILDID"));
                     return;
                 }
-
                 houseId = houseIdMapper.selectByOldHouseId(houseResultSet.getString("HID"));
                 if(houseId==null){
                     System.out.println("houseBusinessMain5没有找到对应HOUSE_idE记录检查:--:"+houseResultSet.getString("HID"));
                     return;
                 }
-
                 houseBusinessResultSet = houseBusinessStatement.executeQuery("SELECT O.ID as OID,O.DEFINE_ID,BH.*,H.ID AS houseBId,H.PROJECT_CODE,O.*" +
                         " FROM OWNER_BUSINESS AS O LEFT JOIN BUSINESS_HOUSE AS BH ON O.ID=BH.BUSINESS_ID " +
                         "LEFT JOIN HOUSE H ON BH.AFTER_HOUSE=H.ID " +
@@ -181,88 +179,90 @@ public class houseBusinessMain5 {
                    int houseBusinessCont = houseBusinessResultSet.getRow(),j=0;
                     nowId = null;
                     beforeId  = null;
+
                     houseBusinessResultSet.beforeFirst();
                     while (houseBusinessResultSet.next()){
-                        //HOUSE.PROJECT_CODE 查询预售许可证的业务的项目楼幢信息
-                        projectCardResultSet = projectCardStatement.executeQuery("select P.ID,P.PROJECT_CODE,O.ID AS OID,B.ID AS BID FROM OWNER_BUSINESS AS O " +
-                                ",HOUSE_OWNER_RECORD.PROJECT AS P,HOUSE_OWNER_RECORD.PROJECT_SELL_INFO AS PSI,HOUSE_OWNER_RECORD.BUILD B " +
-                                "WHERE O.ID=P.BUSINESS AND P.ID=PSI.ID AND P.ID=B.PROJECT " +
-                                "AND  O.DEFINE_ID IN ('WP50') AND STATUS IN ('COMPLETE') and P.PROJECT_CODE ='"+houseBusinessResultSet.getString("PROJECT_CODE")+"'");
-                        //查询到用HOUSE_OWNER_RECORD的表的ID主键 没有用HOUSE_INFO库的表id
-                        if(projectCardResultSet.next()){
-                            ownerRecordProjectId = ownerRecordProjectIdMapper.selectByOldId(projectCardResultSet.getString("ID"));
-                            if(ownerRecordProjectId == null){
-                                System.out.println("houseBusinessMain5没有找到对应记录检查ownerRecordProjectId--:"+projectCardResultSet.getString("ID"));
-                                return;
-                            }
-                            ownerRecordBuildId = ownerRecordBuildIdMapper.selectByOldBuildId(projectCardResultSet.getString("BID"));
-                            if(ownerRecordBuildId==null){
-                                System.out.println("houseBusinessMain5没有找到对应记录检查ownerRecordBuildId:"+projectCardResultSet.getString("BID"));
-                                return;
-                            }
-
-
-                        }else{
-                            ownerRecordProjectId.setId(projectId.getId());
-                            ownerRecordProjectId.setOid(projectId.getOid());
-                            ownerRecordBuildId.setId(buildId.getId());
-                            ownerRecordBuildId.setOid(buildId.getOid());
-
-
-
-                        }
-
-                        //查询预售许可证号 没有预售许可证的，已办产权 项目怎么办？？？
-
-//                        workbookResultSet = workbookStatement.executeQuery("SELECT MA.*,PC.*,P.* FROM HOUSE_OWNER_RECORD.PROJECT_CARD AS PC LEFT JOIN HOUSE_OWNER_RECORD.MAKE_CARD AS MA ON PC.ID = MA.ID " +
-//                                "LEFT  JOIN  PROJECT AS P ON PC.PROJECT= P.ID " +
-//                                "LEFT JOIN  OWNER_BUSINESS O ON P.BUSINESS = O.ID " +
-//                                "WHERE MA.TYPE='PROJECT_RSHIP' AND DEFINE_ID = 'WP50' AND P.ID='"+projectCardResultSet.getString("ID")+"' ORDER BY PRINT_TIME");
-//
-
-
-                        //house_owner_record.house.id = ownerRecordHouseId
-                        ownerRecordHouseId = ownerRecordHouseIdMapper.selectByOldId(houseBusinessResultSet.getString("houseBId"));
-                        if(ownerRecordHouseId==null){
-                            System.out.println("houseBusinessMain5没有找到对应记录检查ownerRecordHouseId:"+houseBusinessResultSet.getString("houseBId"));
-                            return;
-                        }
-                        nowId = houseBusinessResultSet.getString("houseBId");
                         DEFINE_ID = houseBusinessResultSet.getString("DEFINE_ID");
-                        if(beforeId == null){
-                            beforeId = Long.toString(houseId.getId());
-                        }
-                        if(DEFINE_ID.equals("WP42") || DEFINE_ID.equals("BL42")){
-                            //work ownerRecordHouseId.getId() 作为workId
-                            houseBusinessWriter.newLine();
-                            houseBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
-                            houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Q.pm("OLD")
-                                    ,Q.pm(houseBusinessResultSet.getString("CREATE_TIME")),Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
-                                    ,Q.pm("商品房合同备案导入"),Q.pm("COMPLETED")
-                                    ,Q.pm(houseBusinessResultSet.getString("CREATE_TIME")),Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
-                                    ,"0",Q.pm("process_sale_contract_import")
-                                    ,"true",Q.pm("business")
-                            )+ ");");
+                        if(DEFINE_ID.equals("WP42") || DEFINE_ID.equals("BL42") || DEFINE_ID.equals("WP43")|| DEFINE_ID.equals("WP40")){
+                            nowId = houseBusinessResultSet.getString("houseBId");
+                            if(beforeId == null){
+                                beforeId = Long.toString(houseId.getId());
+                            }
+                            //HOUSE.PROJECT_CODE 查询预售许可证的业务的项目楼幢信息
+                            projectCardResultSet = projectCardStatement.executeQuery("select P.ID,P.PROJECT_CODE,O.ID AS OID,B.ID AS BID FROM OWNER_BUSINESS AS O " +
+                                    ",HOUSE_OWNER_RECORD.PROJECT AS P,HOUSE_OWNER_RECORD.PROJECT_SELL_INFO AS PSI,HOUSE_OWNER_RECORD.BUILD B " +
+                                    "WHERE O.ID=P.BUSINESS AND P.ID=PSI.ID AND P.ID=B.PROJECT " +
+                                    "AND  O.DEFINE_ID IN ('WP50') AND STATUS IN ('COMPLETE') and P.PROJECT_CODE ='"+houseBusinessResultSet.getString("PROJECT_CODE")+"'");
+                            //查询到用HOUSE_OWNER_RECORD的表的ID主键 没有用HOUSE_INFO库的表id
+                            if(projectCardResultSet.next()){
+                                ownerRecordProjectId = ownerRecordProjectIdMapper.selectByOldId(projectCardResultSet.getString("ID"));
+                                if(ownerRecordProjectId == null){
+                                    System.out.println("houseBusinessMain5没有找到对应记录检查ownerRecordProjectId--:"+projectCardResultSet.getString("ID"));
+                                    return;
+                                }
+                                ownerRecordBuildId = ownerRecordBuildIdMapper.selectByOldBuildId(projectCardResultSet.getString("BID"));
+                                if(ownerRecordBuildId==null){
+                                    System.out.println("houseBusinessMain5没有找到对应记录检查ownerRecordBuildId:"+projectCardResultSet.getString("BID"));
+                                    return;
+                                }
 
+                            }else{//有备案无预售许可证D用空间库的
+                                ownerRecordProjectId.setId(projectId.getId());
+                                ownerRecordProjectId.setOid(projectId.getOid());
+                                ownerRecordBuildId.setId(buildId.getId());
+                                ownerRecordBuildId.setOid(buildId.getOid());
+                            }
+                            //house_owner_record.house.id = ownerRecordHouseId
+                            ownerRecordHouseId = ownerRecordHouseIdMapper.selectByOldId(houseBusinessResultSet.getString("houseBId"));
+                            if(ownerRecordHouseId==null){
+                                System.out.println("houseBusinessMain5没有找到对应记录检查ownerRecordHouseId:"+houseBusinessResultSet.getString("houseBId"));
+                                return;
+                            }
+
+                            if(DEFINE_ID.equals("WP42") || DEFINE_ID.equals("BL42")) {
+                                //work ownerRecordHouseId.getId() 作为workId
+                                houseBusinessWriter.newLine();
+                                houseBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
+                                houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()), Q.pm("OLD")
+                                        , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
+                                        , Q.pm("商品房合同备案导入"), Q.pm("COMPLETED")
+                                        , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
+                                        , "0", Q.pm("process_sale_contract_import")
+                                        , "true", Q.pm("business")
+                                ) + ");");
+                            }
+
+                            if(DEFINE_ID.equals("WP43")){
+                                //work ownerRecordHouseId.getId() 作为workId
+                                houseBusinessWriter.newLine();
+                                houseBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
+                                houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()), Q.pm("OLD")
+                                        , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
+                                        , Q.pm("商品房合同备案撤消导入"), Q.pm("COMPLETED")
+                                        , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
+                                        , "0", Q.pm("process_sale_contract_cancel_import")
+                                        , "true", Q.pm("business")
+                                ) + ");");
+                            }
 
                             //操作人员记录
-                            taskOperBusinessResultSet = taskOperBusinessStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.BUSINESS_EMP WHERE BUSINESS_ID='"+houseBusinessResultSet.getString("OID")+"'");
-                            if(taskOperBusinessResultSet.next()){
+                            taskOperBusinessResultSet = taskOperBusinessStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.BUSINESS_EMP WHERE BUSINESS_ID='" + houseBusinessResultSet.getString("OID") + "'");
+                            if (taskOperBusinessResultSet.next()) {
                                 taskOperBusinessResultSet.beforeFirst();
-                                while (taskOperBusinessResultSet.next()){
+                                while (taskOperBusinessResultSet.next()) {
 
                                     houseBusinessWriter.newLine();
                                     houseBusinessWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,WORK_TIME) VALUE ");
-                                    houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordProjectId.getId()),Q.pm("TASK")
-                                            ,Q.pm(taskOperBusinessResultSet.getString("EMP_CODE")),Q.pm(taskOperBusinessResultSet.getString("EMP_NAME"))
-                                            ,Q.pm(taskOperBusinessResultSet.getString("ID")),Q.pm(taskOperBusinessResultSet.getTimestamp("OPER_TIME"))
-                                    )+ ");");
+                                    houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordProjectId.getId()), Q.pm("TASK")
+                                            , Q.pm(taskOperBusinessResultSet.getString("EMP_CODE")), Q.pm(taskOperBusinessResultSet.getString("EMP_NAME"))
+                                            , Q.pm(taskOperBusinessResultSet.getString("ID")), Q.pm(taskOperBusinessResultSet.getTimestamp("OPER_TIME"))
+                                    ) + ");");
 
                                     houseBusinessWriter.newLine();
                                     houseBusinessWriter.write("INSERT work_task (task_id, message, task_name, pass) VALUE ");
-                                    houseBusinessWriter.write("(" + Q.v(Q.pm(taskOperBusinessResultSet.getString("ID")),Q.pm("同意")
-                                            ,Q.pm(FindWorkBook.getEmpType(taskOperBusinessResultSet.getString("TYPE"))),Q.p(true)
-                                    )+ ");");
+                                    houseBusinessWriter.write("(" + Q.v(Q.pm(taskOperBusinessResultSet.getString("ID")), Q.pm("同意")
+                                            , Q.pm(FindWorkBook.getEmpType(taskOperBusinessResultSet.getString("TYPE"))), Q.p(true)
+                                    ) + ");");
                                 }
                             }
 
@@ -271,19 +271,23 @@ public class houseBusinessMain5 {
 
 
 
+                            System.out.println("BIZID--"+houseBusinessResultSet.getString("OID")+"---houseCode--:"+houseBusinessResultSet.getString("HOUSE_CODE")+"----nowID--:"+nowId+"---beforeId--"+beforeId);
+                            beforeId = nowId;
 
+                        }
+                        if(!DEFINE_ID.equals("WP42") && !DEFINE_ID.equals("BL42")  && !DEFINE_ID.equals("WP43")){//有初始登记的 添加初始 登记 没有备案,撤案的添加产权预警证明房子已经有人了
 
+                            if(DEFINE_ID.equals("WP40")){
 
-
-
-
+                            }else{
+                                System.out.println("DEFINE_ID---" + DEFINE_ID);
+                            }
 
                         }
 
                         j++;
                         System.out.println("BusinessCont--"+j+"/"+String.valueOf(houseBusinessCont));
-                        System.out.println("BIZID--"+houseBusinessResultSet.getString("OID")+"---houseCode--:"+houseBusinessResultSet.getString("HOUSE_CODE")+"----nowID--:"+nowId+"---beforeId--"+beforeId);
-                        beforeId = nowId;
+
                     }
                 }
                 houseBusinessWriter.flush();
@@ -302,8 +306,6 @@ public class houseBusinessMain5 {
             if(projectStatement!=null){
                 projectStatement.close();
             }
-
-
             MyConnection.closeConnection();
 
         }
