@@ -300,33 +300,33 @@ public class projectBuildMain1 {
                                 ,Q.pm(buildResultSet.getTimestamp("MAP_TIME")),Q.pm(buildResultSet.getString("DOOR_NO"))
                         )+ ");");
 
-                        //没有预售许可证的补录一个作废的预售许可证 为了已办产权等业务能够导入进去
-                        //project_sell_license project_license_builds
-                        System.out.println("楼id--"+buildResultSet.getString("ID"));
-                        projectCardResultSet = projectCardStatement.executeQuery("SELECT HB.BUILD_CODE FROM HOUSE_OWNER_RECORD.PROJECT_CARD AS PC LEFT JOIN HOUSE_OWNER_RECORD.MAKE_CARD AS MA ON PC.ID = MA.ID " +
-                                "LEFT  JOIN  HOUSE_OWNER_RECORD.PROJECT AS P ON PC.PROJECT= P.ID LEFT JOIN HOUSE_OWNER_RECORD.BUILD AS HB ON P.ID = HB.PROJECT " +
-                                "WHERE MA.TYPE='PROJECT_RSHIP' and HB.BUILD_CODE='"+buildResultSet.getString("ID") +"'");
-                        projectCardResultSet.last();
-                        if(projectCardResultSet.getRow()==0){
-                            projectWriter.newLine();
-                            projectWriter.write("INSERT project_sell_license (license_id, status, project_id, year_number, " +
-                                    "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area,updated_at,updated_at) value ");
-                            projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Q.pm("DESTROY")
-                                    ,Long.toString(projectId.getId()),"0"
-                                    ,"0",Q.pm("无")
-                                    ,Q.pm("无"),Q.pm("东港字")
-                                    ,"0","0"
-                                    ,"0","0"
-                                    ,Q.pm(buildResultSet.getTimestamp("MAP_TIME")),Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
-                            )+ ");");
-
-
-                            projectWriter.newLine();
-                            projectWriter.write("INSERT project_license_builds (license_id, build_id) value ");
-                            projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Long.toString(buildId.getId())
-                            )+ ");");
-                            System.out.println("此楼没有预售许可证--"+buildResultSet.getString("ID"));
-                        }
+                        //没有预售许可证的补录一个作废的预售许可证 为了已办产权等业务能够导入进去，有备案没有预售许可证
+                        //project_sell_license project_license_builds license_id = buildId.getId()
+//                        System.out.println("楼id--"+buildResultSet.getString("ID"));
+//                        projectCardResultSet = projectCardStatement.executeQuery("SELECT HB.BUILD_CODE FROM HOUSE_OWNER_RECORD.PROJECT_CARD AS PC LEFT JOIN HOUSE_OWNER_RECORD.MAKE_CARD AS MA ON PC.ID = MA.ID " +
+//                                "LEFT  JOIN  HOUSE_OWNER_RECORD.PROJECT AS P ON PC.PROJECT= P.ID LEFT JOIN HOUSE_OWNER_RECORD.BUILD AS HB ON P.ID = HB.PROJECT " +
+//                                "WHERE MA.TYPE='PROJECT_RSHIP' and HB.BUILD_CODE='"+buildResultSet.getString("ID") +"'");
+//                        projectCardResultSet.last();
+//                        if(projectCardResultSet.getRow()==0){
+//                            projectWriter.newLine();
+//                            projectWriter.write("INSERT project_sell_license (license_id, status, project_id, year_number, " +
+//                                    "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area,updated_at,updated_at) value ");
+//                            projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Q.pm("DESTROY")
+//                                    ,Long.toString(projectId.getId()),"0"
+//                                    ,"0",Q.pm("无")
+//                                    ,Q.pm("无"),Q.pm("东港字")
+//                                    ,"0","0"
+//                                    ,"0","0"
+//                                    ,Q.pm(buildResultSet.getTimestamp("MAP_TIME")),Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
+//                            )+ ");");
+//
+//
+//                            projectWriter.newLine();
+//                            projectWriter.write("INSERT project_license_builds (license_id, build_id) value ");
+//                            projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Long.toString(buildId.getId())
+//                            )+ ");");
+//                            System.out.println("此楼没有预售许可证--"+buildResultSet.getString("ID"));
+//                        }
 
 
 
