@@ -360,13 +360,12 @@ public class projectBuildMain1 {
                                 ,Long.toString(buildId.getId()),Q.pm("CREATE")
                                 ,Long.toString(buildId.getId())
                         )+ ");");
-
-
-
                         projectWriter.flush();
 
 
-                        //house
+
+
+
                         houseResultSet = houseStatement.executeQuery("select * from HOUSE_INFO.HOUSE WHERE BUILDID ='"+buildResultSet.getString("ID")+"'");
                         if(houseResultSet.next()){
                             houseResultSet.beforeFirst();
@@ -400,7 +399,7 @@ public class projectBuildMain1 {
                                     }
                                 }
 
-                                // workid,用build的workId，和defineID buildid z
+                                // workid,用build的workId，和defineID buildid
                                 floorBeginEnd = floorBeginEndMapper.selectByName(houseResultSet.getString("IN_FLOOR_NAME"));
                                 if(floorBeginEnd==null){
                                     projectWriterError.newLine();
@@ -409,6 +408,24 @@ public class projectBuildMain1 {
                                     System.out.println("没有找到对应记录检查floorBeginEndMapper:"+houseResultSet.getString("ID"));
                                     return;
                                 }
+
+
+                                projectWriter.newLine();
+                                projectWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
+                                projectWriter.write("(" + Q.v(Q.pm(Long.toString(houseId.getId())),Q.pm("OLD")
+                                        ,Q.pm(buildResultSet.getString("MAP_TIME")),Q.pm(buildResultSet.getString("MAP_TIME"))
+                                        ,Q.pm("导入房屋"),Q.pm("COMPLETED")
+                                        ,Q.pm(buildResultSet.getString("MAP_TIME")),Q.pm(buildResultSet.getString("MAP_TIME"))
+                                        ,"0",Q.pm("func.building.build.import")
+                                        ,"true",Q.pm("data")
+                                )+ ");");
+                                //work_operator projectId 作为task_id
+                                projectWriter.newLine();
+                                projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id) VALUE ");
+                                projectWriter.write("(" + Q.v(Q.pm(Long.toString(houseId.getId())),Q.pm("CREATE")
+                                        ,"0",Q.pm("root"),Q.pm(Long.toString(houseId.getId()))
+                                )+ ");");
+
                                 //apartment_snapshot
                                 projectWriter.newLine();
                                 projectWriter.write("INSERT apartment_snapshot (apartment_info_id,layer_type, layer_type_key," +
@@ -435,7 +452,7 @@ public class projectBuildMain1 {
                                 projectWriter.write("INSERT house_snapshot (HOUSE_INFO_ID, HOUSE_ID, MAPPING_INFO_ID, APARTMENT_INFO_ID, WORK_ID, UNIT_CODE) value  ");
                                 projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Long.toString(houseId.getId())
                                         ,Long.toString(houseId.getId()),Long.toString(houseId.getId())
-                                        ,Long.toString(buildId.getId()),Q.p(houseResultSet.getString("UNIT_NUMBER"))
+                                        ,Long.toString(houseId.getId()),Q.p(houseResultSet.getString("UNIT_NUMBER"))
                                 )+ ");");
                                 //house
                                 projectWriter.newLine();
@@ -446,21 +463,7 @@ public class projectBuildMain1 {
                                 )+ ");");
 
 
-                                projectWriter.newLine();
-                                projectWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
-                                projectWriter.write("(" + Q.v(Q.pm(Long.toString(houseId.getId())),Q.pm("OLD")
-                                        ,Q.pm(buildResultSet.getString("MAP_TIME")),Q.pm(buildResultSet.getString("MAP_TIME"))
-                                        ,Q.pm("导入房屋"),Q.pm("COMPLETED")
-                                        ,Q.pm(buildResultSet.getString("MAP_TIME")),Q.pm(buildResultSet.getString("MAP_TIME"))
-                                        ,"0",Q.pm("func.building.build.import")
-                                        ,"true",Q.pm("data")
-                                )+ ");");
-                                //work_operator projectId 作为task_id
-                                projectWriter.newLine();
-                                projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id) VALUE ");
-                                projectWriter.write("(" + Q.v(Q.pm(Long.toString(houseId.getId())),Q.pm("CREATE")
-                                        ,"0",Q.pm("root"),Q.pm(Long.toString(houseId.getId()))
-                                )+ ");");
+
 
                                 //project_business
                                 projectWriter.newLine();

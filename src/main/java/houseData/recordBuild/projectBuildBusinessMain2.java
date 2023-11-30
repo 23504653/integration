@@ -306,6 +306,8 @@ public class projectBuildBusinessMain2 {
 
 
                         //work_business.before_info_id 获取
+                        before_info_id = Long.toString(projectId.getId());
+                        oldProjectId = null;
                         if(projectBusinessResultSet.getString("SELECT_BUSINESS")!=null
                                 &&  !projectBusinessResultSet.getString("SELECT_BUSINESS").isBlank()){
                             workbookResultSet = workbookStatement.executeQuery("SELECT O.*,P.ID AS PID FROM HOUSE_OWNER_RECORD.PROJECT AS P LEFT JOIN HOUSE_OWNER_RECORD.OWNER_BUSINESS AS O ON P.BUSINESS = O.ID" +
@@ -324,13 +326,7 @@ public class projectBuildBusinessMain2 {
                                     oldProjectId = workbookResultSet.getString("PID");
 
                                 }
-                            }else{
-                               before_info_id = null;
-                              System.out.println("NOT_FIND_HOUSE_OWNER_RECORD.PROJECT.ID:--"+projectBusinessResultSet.getString("PID")+"--SELECT_BUSINESS--"+projectBusinessResultSet.getString("SELECT_BUSINESS"));
-                              return;
                             }
-                        }else {
-                            before_info_id = null;
                         }
 
                         projectBusinessWriter.newLine();
@@ -440,11 +436,13 @@ public class projectBuildBusinessMain2 {
 
 
                                 //build_business
+                                before_info_id_build = Long.toString(buildId.getId());//默认
                                 workbookResultSet = workbookStatement.executeQuery("SELECT HB.* FROM HOUSE_OWNER_RECORD.PROJECT AS P LEFT JOIN HOUSE_OWNER_RECORD.OWNER_BUSINESS AS O ON P.BUSINESS = O.ID " +
                                         "LEFT JOIN BUILD AS HB ON P.ID= HB.PROJECT " +
                                         "WHERE O.STATUS IN('COMPLETE','COMPLETE_CANCEL','MODIFYING') AND DEFINE_ID='WP50' " +
                                         " AND O.ID='"+projectBusinessResultSet.getString("SELECT_BUSINESS")+"'"+
                                         "AND P.ID='"+oldProjectId+"' AND BUILD_CODE='"+buildBusinessResultSet.getString("BUILD_CODE")+"'");
+
                                 if(workbookResultSet.next()) {
                                     if (workbookResultSet.getString("ID") != null &&
                                             !workbookResultSet.getString("ID").equals("")) {
