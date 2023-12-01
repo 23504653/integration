@@ -390,15 +390,29 @@ public class houseBusinessMain5 {
                                         ,Long.toString(ownerRecordHouseId.getId()),Q.p(before_info_id_build)
                                 )+ ");");
 
-
-
-
-
+                                //house_business
+                                houseBusinessWriter.newLine();
+                                houseBusinessWriter.write("INSERT house_business (work_id, house_id, build_id, updated_at, info_id, business_id, work_type,before_info_id) VALUE ");
+                                houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Long.toString(houseId.getId())
+                                        ,Long.toString(buildId.getId()),Q.pm(Q.nowFormatTime())
+                                        ,Long.toString(ownerRecordHouseId.getId()),Long.toString(ownerRecordHouseId.getId())
+                                        ,Q.pm("BUSINESS"),Q.pm(beforeId)
+                                )+ ");");
 
 
                                 //new_house_contract_business
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("INSERT new_house_contract_business (contract_id, work_id, license_id, valid, version, registering_house, house_id) value ");
+                                houseBusinessWriter.write("(" + Q.v(Long.toString(houseContractId.getId()),Long.toString(ownerRecordHouseId.getId())
+                                        ,Q.pm(UNIFIED_ID),"true"
+                                        ,"0","false"
+                                        ,Long.toString(ownerRecordHouseId.getId())
+                                ) + ");");
+
+                                //contract_business_transferee
+
+                                houseBusinessWriter.newLine();
+                                houseBusinessWriter.write("INSERT contract_business_transferee (ID, ID_TYPE, ID_NUMBER, NAME, WORK_ID, TEL) VALUE) value ");
                                 houseBusinessWriter.write("(" + Q.v(Long.toString(houseContractId.getId()),Long.toString(ownerRecordHouseId.getId())
                                         ,Q.pm(UNIFIED_ID),"true"
                                         ,"0","false"
@@ -490,7 +504,7 @@ public class houseBusinessMain5 {
 
 
 
-                            System.out.println("BIZID--"+houseBusinessResultSet.getString("OID")+"---houseCode--:"+houseBusinessResultSet.getString("HOUSE_CODE")+"----nowID--:"+nowId+"---beforeId--"+beforeId);
+                            System.out.println("BIZID--"+houseBusinessResultSet.getString("OID")+"-"+houseBusinessResultSet.getString("DEFINE_NAME")+"---houseCode--:"+houseBusinessResultSet.getString("HOUSE_CODE")+"----nowID--:"+nowId+"---beforeId--"+beforeId);
                             beforeId = nowId;
 
                         }
