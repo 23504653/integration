@@ -67,18 +67,10 @@ public class FindWorkBook {
      * @return 转换正价类型，个人和企业的证件类型转换
      */
 
-    public static WorkBook changeIdType(String id,String cardType){
-        //cardType 1,机构，2个人
+    public static WorkBook changeIdType(String id){
         WorkBook workBook = new WorkBook();
-        if(cardType.equals(1)){
-            workBook.setId("RESIDENT_ID");
-            workBook.setValue("身份证");
-        }else {
-            workBook.setId("COMPANY");
-            workBook.setValue("营业执照");
-        }
-
-
+        workBook.setId("RESIDENT_ID");
+        workBook.setValue("身份证");
         if(id == null || id.equals("") || id.isBlank()){
             return workBook;
         }
@@ -86,7 +78,7 @@ public class FindWorkBook {
             workBook.setId("SOLDIER");
             workBook.setValue("士兵证");
             return workBook;
-        }else if(id.equals("MASTER_ID")){//身份证
+        }else if(id.equals("MASTER_ID") ||id.equals("OTHER")){//身份证
             workBook.setId("RESIDENT_ID");
             workBook.setValue("身份证");
             return workBook;

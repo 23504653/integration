@@ -120,7 +120,7 @@ public class corpMain {
                     }
                     cropWriter.write("INSERT corp_snapshot(CORP_NAME,TEL,OWNER_NAME,OWNER_ID_TYPE,OWNER_ID_NUMBER,ADDRESS,UNIFIED_ID,SNAPSHOT_ID) VALUE ");
                     cropWriter.write("(" +Q.v(Q.pm(cropResultSet.getString("NAME")),Q.pm(cropResultSet.getString("PHONE"))
-                            ,Q.pm(cropResultSet.getString("OWNER_NAME")),Q.pm(FindWorkBook.changeIdType(cropResultSet.getString("CREDENTIALS_TYPE"),"2").getId())
+                            ,Q.pm(cropResultSet.getString("OWNER_NAME")),Q.pm("COMPANY")
                             ,Q.pm(cropResultSet.getString("COMPANY_CER_CODE")),Q.pm(cropResultSet.getString("ADDRESS"))
                             ,Q.pm(UNIFIED_ID),Long.toString(jointCorpDevelop.getCorpId())
                     )+ ");");
