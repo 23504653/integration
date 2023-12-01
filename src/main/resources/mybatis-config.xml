@@ -46,5 +46,6 @@
         <mapper resource="com/mapper/LockedHouseIdMapper.xml"/>
         <mapper resource="com/mapper/LockedHouseCancelIdMapper.xml"/>
         <mapper resource="com/mapper/HouseContractIdMapper.xml"/>
+        <mapper resource="com/mapper/PowerOwnerIdMapper.xml"/>
     </mappers>
 </configuration>
