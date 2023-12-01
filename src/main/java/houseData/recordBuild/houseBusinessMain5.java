@@ -56,6 +56,9 @@ public class houseBusinessMain5 {
 
     private static Statement houseContractStatement;
     private static ResultSet houseContractResultSet;
+
+    private static Statement powerOwnerStatement;
+    private static ResultSet powerOwnerResultSet;
     private static Set<String> DEAL_DEFINE_ID= new HashSet<>();
 
 
@@ -114,6 +117,7 @@ public class houseBusinessMain5 {
         HouseUseTypeMapper houseUseTypeMapper = sqlSession.getMapper(HouseUseTypeMapper.class);
         OtherHouseTypeMapper otherHouseTypeMapper = sqlSession.getMapper(OtherHouseTypeMapper.class);
         FloorBeginEndMapper floorBeginEndMapper = sqlSession.getMapper(FloorBeginEndMapper.class);
+        PowerOwnerIdMapper powerOwnerIdMapper = sqlSession.getMapper(PowerOwnerIdMapper.class);
 
         houseBusinessStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
         buildStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
@@ -123,7 +127,9 @@ public class houseBusinessMain5 {
         taskOperBusinessStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
         workbookStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
         houseContractStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
+        powerOwnerStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
 
+        PowerOwnerId powerOwnerId = null;
         LockedHouseId lockedHouseId= null;
         JointCorpDevelop jointCorpDevelop = new JointCorpDevelop();
         FloorBeginEnd floorBeginEnd = new FloorBeginEnd();
@@ -263,8 +269,6 @@ public class houseBusinessMain5 {
                                         }
                                     }
                                 }
-
-
                             }else{//有备案无预售许可证D用空间库的
                                 ownerRecordProjectId.setId(projectId.getId());
                                 ownerRecordProjectId.setOid(projectId.getOid());
@@ -399,7 +403,6 @@ public class houseBusinessMain5 {
                                         ,Q.pm("BUSINESS"),Q.pm(beforeId)
                                 )+ ");");
 
-
                                 //new_house_contract_business
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("INSERT new_house_contract_business (contract_id, work_id, license_id, valid, version, registering_house, house_id) value ");
@@ -410,22 +413,29 @@ public class houseBusinessMain5 {
                                 ) + ");");
 
                                 //contract_business_transferee
+                                powerOwnerResultSet = powerOwnerStatement.executeQuery("SELECT PO.* from HOUSE_OWNER AS HO LEFT JOIN POWER_OWNER PO ON HO.POOL =PO.ID " +
+                                        "WHERE HO.HOUSE = '"+houseBusinessResultSet.getString("houseBId")+"'");
+                                if(powerOwnerResultSet.next()){
+                                    powerOwnerResultSet.beforeFirst();
+                                    while (powerOwnerResultSet.next()){
+                                        powerOwnerId = powerOwnerIdMapper.selectByOldId(powerOwnerResultSet.getString("ID"));
+                                        if(powerOwnerId == null){
+                                           System.out.println("houseBusinessMain5没有找到对应记录检查powerOwnerId:--:"+powerOwnerResultSet.getString("ID"));
+                                           return;
+                                        }
 
-                                houseBusinessWriter.newLine();
-                                houseBusinessWriter.write("INSERT contract_business_transferee (ID, ID_TYPE, ID_NUMBER, NAME, WORK_ID, TEL) VALUE) value ");
-                                houseBusinessWriter.write("(" + Q.v(Long.toString(houseContractId.getId()),Long.toString(ownerRecordHouseId.getId())
-                                        ,Q.pm(UNIFIED_ID),"true"
-                                        ,"0","false"
-                                        ,Long.toString(ownerRecordHouseId.getId())
-                                ) + ");");
-
-
-
+                                        houseBusinessWriter.newLine();
+                                        houseBusinessWriter.write("INSERT contract_business_transferee (ID, ID_TYPE, ID_NUMBER, NAME, WORK_ID, TEL) VALUE) value ");
+                                        houseBusinessWriter.write("(" + Q.v(Long.toString(powerOwnerId.getId()),Q.pm(FindWorkBook.changeIdType(powerOwnerResultSet.getString("ID_TYPE")).getId())
+                                                ,Q.pm(powerOwnerResultSet.getString("ID_NO")),Q.pm(powerOwnerResultSet.getString("NAME"))
+                                                ,Long.toString(ownerRecordHouseId.getId()),Q.pm(powerOwnerResultSet.getString("PHONE"))
+                                        ) + ");");
+                                    }
+                                }
 
                             }
 
-
-                            if(DEFINE_ID.equals("WP40")){
+                            if(DEFINE_ID.equals("WP43")){
                                 //work ownerRecordHouseId.getId() 作为workId
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
@@ -456,10 +466,13 @@ public class houseBusinessMain5 {
                                         ) + ");");
                                     }
                                 }
+
+
+
                             }
 
 
-                            if(DEFINE_ID.equals("WP43")){
+                            if(DEFINE_ID.equals("WP40")){
                                 //work ownerRecordHouseId.getId() 作为workId
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
