@@ -132,8 +132,8 @@ public class houseBusinessMain5 {
         ProjectId projectId = null;
         OwnerRecordHouseId ownerRecordHouseId=null;
         OwnerRecordHouseId afterOwnerRecordHouseId =null;
-        OwnerRecordProjectId ownerRecordProjectId = null;
-        OwnerRecordBuildId ownerRecordBuildId=null;
+        OwnerRecordProjectId ownerRecordProjectId = new OwnerRecordProjectId();
+        OwnerRecordBuildId ownerRecordBuildId= new OwnerRecordBuildId();
 //        HouseContractId houseContractId = null;
         HouseUseType houseUseType= new HouseUseType();
         OtherHouseType otherHouseType = null;
@@ -148,7 +148,7 @@ public class houseBusinessMain5 {
                     "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS HD ON HP.DEVELOPERID=HD.ID " +
                     "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID " +
-                    "WHERE HH.ID IN ('B544N1-4-02','0020-25','0030-0','0182-21');"); //,'0020-25','0030-0'
+                    "WHERE HH.ID IN ('210603103001252','0182-21') ORDER BY HB.PROJECT_ID,HH.BUILDID,HH.ID"); //'210603103001252','B544N1-4-02','0020-25','0030-0','0182-21'
             houseResultSet.last();
             int sumCount = houseResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -298,8 +298,17 @@ public class houseBusinessMain5 {
                                 System.out.println("houseBusinessMain5没有找到对应记录检查floorBeginEndMapper:"+houseResultSet.getString("ID"));
                                 return;
                             }
+                            String HOUSE_STATUS = null;
+                            workbookResultSet = workbookStatement.executeQuery("select HOUSE_STATUS from HOUSE_OWNER_RECORD.HOUSE_RECORD where HOUSE_CODE='"+houseResultSet.getString("HID")+"'");
+                            if(workbookResultSet.next()){
+                                if (workbookResultSet.getString("HOUSE_STATUS")!=null &&
+                                        !workbookResultSet.getString("HOUSE_STATUS").equals("")){
+                                    HOUSE_STATUS = workbookResultSet.getString("HOUSE_STATUS");
+                                }
 
-                            if(DEFINE_ID.equals("WP42") || DEFINE_ID.equals("BL42")) {
+                            }
+
+                            if((DEFINE_ID.equals("WP42") || DEFINE_ID.equals("BL42")) && HOUSE_STATUS!=null && !HOUSE_STATUS.equals("INIT_REG")) {
                                 //work ownerRecordHouseId.getId() 作为workId
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
@@ -545,8 +554,7 @@ public class houseBusinessMain5 {
                                 ) + ");");
                             }
 
-
-                            if(DEFINE_ID.equals("WP40")){
+                            if((DEFINE_ID.equals("WP40") || DEFINE_ID.equals("BL42")) && HOUSE_STATUS!=null && HOUSE_STATUS.equals("INIT_REG")){
                                 //work ownerRecordHouseId.getId() 作为workId
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
@@ -653,6 +661,13 @@ public class houseBusinessMain5 {
                                     houseBusinessWriter.write("INSERT house_register_snapshot (register_info_id, register_number, register_date, register_gov, register_type)  value ");
                                     houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Q.pm(workbookResultSet.getString("NUMBER"))
                                             ,Q.pm(houseBusinessResultSet.getTimestamp("APPLY_TIME")),Q.pm("东港市房地产管理处")
+                                            ,Q.pm("HOUSE")
+                                    )+ ");");
+                                }else{
+                                    houseBusinessWriter.newLine();
+                                    houseBusinessWriter.write("INSERT house_register_snapshot (register_info_id, register_number, register_date, register_gov, register_type)  value ");
+                                    houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Q.pm("未知")
+                                            ,Q.pm(houseBusinessResultSet.getTimestamp("APPLY_TIME")),Q.pm("村镇办")
                                             ,Q.pm("HOUSE")
                                     )+ ");");
                                 }
