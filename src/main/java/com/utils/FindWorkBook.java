@@ -311,6 +311,17 @@ public class FindWorkBook {
         }
 
     }
+    public static String getContractStatus(String id){
+        if (id.equals("COMPLETE")){
+            return "TRUE";
+        }else if(id.equals("COMPLETE_CANCEL")){
+            return "FALSE";
+        }else{
+            return "FALSE";
+        }
+
+    }
+
     public static String getEmpType(String id){
         if(id==null || id.equals("")){
             return "未知";

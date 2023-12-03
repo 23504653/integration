@@ -39,12 +39,6 @@ public class houseBusinessMain5 {
     private static Statement houseStatement;
     private static ResultSet houseResultSet;
 
-    private static Statement buildStatement;
-    private static ResultSet buildResultSet;
-
-    private static Statement projectStatement;
-    private static ResultSet projectResultSet;
-
     private static Statement projectCardStatement;
     private static ResultSet projectCardResultSet;
 
@@ -120,8 +114,6 @@ public class houseBusinessMain5 {
         PowerOwnerIdMapper powerOwnerIdMapper = sqlSession.getMapper(PowerOwnerIdMapper.class);
 
         houseBusinessStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
-        buildStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
-        projectStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
         houseStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
         projectCardStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
         taskOperBusinessStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
@@ -129,6 +121,8 @@ public class houseBusinessMain5 {
 //        houseContractStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
         powerOwnerStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
 
+        // 用于保存前一行的 HOUSE_CODE
+        String previousHouseCode = null;
         PowerOwnerId powerOwnerId = null;
         LockedHouseId lockedHouseId= null;
         JointCorpDevelop jointCorpDevelop = new JointCorpDevelop();
@@ -154,7 +148,7 @@ public class houseBusinessMain5 {
                     "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS HD ON HP.DEVELOPERID=HD.ID " +
                     "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID " +
-                    "WHERE HH.ID IN ('B544N1-4-02','0020-25','0030-0');"); //,'0020-25','0030-0'
+                    "WHERE HH.ID IN ('B544N1-4-02','0020-25','0030-0','0182-21');"); //,'0020-25','0030-0'
             houseResultSet.last();
             int sumCount = houseResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -417,7 +411,7 @@ public class houseBusinessMain5 {
 
                                 //contract_business_transferee
                                 powerOwnerResultSet = powerOwnerStatement.executeQuery("SELECT PO.* from HOUSE_OWNER AS HO LEFT JOIN POWER_OWNER PO ON HO.POOL =PO.ID " +
-                                        "WHERE HO.HOUSE = '"+houseBusinessResultSet.getString("houseBId")+"'");
+                                        "WHERE PO.TYPE='CONTRACT' AND HO.HOUSE = '"+houseBusinessResultSet.getString("houseBId")+"'");
                                 if(powerOwnerResultSet.next()){
                                     powerOwnerResultSet.beforeFirst();
                                     while (powerOwnerResultSet.next()){
@@ -613,8 +607,6 @@ public class houseBusinessMain5 {
                                         ,Long.toString(ownerRecordHouseId.getId()),Q.p(houseBusinessResultSet.getString("UNIT_NUMBER"))
                                         ,Long.toString(ownerRecordHouseId.getId())
                                 )+ ");");
-
-
                                 //HOUSE
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("update house set updated_at = '" + houseBusinessResultSet.getTimestamp("CREATE_TIME") +"',house_info_id='"+ownerRecordHouseId.getId()+"' WHERE house_id='" + houseId.getId() + "';");
@@ -665,52 +657,57 @@ public class houseBusinessMain5 {
                                     )+ ");");
                                 }
 
-
-
-
-
-
-
-
-
-
-
                             }
-
-
-
-
-
-
-
-
-
-
-
-
 
                             System.out.println("BIZID--"+houseBusinessResultSet.getString("OID")+"-"+houseBusinessResultSet.getString("DEFINE_NAME")+"---houseCode--:"+houseBusinessResultSet.getString("HOUSE_CODE")+"----nowID--:"+nowId+"---beforeId--"+beforeId);
-                            beforeId = nowId;
+                            String currentHouseCode = houseResultSet.getString("HID");
+                            if(previousHouseCode != null && previousHouseCode.equals(currentHouseCode)){
+                               if(DEFINE_ID.equals("WP42")) {//最后一手生效的合同备案人
+//                                   System.out.println("HOUSE_CODE changed from " + previousHouseCode + " to " + currentHouseCode +
+//                                           ", BUSINESS_ID of the last record: " + nowId);
+                                   //house_rights
+                                   powerOwnerResultSet = powerOwnerStatement.executeQuery("SELECT PO.* from HOUSE_OWNER AS HO LEFT JOIN POWER_OWNER PO ON HO.POOL =PO.ID " +
+                                           "WHERE PO.TYPE='CONTRACT' AND HO.HOUSE = '"+houseBusinessResultSet.getString("houseBId")+"'");
+                                   if(powerOwnerResultSet.next()){
+                                       powerOwnerResultSet.beforeFirst();
+                                       while (powerOwnerResultSet.next()){
+                                           powerOwnerId = powerOwnerIdMapper.selectByOldId(powerOwnerResultSet.getString("ID"));
+                                           if(powerOwnerId == null){
+                                               System.out.println("houseBusinessMain5-house_rights没有找到对应记录检查powerOwnerId:--:"+powerOwnerResultSet.getString("ID"));
+                                               return;
+                                           }
 
-                        }
-                        if(!DEFINE_ID.equals("WP42") && !DEFINE_ID.equals("BL42")  && !DEFINE_ID.equals("WP43")){//有初始登记的 添加初始 登记 没有备案,撤案的添加产权预警证明房子已经有人了
+                                           houseBusinessWriter.newLine();
+                                           houseBusinessWriter.write("INSERT house_rights (id, house_id, power_type, work_id, id_type, id_number, name, tel) VALUE ");
+                                           houseBusinessWriter.write("(" + Q.v(Long.toString(powerOwnerId.getId()),Long.toString(houseId.getId())
+                                                   ,Q.pm("合同"),Long.toString(ownerRecordHouseId.getId())
+                                                   ,Q.pm(FindWorkBook.changeIdType(powerOwnerResultSet.getString("ID_TYPE")).getId()),Q.pm(powerOwnerResultSet.getString("ID_NO"))
+                                                   ,Q.pm(powerOwnerResultSet.getString("NAME")),Q.pm(powerOwnerResultSet.getString("PHONE"))
+                                           ) + ");");
+                                       }
+                                   }
 
-                            if(DEFINE_ID.equals("WP40")){
+                               }
 
-                            }else{
-                                System.out.println("DEFINE_ID---" + DEFINE_ID);
                             }
-
+                            // 更新前一行的值
+                            previousHouseCode = currentHouseCode;
+                            beforeId = nowId;
                         }
 
                         j++;
                         System.out.println("BusinessCont--"+j+"/"+String.valueOf(houseBusinessCont));
-
                     }
                 }
+
+
+
+
+
                 houseBusinessWriter.flush();
                 i++;
                 System.out.println("sumCount---"+i+"/"+String.valueOf(sumCount));
+
             }
 
         }catch (Exception e){
@@ -718,11 +715,46 @@ public class houseBusinessMain5 {
             e.printStackTrace();
             return;
         }finally {
-            if (projectResultSet!=null){
-                projectResultSet.close();
+
+            if (houseStatement!=null){
+                houseStatement.close();
             }
-            if(projectStatement!=null){
-                projectStatement.close();
+            if(houseResultSet!=null){
+                houseResultSet.close();
+            }
+
+            if (houseBusinessStatement!=null){
+                houseBusinessStatement.close();
+            }
+            if(houseBusinessResultSet!=null){
+                houseBusinessResultSet.close();
+            }
+            if (projectCardStatement!=null){
+                projectCardStatement.close();
+            }
+            if(projectCardResultSet!=null){
+                projectCardResultSet.close();
+            }
+
+            if (taskOperBusinessStatement!=null){
+                taskOperBusinessStatement.close();
+            }
+            if(taskOperBusinessResultSet!=null){
+                taskOperBusinessResultSet.close();
+            }
+
+            if (workbookStatement!=null){
+                workbookStatement.close();
+            }
+            if(workbookResultSet!=null){
+                workbookResultSet.close();
+            }
+
+            if (powerOwnerStatement!=null){
+                powerOwnerStatement.close();
+            }
+            if(powerOwnerResultSet!=null){
+                powerOwnerResultSet.close();
             }
             MyConnection.closeConnection();
 
