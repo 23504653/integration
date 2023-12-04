@@ -695,7 +695,7 @@ public class houseBusinessMain5 {
                                            houseBusinessWriter.newLine();
                                            houseBusinessWriter.write("INSERT house_rights (id, house_id, power_type, work_id, id_type, id_number, name, tel) VALUE ");
                                            houseBusinessWriter.write("(" + Q.v(Long.toString(powerOwnerId.getId()),Long.toString(houseId.getId())
-                                                   ,Q.pm("合同"),Long.toString(ownerRecordHouseId.getId())
+                                                   ,Q.pm("CONTRACT"),Long.toString(ownerRecordHouseId.getId())
                                                    ,Q.pm(FindWorkBook.changeIdType(powerOwnerResultSet.getString("ID_TYPE")).getId()),Q.pm(powerOwnerResultSet.getString("ID_NO"))
                                                    ,Q.pm(powerOwnerResultSet.getString("NAME")),Q.pm(powerOwnerResultSet.getString("PHONE"))
                                            ) + ");");
