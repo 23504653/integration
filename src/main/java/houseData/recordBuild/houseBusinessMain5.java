@@ -340,7 +340,7 @@ public class houseBusinessMain5 {
                             }
 
 
-                            if((DEFINE_ID.equals("WP42") || DEFINE_ID.equals("BL42")) && HOUSE_STATUS!=null && !HOUSE_STATUS.equals("INIT_REG")) {
+                            if( DEFINE_ID.equals("WP42") || (DEFINE_ID.equals("BL42") && HOUSE_STATUS!=null && !HOUSE_STATUS.equals("INIT_REG"))) {
                                 //work ownerRecordHouseId.getId() 作为workId
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
