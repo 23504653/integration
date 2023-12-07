@@ -570,7 +570,6 @@ public class houseBusinessMain5 {
                                                    ) + ");");
                                                }
                                            }
-
                                            //contract_transferee
                                            houseBusinessWriter.newLine();
                                            houseBusinessWriter.write("INSERT record_contract.contract_transferee (contract_id, owner_type, share_relation, share_relation_text, version) value ");
@@ -578,7 +577,6 @@ public class houseBusinessMain5 {
                                                    ,Q.p(FindWorkBook.getPoolRelation(share_relation).getId()),Q.p(FindWorkBook.getPoolRelation(share_relation).getValue())
                                                    ,"0"
                                            ) + ");");
-
                                            //contract_house_snapshot
                                            workbookResultSet = workbookStatement.executeQuery("select * from HOUSE_OWNER_RECORD.MAKE_CARD as MC,HOUSE_OWNER_RECORD.OWNER_BUSINESS AS O,HOUSE_OWNER_RECORD.BUSINESS_HOUSE AS BH" +
                                                    "  WHERE MC.BUSINESS_ID=O.ID AND MC.BUSINESS_ID=BH.BUSINESS_ID AND O.DEFINE_ID='WP40' AND BH.HOUSE_CODE='"+houseBusinessResultSet.getString("HOUSE_CODE")+"'");
@@ -601,12 +599,8 @@ public class houseBusinessMain5 {
                                                    ,Q.pm(houseBusinessResultSet.getBigDecimal("HOUSE_AREA")),Q.pm(houseBusinessResultSet.getBigDecimal("USE_AREA"))
                                                    ,Boolean.toString(build_completed),Boolean.toString(house_registered)
                                            ) + ");");
-
                                        }
-
-
                                    }
-
                                 }
 
 
