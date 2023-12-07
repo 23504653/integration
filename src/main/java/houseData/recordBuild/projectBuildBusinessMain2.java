@@ -400,13 +400,33 @@ public class projectBuildBusinessMain2 {
                                         ,Q.pm(buildBusinessResultSet.getString("DOOR_NO"))
                                 )+ ");");
 
+
+                                //project_complete_snapshot
+                                String complete_info_id = null;
+
+                                if(projectBusinessResultSet.getString("TYPE")!=null &&
+                                        !projectBusinessResultSet.getString("TYPE").equals("")
+                                        && projectBusinessResultSet.getString("TYPE").equals("NOW_SELL")){
+                                    complete_info_id = Long.toString(ownerRecordBuildId.getId());
+                                    int complete_year =FindWorkBook.getYearFromDate(projectBusinessResultSet.getTimestamp("CREATE_TIME"));
+
+                                    projectBusinessWriter.newLine();
+                                    projectBusinessWriter.write("INSERT project_complete_snapshot (complete_info_id , license, complete_year, record_number, record_time, record_gov) VALUE ");
+                                    projectBusinessWriter.write("(" + Q.v(complete_info_id,Q.p("未知")
+                                            ,Integer.toString(complete_year),Q.pm("未知")
+                                            ,Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME")),Q.pm("未知")
+                                    )+ ");");
+
+                                }
+
+
                                 //build_snapshot
                                 projectBusinessWriter.newLine();
                                 projectBusinessWriter.write("INSERT build_snapshot (build_info_id, location_info_id, construct_info_id, " +
-                                        "build_id, work_id) VALUE ");
+                                        "build_id, work_id,complete_info_id) VALUE ");
                                 projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Long.toString(ownerRecordBuildId.getId())
                                         ,Long.toString(ownerRecordBuildId.getId()),Long.toString(ownerRecordBuildId.getId())
-                                        ,Long.toString(ownerRecordBuildId.getId())
+                                        ,Long.toString(ownerRecordBuildId.getId()),complete_info_id
 
                                 )+ ");");
 
@@ -464,6 +484,8 @@ public class projectBuildBusinessMain2 {
                                         ,Long.toString(ownerRecordBuildId.getId()),Q.pm("BUSINESS")
                                         ,Long.toString(ownerRecordBuildId.getId()),Q.p(before_info_id_build)
                                 )+ ");");
+
+
 
 
 
