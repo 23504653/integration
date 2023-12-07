@@ -347,6 +347,30 @@ public class FindWorkBook {
         }
     }
 
+    public static String getPayType(String id){
+        if (id.equals("ALL_PAY")){//一次性付款
+            return "ONE_TIME";
+        }else if(id.equals("PART_PAY")){//分期付款
+            return "INSTALLMENT";
+        }else if(id.equals("DEBIT_PAY")){//抵押贷款
+            return "LOAN";
+        }else {
+            return "OTHER";
+        }
+    }
+
+    public static String getPoolType(String id){
+        if (id.equals("SINGLE_OWNER")){//单独
+            return "SINGLE";
+        }else if(id.equals("TOGETHER_OWNER")){//共同
+            return "SHARE";
+        }else if(id.equals("SHARE_OWNER")){//按份共有
+            return "JOINT";
+        }else {
+            return "SINGLE";
+        }
+    }
+
     public static WorkBook getMappingCorpId(String id){
         WorkBook workBook = new WorkBook();
         workBook.setId("3");
@@ -367,6 +391,27 @@ public class FindWorkBook {
         }
 
     }
+    public static String getContractType(String id){
+        if(id==null || id.equals("")){
+            return "PRE_SALE";
+        }
+        if (id.equals("NOW_SELL")){
+            return "SALE";
+        }else{
+            return "PRE_SALE";
+        }
+
+    }
+
+    public static String getProxyType(String id){
+        if (id.equals("LEGAL")){//法定代理人
+            return "Legal";
+        }else{
+            return "Agent";//委托代理人
+        }
+    }
+
+
     public static String getLockedHouseType(String id){
         if(id==null || id.equals("")){
             return "FREEZE";
@@ -385,6 +430,39 @@ public class FindWorkBook {
             return "MORTGAGE";
         }else {
             return "FREEZE";
+        }
+    }
+    public static WorkBook getPoolRelation(String id){
+        WorkBook workBook = new WorkBook();
+        workBook.setId("6");
+        workBook.setValue("其它");
+        if(id == null || id.equals("") || id.isBlank()){
+            return workBook;
+        }
+        if(id.equals("215")){
+            workBook.setId("0");
+            workBook.setValue("夫妻");
+            return workBook;
+        }else if (id.equals("3852") || id.equals("3853")){
+            workBook.setId("1");
+            workBook.setValue("父子（女）");
+            return workBook;
+        }else if (id.equals("3850") || id.equals("3851") ) {
+            workBook.setId("2");
+            workBook.setValue("母子（女）");
+            return workBook;
+        }else if (id.equals("216") ) {
+            workBook.setId("4");
+            workBook.setValue("兄弟");
+            return workBook;
+        }else if (id.equals("217") ) {
+            workBook.setId("5");
+            workBook.setValue("姐妹");
+            return workBook;
+        }else{
+            workBook.setId("6");
+            workBook.setValue("其它");
+            return workBook;
         }
     }
 }

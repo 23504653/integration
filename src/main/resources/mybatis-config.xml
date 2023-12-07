@@ -48,5 +48,7 @@
         <mapper resource="com/mapper/HouseContractIdMapper.xml"/>
         <mapper resource="com/mapper/PowerOwnerIdMapper.xml"/>
         <mapper resource="com/mapper/HouseRecordIdMapper.xml"/>
+        <mapper resource="com/mapper/ContractBusinessPoolIdMapper.xml"/>
+        <mapper resource="com/mapper/ContractPowerProxyIdMapper.xml"/>
     </mappers>
 </configuration>
