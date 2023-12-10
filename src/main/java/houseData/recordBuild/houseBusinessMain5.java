@@ -87,7 +87,7 @@ public class houseBusinessMain5 {
             houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_sale_contract_import','商品房合同备案导入',false,true,0,'business');");
             houseBusinessWriter.newLine();
             houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_sale_contract_cancel_import','商品房合同备案撤消导入',false,true,0,'business');");
-            houseBusinessWriter.flush();
+            houseBusinessWriter.newLine();
             houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.building.house.register.import','房屋初始登记导入',false,true,0,'data');");
             houseBusinessWriter.flush();
 
@@ -168,7 +168,7 @@ public class houseBusinessMain5 {
                     "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS HD ON HP.DEVELOPERID=HD.ID " +
                     "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID " +
-                    "WHERE HH.ID IN ('210603103001252','0182-21') ORDER BY HB.PROJECT_ID,HH.BUILDID,HH.ID"); //'210603103001252','B544N1-4-02','0020-25','0030-0','0182-21'
+                    "WHERE HH.ID IN ('133939','210603103001252','B544N1-4-02','0020-25','0030-0','0182-21') ORDER BY HB.PROJECT_ID,HH.BUILDID,HH.ID"); //'210603103001252','B544N1-4-02','0020-25','0030-0','0182-21',133939
             houseResultSet.last();
             int sumCount = houseResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -360,6 +360,23 @@ public class houseBusinessMain5 {
 //                                    return;
 //                                }
                                 //操作人员记录
+                                //开发商合同提交人
+                                taskOperBusinessResultSet = taskOperBusinessStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.TASK_OPER WHERE OPER_TYPE='CREATE' AND BUSINESS='" + houseBusinessResultSet.getString("OID") + "'");
+                                if (taskOperBusinessResultSet.next()){
+                                    houseBusinessWriter.newLine();
+                                    houseBusinessWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,WORK_TIME) VALUE ");
+                                    houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordProjectId.getId()), Q.pm("TASK")
+                                            , Q.pm(taskOperBusinessResultSet.getString("EMP_CODE")), Q.pm(taskOperBusinessResultSet.getString("EMP_NAME"))
+                                            , Q.pm(taskOperBusinessResultSet.getString("ID")), Q.pm(taskOperBusinessResultSet.getTimestamp("OPER_TIME"))
+                                    ) + ");");
+
+                                    houseBusinessWriter.newLine();
+                                    houseBusinessWriter.write("INSERT work_task (task_id, message, task_name, pass) VALUE ");
+                                    houseBusinessWriter.write("(" + Q.v(Q.pm(taskOperBusinessResultSet.getString("ID")), Q.pm("网签合同创建")
+                                            , Q.pm("提交合同人"), Q.p(true)
+                                    ) + ");");
+
+                                }
                                 taskOperBusinessResultSet = taskOperBusinessStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.BUSINESS_EMP WHERE BUSINESS_ID='" + houseBusinessResultSet.getString("OID") + "'");
                                 if (taskOperBusinessResultSet.next()) {
                                     taskOperBusinessResultSet.beforeFirst();
@@ -379,6 +396,8 @@ public class houseBusinessMain5 {
                                         ) + ");");
                                     }
                                 }
+
+
                                 //apartment_snapshot
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("INSERT apartment_snapshot (apartment_info_id,layer_type, layer_type_key," +
@@ -474,6 +493,11 @@ public class houseBusinessMain5 {
 
                                 //导入开发商客户端合同状态STATUS='SUBMIT'，在内网中业务中的有俩种处理方式一种是直接导入成已备案，一种是不倒 BHID=BUSINESS_HOUSE.ID
                                 //备案外网提交和内网生成的都导入record_contract
+
+                                String Contract_Type = "CANCELLED";
+                                if(houseBusinessResultSet.getString("STATUS").equals("COMPLETE")){
+                                    Contract_Type = "EFFECTIVE";
+                                }
                                 if (houseBusinessResultSet.getString("SOURCE").equals("BIZ_OUTSIDE") && DEFINE_ID.equals("WP42")){
                                     //houseContractResultSet = house_owner_record.house_Contract
                                    houseContractResultSet = houseContractStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.HOUSE_CONTRACT WHERE ID = '"+houseBusinessResultSet.getString("BHID")+"'");
@@ -490,11 +514,10 @@ public class houseBusinessMain5 {
                                                    ,Q.pm(contractResultSet.getString("ATTACH_EMP_ID")),Q.pm("123")
                                                    ,Q.pm(contractResultSet.getTimestamp("CREATE_TIME")),Q.pm(contractResultSet.getBigDecimal("unit_price"))
                                            ) + ");");
-
                                            //house_contract
                                            houseBusinessWriter.newLine();
                                            houseBusinessWriter.write("INSERT record_contract.house_contract (contract_id, status, type, created_at, updated_at, version, unified_id, record_at) value ");
-                                           houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Q.pm("EFFECTIVE")
+                                           houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Q.pm(Contract_Type)
                                                    ,Q.pm(FindWorkBook.getContractType(contractResultSet.getString("TYPE"))),Q.pm(contractResultSet.getTimestamp("CREATE_TIME"))
                                                    ,Q.pm(contractResultSet.getTimestamp("CREATE_TIME")),Q.pm("0")
                                                    ,Q.pm(UNIFIED_ID),Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
@@ -529,8 +552,7 @@ public class houseBusinessMain5 {
                                                        System.out.println("houseBusinessMain5没有找到对应记录检查contractBusinessPoolId:--:"+businessPoolResultSet.getString("ID"));
                                                        return;
                                                    }
-                                                   //contract_rights
-
+                                                   //contract_rights 查询有沒有代理人 有的話先插入contract_rights，Type='Transferee'
                                                    contractOtherResultSet = contractOtherStatement.executeQuery("SELECT * FROM CONTRACT.POWER_PROXY_PERSON WHERE ID='"+businessPoolResultSet.getString("ID")+"'");
                                                    if(contractOtherResultSet.next()){
                                                        contractPowerProxyId = contractPowerProxyIdMapper.selectByOldId(contractOtherResultSet.getString("ID"));
@@ -601,12 +623,134 @@ public class houseBusinessMain5 {
                                            ) + ");");
                                        }
                                    }
+                                }else{
+                                    houseContractResultSet = houseContractStatement.executeQuery("SELECT HC.*,H.HOUSE_AREA,ROUND(HC.SUM_PRICE/H.HOUSE_AREA,3) AS unit_price FROM HOUSE_OWNER_RECORD.HOUSE_CONTRACT AS HC " +
+                                            "LEFT JOIN HOUSE_OWNER_RECORD.BUSINESS_HOUSE BH ON HC.ID=BH.ID " +
+                                            "LEFT JOIN HOUSE_OWNER_RECORD.HOUSE AS H ON BH.AFTER_HOUSE=H.ID WHERE HC.ID = '"+houseBusinessResultSet.getString("BHID")+"'");
+                                    if(houseContractResultSet.next()){
+                                        //submit_info
+                                        houseBusinessWriter.newLine();
+                                        houseBusinessWriter.write("INSERT record_contract.submit_info (contract_id, work_id, user, fid, created_at, unit_price) VALUE ");
+                                        houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Long.toString(ownerRecordHouseId.getId())
+                                                ,Q.pm("ROOT"),Q.pm("数据导入")
+                                                ,Q.pm(houseBusinessResultSet.getTimestamp("CREATE_TIME")),Q.pm(houseContractResultSet.getBigDecimal("unit_price"))
+                                        ) + ");");
+                                    }
+                                    //house_contract
+                                    houseBusinessWriter.newLine();
+                                    houseBusinessWriter.write("INSERT record_contract.house_contract (contract_id, status, type, created_at, updated_at, version, unified_id, record_at) value ");
+                                    houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Q.pm(Contract_Type)
+                                            ,Q.pm(FindWorkBook.getContractType(houseContractResultSet.getString("TYPE"))),Q.pm(houseBusinessResultSet.getTimestamp("CREATE_TIME"))
+                                            ,Q.pm(houseBusinessResultSet.getTimestamp("CREATE_TIME")),Q.pm("0")
+                                            ,Q.pm(UNIFIED_ID),Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
+                                    ) + ");");
+
+                                    //corp_proxy_person
+                                    workbookResultSet = workbookStatement.executeQuery("SELECT * FROM BUSINESS_PERSION WHERE TYPE='PRE_SALE_ENTRUST' AND BUSINESS_ID ='"+houseBusinessResultSet.getString("OID")+"'");
+                                    if(workbookResultSet.next()){
+                                        houseBusinessWriter.newLine();
+                                        houseBusinessWriter.write("INSERT record_contract.corp_proxy_person (contract_id, id_type, id_number, name, tel, version) value ");
+                                        houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Q.pm(FindWorkBook.changeIdType(workbookResultSet.getString("ID_TYPE")).getId())
+                                                ,Q.pm(workbookResultSet.getString("ID_NO")),Q.pm(workbookResultSet.getString("NAME"))
+                                                ,Q.pm(workbookResultSet.getString("PHONE")),Q.pm("0")
+                                        ) + ");");
+                                    }
+
+                                    //contract_content
+                                    houseBusinessWriter.newLine();
+                                    houseBusinessWriter.write("INSERT record_contract.contract_content (contract_id, pricing_method, total_price, deposit, pay_type, initial_pay, version) value ");
+                                    houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Q.pm("OTHER")
+                                            ,Q.pm(houseContractResultSet.getBigDecimal("SUM_PRICE")),"0"
+                                            ,Q.pm(FindWorkBook.getPayType(houseContractResultSet.getString("PAY_TYPE"))),"0"
+                                            ,"0"
+                                    ) + ");");
+
+
+                                    String pool_memo= "SINGLE_OWNER",share_relation=null;
+                                    powerOwnerResultSet = powerOwnerStatement.executeQuery("SELECT PO.* from HOUSE_OWNER AS HO LEFT JOIN POWER_OWNER PO ON HO.POOL =PO.ID " +
+                                            "WHERE PO.TYPE='CONTRACT' AND HO.HOUSE = '"+houseBusinessResultSet.getString("houseBId")+"'");
+                                    if(powerOwnerResultSet.next()){
+                                        powerOwnerResultSet.last();
+                                        int poolcount = powerOwnerResultSet.getRow();
+                                        if(houseBusinessResultSet.getString("POOL_MEMO")!=null && !houseBusinessResultSet.getString("POOL_MEMO").equals("")){
+                                            pool_memo= houseBusinessResultSet.getString("POOL_MEMO");
+                                        }else{
+                                            if(poolcount == 1){
+                                                pool_memo = "SINGLE_OWNER";
+                                            }else if(poolcount == 2){
+                                                pool_memo = "TOGETHER_OWNER";
+                                            }else if(poolcount > 2){
+                                                pool_memo = "SHARE_OWNER";
+                                            }
+                                        }
+                                        powerOwnerResultSet.beforeFirst();
+                                        while (powerOwnerResultSet.next()){
+                                            powerOwnerId = powerOwnerIdMapper.selectByOldId(powerOwnerResultSet.getString("ID"));
+                                            if(powerOwnerId == null) {
+                                                System.out.println("houseBusinessMain5-house_rights没有找到对应记录检查powerOwnerId12:--:" + powerOwnerResultSet.getString("ID"));
+                                                return;
+                                            }
+                                            share_relation = powerOwnerResultSet.getString("RELATION");
+                                            houseBusinessWriter.newLine();
+                                            houseBusinessWriter.write("INSERT record_contract.contract_rights (id, type, rights_type, name, id_type, " +
+                                                    "id_number, percentage, tel, " +
+                                                    "legal_name,sex, birthday, address, " +
+                                                    "contract_id) VALUE ");
+                                            houseBusinessWriter.write("(" + Q.v(Long.toString(powerOwnerId.getId()),Q.pm("Main")
+                                                    ,Q.pm("Transferee"),Q.pm(powerOwnerResultSet.getString("NAME"))
+                                                    ,Q.pm(FindWorkBook.changeIdType(powerOwnerResultSet.getString("ID_TYPE")).getId()),Q.pm(powerOwnerResultSet.getString("ID_NO"))
+                                                    ,Q.p(powerOwnerResultSet.getBigDecimal("PERC")),Q.p(powerOwnerResultSet.getString("PHONE"))
+                                                    ,Q.p(powerOwnerResultSet.getString("LEGAL_PERSON"))
+                                                    ,Q.p(powerOwnerResultSet.getString("SEX")),Q.p(powerOwnerResultSet.getTimestamp("BIRTHDAY"))
+                                                    ,Q.p(powerOwnerResultSet.getString("ADDRESS"))
+                                                    ,Long.toString(ownerRecordHouseId.getId())
+                                            ) + ");");
+                                        }
+                                    }else {//HOUSE_OWNER为空没有备案人
+
+                                        houseBusinessWriter.newLine();
+                                        houseBusinessWriter.write("INSERT record_contract.contract_rights (id, type, rights_type, name, id_type, " +
+                                                "id_number, "+
+                                                "contract_id) VALUE ");
+                                        houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Q.pm("Main")
+                                                ,Q.pm("Transferee"),Q.pm("未知")
+                                                ,Q.pm("RESIDENT_ID"),Q.pm("未知")
+                                                ,Long.toString(ownerRecordHouseId.getId())
+                                        ) + ");");
+
+                                    }
+                                    //contract_transferee
+                                    houseBusinessWriter.newLine();
+                                    houseBusinessWriter.write("INSERT record_contract.contract_transferee (contract_id, owner_type, share_relation, share_relation_text, version) value ");
+                                    houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Q.pm(FindWorkBook.getPoolType(pool_memo))
+                                            ,Q.p(FindWorkBook.getPoolRelation(share_relation).getId()),Q.p(FindWorkBook.getPoolRelation(share_relation).getValue())
+                                            ,"0"
+                                    ) + ");");
+
+                                    //contract_house_snapshot
+                                    workbookResultSet = workbookStatement.executeQuery("select * from HOUSE_OWNER_RECORD.MAKE_CARD as MC,HOUSE_OWNER_RECORD.OWNER_BUSINESS AS O,HOUSE_OWNER_RECORD.BUSINESS_HOUSE AS BH" +
+                                            "  WHERE MC.BUSINESS_ID=O.ID AND MC.BUSINESS_ID=BH.BUSINESS_ID AND O.DEFINE_ID='WP40' AND BH.HOUSE_CODE='"+houseBusinessResultSet.getString("HOUSE_CODE")+"'");
+                                    house_registered = false;
+                                    workbookResultSet.last();
+                                    if(workbookResultSet.getRow()>1) {
+                                        house_registered = true;
+                                    }
+                                    houseBusinessWriter.newLine();
+                                    houseBusinessWriter.write("INSERT record_contract.contract_house_snapshot (contract_id, house_id, house_info_id, license_id, " +
+                                            "build_id, build_info_id, project_id, project_info_id, district_code, project_name, build_name, " +
+                                            "apartment_number, unit, house_address, area, area_use, build_completed, house_registered) value ");
+                                    houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Long.toString(houseId.getId())
+                                            ,Long.toString(ownerRecordHouseId.getId()),Q.pm(houseContractResultSet.getString("PROJECT_RSHIP_NUMBER"))
+                                            ,Long.toString(buildId.getId()),Long.toString(ownerRecordBuildId.getId())
+                                            ,Long.toString(projectId.getId()),Long.toString(ownerRecordProjectId.getId())
+                                            ,Q.pm(houseBusinessResultSet.getString("DISTRICT_CODE")),Q.pm(houseBusinessResultSet.getString("DISTRICT_NAME"))
+                                            ,Q.pm(houseBusinessResultSet.getString("BUILD_NAME")),Q.pm(houseBusinessResultSet.getString("HOUSE_ORDER"))
+                                            ,Q.pm(houseBusinessResultSet.getString("HOUSE_UNIT_NAME")),Q.pm(houseBusinessResultSet.getString("ADDRESS"))
+                                            ,Q.pm(houseBusinessResultSet.getBigDecimal("HOUSE_AREA")),Q.pm(houseBusinessResultSet.getBigDecimal("USE_AREA"))
+                                            ,Boolean.toString(build_completed),Boolean.toString(house_registered)
+                                    ) + ");");
+
                                 }
-
-
-
-
-
                             }
 
                             if(DEFINE_ID.equals("WP43")){
@@ -938,14 +1082,6 @@ public class houseBusinessMain5 {
                 workbookStatement.close();
             }
 
-
-            if (powerOwnerStatement!=null){
-                powerOwnerStatement.close();
-            }
-            if(powerOwnerResultSet!=null){
-                powerOwnerResultSet.close();
-            }
-
             if(powerOwnerResultSet!=null){
                 powerOwnerResultSet.close();
             }
@@ -968,6 +1104,14 @@ public class houseBusinessMain5 {
 
             if (businessPoolStatement!=null){
                 businessPoolStatement.close();
+            }
+
+            if(contractOtherResultSet!=null){
+                contractOtherResultSet.close();
+            }
+
+            if (contractOtherStatement!=null){
+                contractOtherStatement.close();
             }
 
             MyConnection.closeConnection();

@@ -348,6 +348,9 @@ public class FindWorkBook {
     }
 
     public static String getPayType(String id){
+        if(id==null || id.equals("")){
+            return "OTHER";
+        }
         if (id.equals("ALL_PAY")){//一次性付款
             return "ONE_TIME";
         }else if(id.equals("PART_PAY")){//分期付款
@@ -370,6 +373,7 @@ public class FindWorkBook {
             return "SINGLE";
         }
     }
+
 
     public static WorkBook getMappingCorpId(String id){
         WorkBook workBook = new WorkBook();
