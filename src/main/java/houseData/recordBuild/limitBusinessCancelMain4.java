@@ -20,8 +20,8 @@ public class limitBusinessCancelMain4 {
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_OWNER_RECORD?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
     private final static String PASSWORD ="dgsoft";
-    private static final String Limit_ERROR_FILE="/limitBusinessCancelError.sql";
-    private static final String Limit_FILE="/limitBusinessCancelRecord.sql";
+    private static final String Limit_ERROR_FILE="/limitBusinessCancelError4.sql";
+    private static final String Limit_FILE="/limitBusinessCancelRecord4.sql";
     private static File limitCancelBusinessFileError;
     private static File limitCancelBusinessFile;
     private static BufferedWriter limitCancelBusinessWriterError;
@@ -57,8 +57,8 @@ public class limitBusinessCancelMain4 {
             FileWriter fw = new FileWriter(limitCancelBusinessFile.getAbsoluteFile());
             limitCancelBusinessWriter = new BufferedWriter(fw);
             limitCancelBusinessWriter.write("USE record_building;");
-            limitCancelBusinessWriter.newLine();
-            limitCancelBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.limit.cancel.import','预警取消业务导入',false,true,0,'business');");
+//            limitCancelBusinessWriter.newLine();
+//            limitCancelBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.limit.cancel.import','预警取消业务导入',false,true,0,'business');");
 
             limitCancelBusinessWriter.flush();
         }catch (IOException e){

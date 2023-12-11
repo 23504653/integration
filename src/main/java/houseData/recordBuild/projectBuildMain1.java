@@ -62,10 +62,10 @@ public class projectBuildMain1 {
             FileWriter fw = new FileWriter(projectFile.getAbsoluteFile());
             projectWriter = new BufferedWriter(fw);
             projectWriter.write("USE record_building;");
-            projectWriter.newLine();
-            projectWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.building.project.import','导入工程项目',false,true,0,'data');");
-            projectWriter.newLine();
-            projectWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.building.build.import','导入楼幢',false,true,0,'data');");
+//            projectWriter.newLine();
+//            projectWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.building.project.import','导入工程项目',false,true,0,'data');");
+//            projectWriter.newLine();
+//            projectWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.building.build.import','导入楼幢',false,true,0,'data');");
             projectWriter.flush();
         }catch (IOException e){
             System.out.println("projectWriter 文件创建失败");
@@ -116,7 +116,7 @@ public class projectBuildMain1 {
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='115' ORDER BY P.NAME");//N6477 115 1
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='206' ORDER BY P.NAME");//N6477 115 1 ,206
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);

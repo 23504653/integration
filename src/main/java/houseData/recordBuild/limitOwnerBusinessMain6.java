@@ -22,8 +22,8 @@ public class limitOwnerBusinessMain6 {
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_OWNER_RECORD?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
     private final static String PASSWORD ="dgsoft";
-    private static final String Limit_ERROR_FILE="/limitOwnerBusinessError.sql";
-    private static final String Limit_FILE="/limitOwnerBusinessRecord.sql";
+    private static final String Limit_ERROR_FILE="/limitOwnerBusinessError6.sql";
+    private static final String Limit_FILE="/limitOwnerBusinessRecord6.sql";
     private static File limitOwnerBusinessFileError;
     private static File limitOwnerBusinessFile;
     private static BufferedWriter limitOwnerBusinessWriterError;

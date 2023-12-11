@@ -19,8 +19,8 @@ import java.sql.Statement;
 public class corpMain {
     private static final String BEGIN_DATE = "2023-03-09";
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_INFO?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
-    private static final String CORP_ERROR_FILE="/corpError.sql";
-    private static final String CORP_FILE="/corpRecord.sql";
+    private static final String CORP_ERROR_FILE="/corpError0.sql";
+    private static final String CORP_FILE="/corpRecord0.sql";
     private static BufferedWriter cropWriterError;
     private static BufferedWriter cropWriter;
     private static File cropFileError;
@@ -128,7 +128,7 @@ public class corpMain {
                     cropWriter.newLine();
                     cropWriter.write("INSERT corp (UNIFIED_ID,VERSION,UPDATED_AT,CREATED_AT,SNAPSHOT_ID) VALUE ");
                     cropWriter.write("(" +Q.v(Q.pm(UNIFIED_ID),"0"
-                            ,Q.pm("2023-10-28 18:30:45"),Q.pm("2023-10-28 18:30:45")
+                            ,Q.pm(cropResultSet.getTimestamp("CREATE_TIME")),Q.pm(cropResultSet.getTimestamp("CREATE_TIME"))
                             ,Long.toString(jointCorpDevelop.getCorpId())
                     )+ ");");
                     cropWriter.flush();

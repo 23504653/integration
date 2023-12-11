@@ -22,8 +22,8 @@ public class limitBusinessMain3 {
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_OWNER_RECORD?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
     private final static String PASSWORD ="dgsoft";
-    private static final String Limit_ERROR_FILE="/limitBusinessError.sql";
-    private static final String Limit_FILE="/limitBusinessRecord.sql";
+    private static final String Limit_ERROR_FILE="/limitBusinessError3.sql";
+    private static final String Limit_FILE="/limitBusinessRecord3.sql";
     private static File limitBusinessFileError;
     private static File limitBusinessFile;
     private static BufferedWriter limitBusinessWriterError;
@@ -58,8 +58,8 @@ public class limitBusinessMain3 {
             FileWriter fw = new FileWriter(limitBusinessFile.getAbsoluteFile());
             limitBusinessWriter = new BufferedWriter(fw);
             limitBusinessWriter.write("USE record_building;");
-            limitBusinessWriter.newLine();
-            limitBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.limit.import','预警业务导入',false,true,0,'business');");
+//            limitBusinessWriter.newLine();
+//            limitBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.limit.import','预警业务导入',false,true,0,'business');");
 
             limitBusinessWriter.flush();
         }catch (IOException e){
@@ -102,7 +102,7 @@ public class limitBusinessMain3 {
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null;
         try {
 
-            lockedHouseResultSet = lockedHouseStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.LOCKED_HOUSE where HOUSE_CODE='10001' ORDER BY HOUSE_CODE");
+            lockedHouseResultSet = lockedHouseStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.LOCKED_HOUSE ORDER BY HOUSE_CODE");
             lockedHouseResultSet.last();
             int sumCount = lockedHouseResultSet.getRow(),i=0;
 

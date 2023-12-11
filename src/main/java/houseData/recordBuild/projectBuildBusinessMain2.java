@@ -27,8 +27,8 @@ public class projectBuildBusinessMain2 {
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_OWNER_RECORD?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
     private final static String PASSWORD ="dgsoft";
-    private static final String PROJECT_ERROR_FILE="/projectBusinessError1.sql";
-    private static final String PROJECT_FILE="/projectBusinessRecord1.sql";
+    private static final String PROJECT_ERROR_FILE="/projectBusinessError2.sql";
+    private static final String PROJECT_FILE="/projectBusinessRecord2.sql";
     private static File projectBusinessFileError;
     private static File projectBusinessFile;
     private static BufferedWriter projectBusinessWriterError;
@@ -70,10 +70,10 @@ public class projectBuildBusinessMain2 {
             FileWriter fw = new FileWriter(projectBusinessFile.getAbsoluteFile());
             projectBusinessWriter = new BufferedWriter(fw);
             projectBusinessWriter.write("USE record_building;");
-            projectBusinessWriter.newLine();
-            projectBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_project_import','预销售许可证业务导入',false,true,0,'business');");
-            projectBusinessWriter.newLine();
-            projectBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.limit.import','预警业务导入',false,true,0,'business');");
+//            projectBusinessWriter.newLine();
+//            projectBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_project_import','预销售许可证业务导入',false,true,0,'business');");
+//            projectBusinessWriter.newLine();
+//            projectBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.limit.import','预警业务导入',false,true,0,'business');");
 
             projectBusinessWriter.flush();
         }catch (IOException e){
@@ -135,7 +135,7 @@ public class projectBuildBusinessMain2 {
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='115' ORDER BY P.NAME");//N6477 115 1
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='206' ORDER BY P.NAME");//N6477 115 1
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0,onNumber=1;;
             System.out.println("记录总数-"+sumCount);
@@ -508,14 +508,14 @@ public class projectBuildBusinessMain2 {
                                             if(!projectCardNumber.contains(cardNmuber)){ //判断同一个项目下有多个楼幢，预售许可信息只取一次
                                                 projectBusinessWriter.newLine();
                                                 projectBusinessWriter.write("INSERT project_sell_license (license_id, status, project_id, year_number, " +
-                                                        "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area,updated_at,updated_at) value ");
+                                                        "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area,updated_at) value ");
                                                 projectBusinessWriter.write("(" + Q.v(cardNmuber,Q.pm(FindWorkBook.getCardStatus(projectBusinessResultSet.getString("STATUS")))
                                                         ,Long.toString(ownerRecordProjectId.getId()),Integer.toString(year)
                                                         ,Integer.toString(onNumber),Q.pm(projectBusinessResultSet.getString("SELL_OBJECT"))
                                                         ,Q.pm(projectBusinessResultSet.getString("GOV_NAME")),Q.pm("东港字")
                                                         ,projectBusinessResultSet.getString("BUILD_COUNT"),projectBusinessResultSet.getString("HOUSE_COUNT")
                                                         ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA")) ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA"))
-                                                        ,Q.pm(workbookResultSet.getTimestamp("PRINT_TIME")),Q.pm(workbookResultSet.getTimestamp("PRINT_TIME"))
+                                                        ,Q.pm(workbookResultSet.getTimestamp("PRINT_TIME"))
 
                                                 )+ ");");
                                                 onNumber++;

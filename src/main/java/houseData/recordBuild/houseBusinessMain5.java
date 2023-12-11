@@ -27,8 +27,8 @@ public class houseBusinessMain5 {
     private static String CONTRACT_DB_URL = "jdbc:mysql://127.0.0.1:3306/CONTRACT?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
     private final static String PASSWORD ="dgsoft";
-    private static final String house_ERROR_FILE="/houseBusinessError.sql";
-    private static final String house_FILE="/hoseBusinessRecord.sql";
+    private static final String house_ERROR_FILE="/houseBusinessError5.sql";
+    private static final String house_FILE="/hoseBusinessRecord5.sql";
     private static File houseBusinessFileError;
     private static File houseBusinessFile;
     private static BufferedWriter houseBusinessWriterError;
@@ -83,12 +83,12 @@ public class houseBusinessMain5 {
             FileWriter fw = new FileWriter(houseBusinessFile.getAbsoluteFile());
             houseBusinessWriter = new BufferedWriter(fw);
             houseBusinessWriter.write("USE record_building;");
-            houseBusinessWriter.newLine();
-            houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_sale_contract_import','商品房合同备案导入',false,true,0,'business');");
-            houseBusinessWriter.newLine();
-            houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_sale_contract_cancel_import','商品房合同备案撤消导入',false,true,0,'business');");
-            houseBusinessWriter.newLine();
-            houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.building.house.register.import','房屋初始登记导入',false,true,0,'data');");
+//            houseBusinessWriter.newLine();
+//            houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_sale_contract_import','商品房合同备案导入',false,true,0,'business');");
+//            houseBusinessWriter.newLine();
+//            houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('sale_contract_cancel_import','商品房合同备案撤消导入',false,true,0,'business');");
+//            houseBusinessWriter.newLine();
+//            houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.house.register.import','房屋初始登记导入',false,true,0,'data');");
             houseBusinessWriter.flush();
 
         }catch (IOException e){
@@ -168,7 +168,7 @@ public class houseBusinessMain5 {
                     "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS HD ON HP.DEVELOPERID=HD.ID " +
                     "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID " +
-                    "WHERE HH.ID IN ('133939','210603103001252','B544N1-4-02','0020-25','0030-0','0182-21') ORDER BY HB.PROJECT_ID,HH.BUILDID,HH.ID"); //'210603103001252','B544N1-4-02','0020-25','0030-0','0182-21',133939
+                    "WHERE HB.PROJECT_ID IN ('206') ORDER BY HB.PROJECT_ID,HH.BUILDID,HH.ID"); //'210603103001252','B544N1-4-02','0020-25','0030-0','0182-21',133939
             houseResultSet.last();
             int sumCount = houseResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -462,11 +462,11 @@ public class houseBusinessMain5 {
 
                                 //new_house_contract_business
                                 houseBusinessWriter.newLine();
-                                houseBusinessWriter.write("INSERT new_house_contract_business (contract_id, work_id, license_id, valid, version, registering_house, house_id) value ");
+                                houseBusinessWriter.write("INSERT new_house_contract_business (contract_id, work_id, license_id, valid, version, registering_house, house_id,file_uploaded) value ");
                                 houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Long.toString(ownerRecordHouseId.getId())
                                         ,Q.pm(UNIFIED_ID),FindWorkBook.getContractStatus(houseBusinessResultSet.getString("STATUS"))
                                         ,"1","false"
-                                        ,Long.toString(houseId.getId())
+                                        ,Long.toString(houseId.getId()),"false"
                                 ) + ");");
 
                                 //contract_business_transferee
@@ -761,7 +761,7 @@ public class houseBusinessMain5 {
                                         , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
                                         , Q.pm("商品房合同备案撤消导入"), Q.pm("COMPLETED")
                                         , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
-                                        , "0", Q.pm("process_sale_contract_cancel_import")
+                                        , "0", Q.pm("sale_contract_cancel_import")
                                         , "true", Q.pm("business")
                                 ) + ");");
                                 //操作人员记录
@@ -874,7 +874,7 @@ public class houseBusinessMain5 {
                                         , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
                                         , Q.pm("房屋初始登记导入"), Q.pm("COMPLETED")
                                         , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
-                                        , "0", Q.pm("func.building.house.register.import")
+                                        , "0", Q.pm("func.house.register.import")
                                         , "true", Q.pm("business")
                                 ) + ");");
                                 //操作人员记录
