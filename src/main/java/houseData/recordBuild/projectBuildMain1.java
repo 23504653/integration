@@ -330,7 +330,7 @@ public class projectBuildMain1 {
                             projectWriter.write("INSERT project_license_builds (license_id, build_id) value ");
                             projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Long.toString(buildId.getId())
                             )+ ");");
-                            System.out.println("此楼没有预售许可证--"+buildResultSet.getString("ID"));
+                          //  System.out.println("此楼没有预售许可证--"+buildResultSet.getString("ID"));
                         }
 
 
@@ -394,9 +394,6 @@ public class projectBuildMain1 {
                                 if(houseUseType.getHouseType().equals("Null")){//DesignUseType 用途是其它 需要调 otherHouseType表 进行房屋类型的取值
                                     otherHouseType = otherHouseTypeMapper.selectByHouseId(houseResultSet.getString("ID"));
                                     if (otherHouseType == null){
-                                        projectWriterError.newLine();
-                                        projectWriterError.write("没有找到对应记录检查otherHouseTypeMapper:"+houseResultSet.getString("ID"));
-                                        projectWriterError.flush();
                                         System.out.println("没有找到对应记录检查otherHouseTypeMapper:"+houseResultSet.getString("ID"));
                                         return;
                                     }else {

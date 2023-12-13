@@ -71,9 +71,9 @@ public class projectBuildBusinessMain2 {
             projectBusinessWriter = new BufferedWriter(fw);
             projectBusinessWriter.write("USE record_building;");
 //            projectBusinessWriter.newLine();
-//            projectBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_project_import','预销售许可证业务导入',false,true,0,'business');");
+//            projectBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_project_license','预销售许可证业务导入',false,true,0,'business');");
 //            projectBusinessWriter.newLine();
-//            projectBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.limit.import','预警业务导入',false,true,0,'business');");
+//            projectBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.limit.create','预警业务导入',false,true,0,'business');");
 
             projectBusinessWriter.flush();
         }catch (IOException e){
@@ -176,7 +176,7 @@ public class projectBuildBusinessMain2 {
                                 ,Q.pm(projectResultSet.getString("CREATE_TIME")),Q.pm(projectResultSet.getString("CREATE_TIME"))
                                 ,Q.pm("预销售许可证业务导入"),Q.pm("COMPLETED")
                                 ,Q.pm(projectResultSet.getString("CREATE_TIME")),Q.pm(projectResultSet.getString("CREATE_TIME"))
-                                ,"0",Q.pm("process_project_import")
+                                ,"0",Q.pm("process_project_license")
                                 ,"true",Q.pm("business")
                         )+ ");");
                         //操作人员记录
@@ -220,7 +220,7 @@ public class projectBuildBusinessMain2 {
                         //land_use_type_snapshot project 只有一种土地用途的，ID 跟业务走，
                         projectBusinessWriter.newLine();
                         projectBusinessWriter.write("INSERT record_building.land_use_type_snapshot (end_date, use_type, land_info_id, id) value ");
-                        projectBusinessWriter.write("(" + Q.v(Q.pm(projectBusinessResultSet.getTimestamp("END_USE_TIME")),Q.pm(FindWorkBook.landUseType(projectBusinessResultSet.getString("USE_TYPE")))
+                        projectBusinessWriter.write("(" + Q.v(Q.pm(projectBusinessResultSet.getTimestamp("END_USE_TIME")),Q.pm(FindWorkBook.landUseType2(projectBusinessResultSet.getString("USE_TYPE")))
                                 ,Long.toString(ownerRecordProjectId.getId())
                                 ,Long.toString(ownerRecordProjectId.getId())
                         )+ ");");
@@ -241,7 +241,7 @@ public class projectBuildBusinessMain2 {
                                 }
                                 projectBusinessWriter.newLine();
                                 projectBusinessWriter.write("INSERT record_building.land_use_type_snapshot (end_date, use_type, land_info_id, id) value ");
-                                projectBusinessWriter.write("(" + Q.v(Q.pm(landEndTimeResultSet.getTimestamp("END_TIME")),Q.pm(landEndTimeResultSet.getString("USE_TYPE"))
+                                projectBusinessWriter.write("(" + Q.v(Q.pm(landEndTimeResultSet.getTimestamp("END_TIME")),Q.pm(FindWorkBook.landUseType2(landEndTimeResultSet.getString("USE_TYPE")))
                                        ,Long.toString(ownerRecordProjectId.getId())
                                        ,Long.toString(landEndTimeId.getId())
                                 )+ ");");
@@ -579,7 +579,7 @@ public class projectBuildBusinessMain2 {
                                                 ,Q.pm(projectResultSet.getTimestamp("CREATE_TIME")),Q.pm(projectResultSet.getTimestamp("CREATE_TIME"))
                                                 ,Q.pm("预售不可售房屋导入"),Q.pm("COMPLETED")
                                                 ,Q.pm(projectResultSet.getTimestamp("CREATE_TIME")),Q.pm(projectResultSet.getTimestamp("CREATE_TIME"))
-                                                ,"0",Q.pm("func.limit.import")
+                                                ,"0",Q.pm("func.limit.create")
                                                 ,"true",Q.pm("business")
                                         )+ ");");
                                         projectBusinessWriter.newLine();

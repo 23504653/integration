@@ -58,7 +58,7 @@ public class limitBusinessCancelMain4 {
             limitCancelBusinessWriter = new BufferedWriter(fw);
             limitCancelBusinessWriter.write("USE record_building;");
 //            limitCancelBusinessWriter.newLine();
-//            limitCancelBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.limit.cancel.import','预警取消业务导入',false,true,0,'business');");
+//            limitCancelBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.limit.cancel','预警取消业务导入',false,true,0,'business');");
 
             limitCancelBusinessWriter.flush();
         }catch (IOException e){
@@ -156,7 +156,7 @@ public class limitBusinessCancelMain4 {
                         ,Q.pm(lockedHouseCancelResultSet.getTimestamp("CANCEL_TIME")),Q.pm(lockedHouseCancelResultSet.getTimestamp("CANCEL_TIME"))
                         ,Q.pm("房屋预警导入"),Q.pm("COMPLETED")
                         ,Q.pm(lockedHouseCancelResultSet.getTimestamp("CANCEL_TIME")),Q.pm(lockedHouseCancelResultSet.getTimestamp("CANCEL_TIME"))
-                        ,"0",Q.pm("func.limit.cancel.import")
+                        ,"0",Q.pm("func.limit.cancel")
                         ,"true",Q.pm("business")
                 )+ ");");
 

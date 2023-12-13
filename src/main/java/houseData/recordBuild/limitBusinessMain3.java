@@ -59,7 +59,7 @@ public class limitBusinessMain3 {
             limitBusinessWriter = new BufferedWriter(fw);
             limitBusinessWriter.write("USE record_building;");
 //            limitBusinessWriter.newLine();
-//            limitBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.limit.import','预警业务导入',false,true,0,'business');");
+//            limitBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.limit.create','预警业务导入',false,true,0,'business');");
 
             limitBusinessWriter.flush();
         }catch (IOException e){
@@ -163,7 +163,7 @@ public class limitBusinessMain3 {
                         ,Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME")),Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME"))
                         ,Q.pm("房屋预警导入"),Q.pm("COMPLETED")
                         ,Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME")),Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME"))
-                        ,"0",Q.pm("func.limit.import")
+                        ,"0",Q.pm("func.limit.create")
                         ,"true",Q.pm("business")
                 )+ ");");
 

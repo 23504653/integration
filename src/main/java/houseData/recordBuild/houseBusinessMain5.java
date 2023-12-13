@@ -84,11 +84,11 @@ public class houseBusinessMain5 {
             houseBusinessWriter = new BufferedWriter(fw);
             houseBusinessWriter.write("USE record_building;");
 //            houseBusinessWriter.newLine();
-//            houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_sale_contract_import','商品房合同备案导入',false,true,0,'business');");
+//            houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_sale_contract_new','商品房合同备案导入',false,true,0,'business');");
 //            houseBusinessWriter.newLine();
-//            houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('sale_contract_cancel_import','商品房合同备案撤消导入',false,true,0,'business');");
+//            houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('process_sale_contract_new_cancel','商品房合同备案撤消导入',false,true,0,'business');");
 //            houseBusinessWriter.newLine();
-//            houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.house.register.import','房屋初始登记导入',false,true,0,'data');");
+//            houseBusinessWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.building.house.register','房屋初始登记导入',false,true,0,'data');");
             houseBusinessWriter.flush();
 
         }catch (IOException e){
@@ -348,7 +348,7 @@ public class houseBusinessMain5 {
                                         , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
                                         , Q.pm("商品房合同备案导入"), Q.pm("COMPLETED")
                                         , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
-                                        , "0", Q.pm("process_sale_contract_import")
+                                        , "0", Q.pm("process_sale_contract_new")
                                         , "true", Q.pm("business")
                                 ) + ");");
 
@@ -762,7 +762,7 @@ public class houseBusinessMain5 {
                                         , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
                                         , Q.pm("商品房合同备案撤消导入"), Q.pm("COMPLETED")
                                         , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
-                                        , "0", Q.pm("sale_contract_cancel_import")
+                                        , "0", Q.pm("process_sale_contract_new_cancel")
                                         , "true", Q.pm("business")
                                 ) + ");");
                                 //操作人员记录
@@ -876,7 +876,7 @@ public class houseBusinessMain5 {
                                         , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
                                         , Q.pm("房屋初始登记导入"), Q.pm("COMPLETED")
                                         , Q.pm(houseBusinessResultSet.getString("CREATE_TIME")), Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
-                                        , "0", Q.pm("func.house.register.import")
+                                        , "0", Q.pm("func.building.house.register")
                                         , "true", Q.pm("business")
                                 ) + ");");
                                 //操作人员记录
