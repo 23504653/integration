@@ -47,21 +47,19 @@ public class corpMain {
             //创建一个空开发商用于挂没有开发商的项目
             cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('未知开发商','13333333333','未知','RESIDENT_ID','未知','未知','011',0);");
             cropWriter.newLine();
-            cropWriter.write("INSERT corp (unified_id, version, corp.created_at,snapshot_id) VALUE (0,0,'1980-01-01:08:00:00',0);");
-
+            cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (0,0,'1990-01-01:08:00:00',0,'1990-01-01:08:00:00');");
             cropWriter.newLine();
             cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('东港市房产测绘中心','13333333333','未知','RESIDENT_ID','未知','未知','012',1);");
             cropWriter.newLine();
-            cropWriter.write("INSERT corp (unified_id, version, corp.created_at,snapshot_id) VALUE (1,0,'1980-01-01:08:00:00',1);");
+            cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (1,0,'1990-01-01:08:00:00',1,'1990-01-01:08:00:00');");
             cropWriter.newLine();
             cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('东港市村镇建设管理处测绘队','13333333333','未知','RESIDENT_ID','未知','未知','013',2);");
             cropWriter.newLine();
-            cropWriter.write("INSERT corp (unified_id, version, corp.created_at,snapshot_id) VALUE (2,0,'1980-01-01:08:00:00',2);");
-
+            cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (2,0,'1990-01-01:08:00:00',2,'1990-01-01:08:00:00');");
             cropWriter.newLine();
             cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('未知测绘机构','13333333333','未知','RESIDENT_ID','未知','未知','014',3);");
             cropWriter.newLine();
-            cropWriter.write("INSERT corp (unified_id, version, corp.created_at,snapshot_id) VALUE (3,0,'1980-01-01:08:00:00',3);");
+            cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (3,0,'1990-01-01:08:00:00',3,'1990-01-01:08:00:00');");
             cropWriter.flush();
 
 
@@ -103,7 +101,7 @@ public class corpMain {
         String UNIFIED_ID=null;
 
         try {
-            cropResultSet = cropStatement.executeQuery("select DEVELOPER.ID AS DID,DEVELOPER.*,ATTACH_CORPORATION.* from DEVELOPER LEFT JOIN ATTACH_CORPORATION ON DEVELOPER.ATTACH_ID = ATTACH_CORPORATION.ID");
+            cropResultSet = cropStatement.executeQuery("select DEVELOPER.ID AS DID,DEVELOPER.*,ATTACH_CORPORATION.* from DEVELOPER LEFT JOIN ATTACH_CORPORATION ON DEVELOPER.ATTACH_ID = ATTACH_CORPORATION.ID where DEVELOPER.ID='N2586'");
             cropResultSet.last();
             int sumCount = cropResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -131,6 +129,41 @@ public class corpMain {
                             ,Q.pm(cropResultSet.getTimestamp("CREATE_TIME")),Q.pm(cropResultSet.getTimestamp("CREATE_TIME"))
                             ,Long.toString(jointCorpDevelop.getCorpId())
                     )+ ");");
+
+                    cropWriter.newLine();
+                    cropWriter.write("INSERT qualification_snapshot (qualification_id, level, level_number, expire_at, register_gov) VALUE ");
+                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"1"
+                            ,Q.pm("企业资质证书好"),Q.pm(cropResultSet.getTimestamp("CREATE_TIME"))
+                            ,Q.pm("颁发机构")
+                    )+ ");");
+
+                    cropWriter.newLine();
+                    cropWriter.write("INSERT corp_record_snapshot (INFO_ID, QUALIFICATION_ID, RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE ");
+                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
+                            ,Long.toString(jointCorpDevelop.getCorpId()),"0",Long.toString(jointCorpDevelop.getCorpId())
+                            ,Q.pm("DEVELOPER")
+                    )+ ");");
+
+
+
+                    cropWriter.newLine();
+                    cropWriter.write("INSERT joint_corp (record_id, unified_id, type, enabled, version, updated_at, created_at, info_id, pin) VALUE ");
+                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Q.pm(UNIFIED_ID)
+                            ,Q.pm("DEVELOPER"),"true","0",Q.pm(cropResultSet.getTimestamp("CREATE_TIME")),Q.pm(cropResultSet.getTimestamp("CREATE_TIME"))
+                            ,Long.toString(jointCorpDevelop.getCorpId()),Q.pm(cropResultSet.getString("PYCODE"))
+                    )+ ");");
+
+                    cropWriter.newLine();
+                    cropWriter.write("INSERT corp_business(business_id, work_id, before_info_id, info_id, type, unified_id, updated_at, work_type) VALUE ");
+                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"0"
+                            ,Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
+                            ,Q.pm("DEVELOPER"),Q.pm(UNIFIED_ID)
+                            ,Q.pm(cropResultSet.getTimestamp("CREATE_TIME")),Q.pm("BUSINESS")
+
+                    )+ ");");
+
+
+
                     cropWriter.flush();
                 }else{
                     cropWriterError.newLine();
