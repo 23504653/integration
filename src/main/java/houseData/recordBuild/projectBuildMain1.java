@@ -116,7 +116,7 @@ public class projectBuildMain1 {
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='206' ORDER BY P.NAME");//N6477 115 1 ,206
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='206' ORDER BY P.NAME");//N6477 115 1 ,206 WHERE P.ID<>'206'
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -155,9 +155,10 @@ public class projectBuildMain1 {
                 )+ ");");
                //work_operator projectId 作为task_id
                 projectWriter.newLine();
-                projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id) VALUE ");
+                projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,work_time) VALUE ");
                 projectWriter.write("(" + Q.v(Q.pm(Long.toString(projectId.getId())),Q.pm("CREATE")
                         ,"0",Q.pm("root"),Q.pm(Long.toString(projectId.getId()))
+                        ,Q.pm(projectResultSet.getString("CREATE_TIME"))
                 )+ ");");
 
                 //land_snapshot
@@ -165,7 +166,7 @@ public class projectBuildMain1 {
                 projectWriter.write("INSERT record_building.land_snapshot (CAPARCEL_NUMBER, LAND_NUMBER, BEGIN_DATE, " +
                         "TAKE_TYPE_KEY, TAKE_TYPE, AREA, ADDRESS, LICENSE_NUMBER, LICENSE_TYPE, LICENSE_TYPE_KEY, LAND_INFO_ID) VALUE ");
                 projectWriter.write("(" + Q.v(Q.pm("未知"),Q.pm("未知")
-                        ,Q.pm("1801-01-01:08:00:00"),"6"
+                        ,Q.pm("1990-01-01:08:00:00"),"6"
                         ,Q.pm("其它"),"0"
                         ,Q.pm("未知"),Q.pm("未知")
                         ,Q.pm("国有土地使用证"),"2"
@@ -174,7 +175,7 @@ public class projectBuildMain1 {
                 //
                 projectWriter.newLine();
                 projectWriter.write("INSERT record_building.land_use_type_snapshot (end_date, use_type, land_info_id, id) value ");
-                projectWriter.write("(" + Q.v(Q.pm("1801-01-01:08:00:00"),Q.pm("DWELLING")
+                projectWriter.write("(" + Q.v(Q.pm("1990-01-01:08:00:00"),Q.pm("DWELLING")
                         ,Long.toString(projectId.getId())
                         ,Long.toString(projectId.getId())
                 )+ ");");
@@ -215,21 +216,23 @@ public class projectBuildMain1 {
 
                 projectWriter.newLine(); // 建立一个未知开发商将没有开发商的项目都挂上去
                 projectWriter.write("INSERT record_building.project (project_id, developer_id,updated_at, developer_name, project_info_id, status, " +
-                        "version, address, project_name, district_code, pin) value ");
+                        "version, address, project_name, district_code, pin,created_at) value ");
                 projectWriter.write("(" + Q.v(Long.toString(projectId.getId()),Q.pm(UNIFIED_ID),Q.pm(projectResultSet.getString("CREATE_TIME"))
                         ,Q.pm(developName),Long.toString(projectId.getId())
                         ,Q.p("PUBLIC"),"0"
                         ,Q.pm(projectResultSet.getString("ADDRESS")),Q.pm(projectResultSet.getString("NAME"))
                         ,Q.pm(districtCode),Q.p(PinyinTools.getPinyinCode(projectResultSet.getString("NAME")))
+                        ,Q.pm(projectResultSet.getString("CREATE_TIME"))
                 )+ ");");
                 //project_business
                 projectWriter.newLine();
                 projectWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                        "developer_name, work_type,business_id) VALUE ");
+                        "developer_name, work_type,business_id,updated_at) VALUE ");
                 projectWriter.write("(" + Q.v(Long.toString(projectId.getId()),Long.toString(projectId.getId())
                         ,Q.pm(UNIFIED_ID),Long.toString(projectId.getId())
                         ,Q.pm(developName),Q.pm("CREATE")
                         ,Long.toString(projectId.getId())
+                        ,Q.pm(projectResultSet.getTimestamp("CREATE_TIME"))
                 )+ ");");
                 projectWriter.flush();
                 //HOUSE_INFO.BUILD.ID 作为build表主键
@@ -252,17 +255,18 @@ public class projectBuildMain1 {
                         projectWriter.newLine();
                         projectWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
                         projectWriter.write("(" + Q.v(Q.pm(Long.toString(buildId.getId())),Q.pm("OLD")
-                                ,Q.pm(buildResultSet.getString("MAP_TIME")),Q.pm(buildResultSet.getString("MAP_TIME"))
+                                ,Q.pm(buildResultSet.getTimestamp("MAP_TIME")),Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
                                 ,Q.pm("导入楼幢"),Q.pm("COMPLETED")
-                                ,Q.pm(buildResultSet.getString("MAP_TIME")),Q.pm(buildResultSet.getString("MAP_TIME"))
+                                ,Q.pm(buildResultSet.getTimestamp("MAP_TIME")),Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
                                 ,"0",Q.pm("func.building.build.import")
                                 ,"true",Q.pm("data")
                         )+ ");");
                         //work_operator projectId 作为task_id
                         projectWriter.newLine();
-                        projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id) VALUE ");
+                        projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,work_time) VALUE ");
                         projectWriter.write("(" + Q.v(Q.pm(Long.toString(buildId.getId())),Q.pm("CREATE")
-                                ,"0",Q.pm("root"),Q.pm(Long.toString(buildId.getId()))
+                                ,"0",Q.pm("root")
+                                ,Q.pm(Long.toString(buildId.getId())),Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
                         )+ ");");
 
                         //build_construct_snapshot
@@ -293,11 +297,12 @@ public class projectBuildMain1 {
                         )+ ");");
                         //BUILD
                         projectWriter.newLine();
-                        projectWriter.write("INSERT build (BUILD_ID, PROJECT_ID, STATUS, BUILD_INFO_ID, BUILD_NAME, VERSION, created_at, DOOR_NUMBER) VALUE");
+                        projectWriter.write("INSERT build (BUILD_ID, PROJECT_ID, STATUS, BUILD_INFO_ID, BUILD_NAME, VERSION, created_at, DOOR_NUMBER,updated_at) VALUE");
                         projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Long.toString(projectId.getId())
                                 ,Q.pm("SALE"),Long.toString(buildId.getId())
                                 ,Q.pm(buildResultSet.getString("NAME")),"0"
                                 ,Q.pm(buildResultSet.getTimestamp("MAP_TIME")),Q.pm(buildResultSet.getString("DOOR_NO"))
+                                ,Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
                         )+ ");");
 
                         //没有预售许可证的补录一个作废的预售许可证 为了已办产权等业务能够导入进去，有备案没有预售许可证
@@ -310,7 +315,7 @@ public class projectBuildMain1 {
                         if(projectCardResultSet.getRow()==0){
                             projectWriter.newLine();
                             projectWriter.write("INSERT project_sell_license (license_id, status, project_id, year_number, " +
-                                    "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area,updated_at,updated_at) value ");
+                                    "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area,updated_at,created_at) value ");
                             projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Q.pm("DESTROY")
                                     ,Long.toString(projectId.getId()),"0"
                                     ,"0",Q.pm("无")
@@ -343,11 +348,11 @@ public class projectBuildMain1 {
                         //project_business
                         projectWriter.newLine();
                         projectWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                                "developer_name, work_type,business_id) VALUE ");
+                                "developer_name, work_type,business_id,updated_at) VALUE ");
                         projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Long.toString(projectId.getId())
                                 ,Q.pm(UNIFIED_ID),Long.toString(projectId.getId())
                                 ,Q.pm(developName),Q.pm("REFER")
-                                ,Long.toString(buildId.getId())
+                                ,Long.toString(buildId.getId()),Q.pm(projectResultSet.getString("CREATE_TIME"))
                         )+ ");");
 
 
@@ -356,7 +361,7 @@ public class projectBuildMain1 {
                         projectWriter.newLine();
                         projectWriter.write("INSERT build_business (work_id, build_id,project_id, updated_at, info_id, work_type, business_id) value ");
                         projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Long.toString(buildId.getId())
-                                ,Long.toString(projectId.getId()),Q.pm(Q.nowFormatTime())
+                                ,Long.toString(projectId.getId()),Q.pm(projectResultSet.getString("CREATE_TIME"))
                                 ,Long.toString(buildId.getId()),Q.pm("CREATE")
                                 ,Long.toString(buildId.getId())
                         )+ ");");
@@ -413,17 +418,18 @@ public class projectBuildMain1 {
                                 projectWriter.newLine();
                                 projectWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
                                 projectWriter.write("(" + Q.v(Q.pm(Long.toString(houseId.getId())),Q.pm("OLD")
-                                        ,Q.pm(buildResultSet.getString("MAP_TIME")),Q.pm(buildResultSet.getString("MAP_TIME"))
+                                        ,Q.pm(buildResultSet.getTimestamp("MAP_TIME")),Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
                                         ,Q.pm("导入房屋"),Q.pm("COMPLETED")
-                                        ,Q.pm(buildResultSet.getString("MAP_TIME")),Q.pm(buildResultSet.getString("MAP_TIME"))
+                                        ,Q.pm(buildResultSet.getTimestamp("MAP_TIME")),Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
                                         ,"0",Q.pm("func.building.build.import")
                                         ,"true",Q.pm("data")
                                 )+ ");");
                                 //work_operator projectId 作为task_id
                                 projectWriter.newLine();
-                                projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id) VALUE ");
+                                projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,work_time) VALUE ");
                                 projectWriter.write("(" + Q.v(Q.pm(Long.toString(houseId.getId())),Q.pm("CREATE")
                                         ,"0",Q.pm("root"),Q.pm(Long.toString(houseId.getId()))
+                                        ,Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
                                 )+ ");");
 
                                 //apartment_snapshot
@@ -456,10 +462,11 @@ public class projectBuildMain1 {
                                 )+ ");");
                                 //house
                                 projectWriter.newLine();
-                                projectWriter.write("INSERT house (HOUSE_ID, BUILD_ID, HOUSE_INFO_ID, STATUS, MAPPING_CORP_ID, MAPPING_CORP_NAME, VERSION) value ");
+                                projectWriter.write("INSERT house (HOUSE_ID, BUILD_ID, HOUSE_INFO_ID, STATUS, MAPPING_CORP_ID, MAPPING_CORP_NAME, VERSION,created_at) value ");
                                 projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Long.toString(buildId.getId())
                                         ,Long.toString(houseId.getId()),Q.pm("SALE"),Q.p(FindWorkBook.getMappingCorpId(buildResultSet.getString("MAP_CORP")).getId())
                                         ,Q.p(FindWorkBook.getMappingCorpId(buildResultSet.getString("MAP_CORP")).getValue()),"0"
+                                        ,Q.p(houseResultSet.getTimestamp("CREATE_TIME"))
                                 )+ ");");
 
 
@@ -468,11 +475,11 @@ public class projectBuildMain1 {
                                 //project_business
                                 projectWriter.newLine();
                                 projectWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                                        "developer_name, work_type,business_id) VALUE ");
+                                        "developer_name, work_type,business_id,updated_at) VALUE ");
                                 projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Long.toString(projectId.getId())
                                         ,Q.pm(UNIFIED_ID),Long.toString(projectId.getId())
                                         ,Q.pm(developName),Q.pm("REFER")
-                                        ,Long.toString(houseId.getId())
+                                        ,Long.toString(houseId.getId()),Q.pm(projectResultSet.getTimestamp("CREATE_TIME"))
                                 )+ ");");
 
 
@@ -481,7 +488,7 @@ public class projectBuildMain1 {
                                 projectWriter.newLine();
                                 projectWriter.write("INSERT build_business (work_id, build_id,project_id, updated_at, info_id, work_type, business_id) value ");
                                 projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Long.toString(buildId.getId())
-                                        ,Long.toString(projectId.getId()),Q.pm(Q.nowFormatTime())
+                                        ,Long.toString(projectId.getId()),Q.pm(projectResultSet.getString("CREATE_TIME"))
                                         ,Long.toString(buildId.getId()),Q.pm("REFER")
                                         ,Long.toString(houseId.getId())
                                 )+ ");");
@@ -490,7 +497,7 @@ public class projectBuildMain1 {
                                 projectWriter.newLine();
                                 projectWriter.write("INSERT house_business (work_id, house_id, build_id, updated_at, info_id, business_id, work_type) VALUE ");
                                 projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Long.toString(houseId.getId())
-                                        ,Long.toString(buildId.getId()),Q.pm(Q.nowFormatTime())
+                                        ,Long.toString(buildId.getId()),Q.pm(projectResultSet.getString("CREATE_TIME"))
                                         ,Long.toString(houseId.getId()),Long.toString(houseId.getId())
                                         ,Q.pm("CREATE")
                                 )+ ");");
