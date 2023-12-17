@@ -27,6 +27,28 @@ public class FindWorkBook {
         }
     }
 
+    public static String landUseType2(String id){
+        if(id ==null || id.equals("")){
+            return "DWELLING";
+        }else if(id.equals("DWELLING_KEY")){
+            return "DWELLING";
+        }else if(id.equals("SHOP_HOUSE_KEY")){
+            return "SHOP";
+        }else if(id.equals("CAR_STORE")){
+            return "GARAGE";
+        }else if(id.equals("STORE_HOUSE") || id.equals("INDUSTRY")){
+            return "STORE";
+        }else if(id.equals("OFFICE")){
+            return "OFFICE";
+        }else{
+            return "DWELLING";
+        }
+    }
+
+
+
+
+
 
 
     public static WorkBook changeLandSnapshot(String id){
@@ -117,8 +139,11 @@ public class FindWorkBook {
      */
     public static WorkBook changeLandCardType(String id){
         WorkBook workBook = new WorkBook();
-        workBook.setId(null);
-        workBook.setValue(null);
+        workBook.setId("2");
+        workBook.setValue("国有土地使用证");
+        if(id == null || id.equals("")){
+            return workBook;
+        }
         if(id.equals("landCardType.collective")){
             workBook.setId("3");
             workBook.setValue("集体土地使用证");

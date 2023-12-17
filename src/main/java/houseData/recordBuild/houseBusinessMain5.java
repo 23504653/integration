@@ -168,7 +168,7 @@ public class houseBusinessMain5 {
                     "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS HD ON HP.DEVELOPERID=HD.ID " +
                     "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID " +
-                    "WHERE HB.PROJECT_ID IN ('206') ORDER BY HB.PROJECT_ID,HH.BUILDID,HH.ID"); //'210603103001252','B544N1-4-02','0020-25','0030-0','0182-21',133939
+                    "ORDER BY HB.PROJECT_ID,HH.BUILDID,HH.ID"); //'210603103001252','B544N1-4-02','0020-25','0030-0','0182-21',133939 WHERE HB.PROJECT_ID IN ('206') WHERE HH.ID='21068110141843255051200488' 21.34
             houseResultSet.last();
             int sumCount = houseResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -311,13 +311,13 @@ public class houseBusinessMain5 {
 
                             houseUseType = houseUseTypeMapper.selectByDesignUseType(houseResultSet.getString("DESIGN_USE_TYPE"));
                             if(houseUseType ==null){//房屋类型不是其它
-                                System.out.println("houseBusinessMain5没有找到对应记录检查houseUseType:"+houseResultSet.getString("ID"));
+                                System.out.println("houseBusinessMain5没有找到对应记录检查houseUseType:"+houseResultSet.getString("HID"));
                                 return;
                             }
                             if(houseUseType.getHouseType().equals("Null")){//DesignUseType 用途是其它 需要调 otherHouseType表 进行房屋类型的取值
-                                otherHouseType = otherHouseTypeMapper.selectByHouseId(houseResultSet.getString("ID"));
+                                otherHouseType = otherHouseTypeMapper.selectByHouseId(houseResultSet.getString("HID"));
                                 if (otherHouseType == null){
-                                    System.out.println("houseBusinessMain5没有找到对应记录检查otherHouseTypeMapper:"+houseResultSet.getString("ID"));
+                                    System.out.println("houseBusinessMain5没有找到对应记录检查otherHouseTypeMapper:"+houseResultSet.getString("HID"));
                                     return;
                                 }else {
                                     houseUseType.setHouseType(otherHouseType.getHouseType());
@@ -326,7 +326,7 @@ public class houseBusinessMain5 {
 
                             floorBeginEnd = floorBeginEndMapper.selectByName(houseResultSet.getString("IN_FLOOR_NAME"));
                             if(floorBeginEnd==null){
-                                System.out.println("houseBusinessMain5没有找到对应记录检查floorBeginEndMapper:"+houseResultSet.getString("ID"));
+                                System.out.println("houseBusinessMain5没有找到对应记录检查floorBeginEndMapper:"+houseResultSet.getString("HID"));
                                 return;
                             }
                             String HOUSE_STATUS = null;
@@ -637,6 +637,8 @@ public class houseBusinessMain5 {
                                                 ,Q.pm(houseBusinessResultSet.getTimestamp("CREATE_TIME")),Q.pm(houseContractResultSet.getBigDecimal("unit_price"))
                                         ) + ");");
                                     }
+
+                                    System.out.println("123123-"+houseContractResultSet.getString("TYPE"));
                                     //house_contract
                                     houseBusinessWriter.newLine();
                                     houseBusinessWriter.write("INSERT record_contract.house_contract (contract_id, status, type, created_at, updated_at, version, unified_id, record_at) value ");
@@ -840,6 +842,7 @@ public class houseBusinessMain5 {
                                 )+ ");");
 
 
+                                System.out.println("111110-"+houseBusinessResultSet.getString("SELECT_BUSINESS"));
                                 workbookResultSet=workbookStatement.executeQuery("select BH.AFTER_HOUSE from OWNER_BUSINESS AS O LEFT JOIN BUSINESS_HOUSE AS BH ON O.ID=BH.BUSINESS_ID " +
                                         "WHERE O.ID = '"+houseBusinessResultSet.getString("SELECT_BUSINESS")+"'");
                                 if(workbookResultSet.next()){
