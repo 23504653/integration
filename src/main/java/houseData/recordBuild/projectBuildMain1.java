@@ -116,7 +116,7 @@ public class projectBuildMain1 {
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='206' ORDER BY P.NAME");//N6477 115 1 ,206 WHERE P.ID<>'206'
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID  ORDER BY P.NAME");//N6477 115 1 ,206 WHERE P.ID<>'206'
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -125,10 +125,7 @@ public class projectBuildMain1 {
                 //在码表找到对应的新ID
                 projectId = projectIdMapper.selectByOldProjectId(projectResultSet.getString("ID"));
                 if(projectId == null){
-                    projectWriterError.newLine();
-                    projectWriterError.write("没有找到对应记录检查jproject_Id--:"+projectResultSet.getString("ID"));
-                    projectWriterError.flush();
-                    System.out.println("没有找到对应记录检查jproject_Id--:"+projectResultSet.getString("ID"));
+                       System.out.println("没有找到对应记录检查jproject_Id--:"+projectResultSet.getString("ID"));
                     return;
                 }
                //获取开发新ID=UNIFIED_ID 营业执照号，没有的用开发商新ID替代 没有开发商用未知开发商
@@ -184,7 +181,7 @@ public class projectBuildMain1 {
                 projectWriter.newLine();
                 projectWriter.write("INSERT record_building.project_construct_snapshot (project_design_license, design_license_date, construct_license, " +
                         "construct_info_id, total_area) value ");
-                projectWriter.write("(" + Q.v(Q.pm("未知"),Q.pm("1980-01-01 00:00:00")
+                projectWriter.write("(" + Q.v(Q.pm("未知"),Q.pm("1990-01-01 00:00:00")
                         ,Q.pm("未知")
                         ,Long.toString(projectId.getId()),"0"
                 )+ ");");
@@ -243,9 +240,7 @@ public class projectBuildMain1 {
                     while (buildResultSet.next()){
                         buildId = buildIdMapper.selectByOldBuildId(buildResultSet.getString("ID"));
                         if(buildId==null){
-                            projectWriterError.newLine();
-                            projectWriterError.write("没有找到对应记录检查buildId:"+buildResultSet.getString("ID"));
-                            projectWriterError.flush();
+
                             System.out.println("没有找到对应记录检查buildId:"+buildResultSet.getString("ID"));
                             return;
                         }
@@ -318,7 +313,7 @@ public class projectBuildMain1 {
                                     "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area,updated_at,created_at) value ");
                             projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Q.pm("DESTROY")
                                     ,Long.toString(projectId.getId()),"0"
-                                    ,"0",Q.pm("无")
+                                    ,"0",Q.pm("INSIDE")
                                     ,Q.pm("无"),Q.pm("东港字")
                                     ,"0","0"
                                     ,"0","0"
@@ -415,9 +410,9 @@ public class projectBuildMain1 {
                                 projectWriter.newLine();
                                 projectWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
                                 projectWriter.write("(" + Q.v(Q.pm(Long.toString(houseId.getId())),Q.pm("OLD")
-                                        ,Q.pm(buildResultSet.getTimestamp("MAP_TIME")),Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
+                                        ,Q.pm(houseResultSet.getTimestamp("CREATE_TIME")),Q.pm(houseResultSet.getTimestamp("CREATE_TIME"))
                                         ,Q.pm("导入房屋"),Q.pm("COMPLETED")
-                                        ,Q.pm(buildResultSet.getTimestamp("MAP_TIME")),Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
+                                        ,Q.pm(houseResultSet.getTimestamp("CREATE_TIME")),Q.pm(houseResultSet.getTimestamp("CREATE_TIME"))
                                         ,"0",Q.pm("func.building.build.import")
                                         ,"true",Q.pm("data")
                                 )+ ");");
@@ -426,7 +421,7 @@ public class projectBuildMain1 {
                                 projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,work_time) VALUE ");
                                 projectWriter.write("(" + Q.v(Q.pm(Long.toString(houseId.getId())),Q.pm("CREATE")
                                         ,"0",Q.pm("root"),Q.pm(Long.toString(houseId.getId()))
-                                        ,Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
+                                        ,Q.pm(houseResultSet.getTimestamp("CREATE_TIME"))
                                 )+ ");");
 
                                 //apartment_snapshot

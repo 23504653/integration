@@ -135,7 +135,7 @@ public class projectBuildBusinessMain2 {
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='206' ORDER BY P.NAME");//N6477 115 1
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID  ORDER BY P.NAME");//N6477 115 1 WHERE P.ID<>'206'
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0,onNumber=1;;
             System.out.println("记录总数-"+sumCount);
@@ -173,9 +173,9 @@ public class projectBuildBusinessMain2 {
                         projectBusinessWriter.newLine();
                         projectBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
                         projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordProjectId.getId()),Q.pm("OLD")
-                                ,Q.pm(projectResultSet.getString("CREATE_TIME")),Q.pm(projectResultSet.getString("CREATE_TIME"))
+                                ,Q.pm(projectResultSet.getString("CREATE_TIME")),Q.pm(projectBusinessResultSet.getString("CREATE_TIME"))
                                 ,Q.pm("预销售许可证业务导入"),Q.pm("COMPLETED")
-                                ,Q.pm(projectResultSet.getString("CREATE_TIME")),Q.pm(projectResultSet.getString("CREATE_TIME"))
+                                ,Q.pm(projectBusinessResultSet.getString("CREATE_TIME")),Q.pm(projectBusinessResultSet.getString("CREATE_TIME"))
                                 ,"0",Q.pm("process_project_license")
                                 ,"true",Q.pm("business")
                         )+ ");");
@@ -342,7 +342,7 @@ public class projectBuildBusinessMain2 {
                         //project_license_business
                         projectBusinessWriter.newLine();
                         projectBusinessWriter.write("INSERT project_license_business (work_id, sell_object, version, valid) value ");
-                        projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordProjectId.getId()),Q.pm("国内")
+                        projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordProjectId.getId()),Q.pm("INSIDE")
                                 ,"0","true"
                         )+ ");");
 
@@ -370,9 +370,9 @@ public class projectBuildBusinessMain2 {
                                 projectBusinessWriter.newLine();
                                 projectBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
                                 projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Q.pm("OLD")
-                                        ,Q.pm(buildBusinessResultSet.getTimestamp("MAP_TIME")),Q.pm(buildBusinessResultSet.getTimestamp("MAP_TIME"))
+                                        ,Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME")),Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME"))
                                         ,Q.pm("导入预售许可证楼幢"),Q.pm("COMPLETED")
-                                        ,Q.pm(buildBusinessResultSet.getTimestamp("MAP_TIME")),Q.pm(buildBusinessResultSet.getTimestamp("MAP_TIME"))
+                                        ,Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME")),Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME"))
                                         ,"0",Q.pm("func.building.build.import")
                                         ,"true",Q.pm("business")
                                 )+ ");");
@@ -382,7 +382,7 @@ public class projectBuildBusinessMain2 {
                                 projectBusinessWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,work_time) VALUE ");
                                 projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordBuildId.getId()),Q.pm("CREATE")
                                         ,"0",Q.pm("root"),Long.toString(ownerRecordBuildId.getId())
-                                        ,Q.pm(buildBusinessResultSet.getTimestamp("MAP_TIME"))
+                                        ,Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME"))
                                 )+ ");");
 
                                 //build_construct_snapshot
@@ -514,7 +514,7 @@ public class projectBuildBusinessMain2 {
                                                         "on_number, sell_object, make_department, word_number, build_count, house_count, house_area, house_use_area,updated_at,created_at) value ");
                                                 projectBusinessWriter.write("(" + Q.v(cardNmuber,Q.pm(FindWorkBook.getCardStatus(projectBusinessResultSet.getString("STATUS")))
                                                         ,Long.toString(ownerRecordProjectId.getId()),Integer.toString(year)
-                                                        ,Integer.toString(onNumber),Q.pm(projectBusinessResultSet.getString("SELL_OBJECT"))
+                                                        ,Integer.toString(onNumber),Q.pm("INSIDE")
                                                         ,Q.pm(projectBusinessResultSet.getString("GOV_NAME")),Q.pm("东港字")
                                                         ,projectBusinessResultSet.getString("BUILD_COUNT"),projectBusinessResultSet.getString("HOUSE_COUNT")
                                                         ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA")) ,Q.pm(projectBusinessResultSet.getBigDecimal("AREA"))
@@ -576,9 +576,9 @@ public class projectBuildBusinessMain2 {
                                         projectBusinessWriter.newLine();
                                         projectBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
                                         projectBusinessWriter.write("(" + Q.v(Long.toString(exceptHouseId.getId()),Q.pm("OLD")
-                                                ,Q.pm(projectResultSet.getTimestamp("CREATE_TIME")),Q.pm(projectResultSet.getTimestamp("CREATE_TIME"))
+                                                ,Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME")),Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME"))
                                                 ,Q.pm("预售不可售房屋导入"),Q.pm("COMPLETED")
-                                                ,Q.pm(projectResultSet.getTimestamp("CREATE_TIME")),Q.pm(projectResultSet.getTimestamp("CREATE_TIME"))
+                                                ,Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME")),Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME"))
                                                 ,"0",Q.pm("func.limit.create")
                                                 ,"true",Q.pm("business")
                                         )+ ");");
@@ -586,7 +586,7 @@ public class projectBuildBusinessMain2 {
                                         projectBusinessWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,work_time) VALUE ");
                                         projectBusinessWriter.write("(" + Q.v(Long.toString(exceptHouseId.getId()),Q.pm("CREATE")
                                                 ,"0",Q.pm(EMP_NAME),Long.toString(exceptHouseId.getId())
-                                                ,Q.pm(projectResultSet.getTimestamp("CREATE_TIME"))
+                                                ,Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME"))
                                         )+ ");");
 
                                         //limit_business
@@ -610,7 +610,7 @@ public class projectBuildBusinessMain2 {
                                         projectBusinessWriter.write("(" + Q.v(Long.toString(exceptHouseId.getId()),Long.toString(houseId.getId())
                                                 ,Q.pm("FREEZE"),Q.pm("VALID"),"0"
                                                 ,Q.pm(projectResultSet.getString("CREATE_TIME")),Q.pm("预售不可售")
-                                                ,Q.pm("2123-01-01:08:00:00"),Q.pm(projectResultSet.getString("CREATE_TIME"))
+                                                ,Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME")),Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME"))
                                                 ,Long.toString(exceptHouseId.getId())
                                         )+ ");");
 
