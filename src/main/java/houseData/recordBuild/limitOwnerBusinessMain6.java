@@ -99,7 +99,8 @@ public class limitOwnerBusinessMain6 {
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null;
         houseRecordStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
         try {
-            houseRecordResultSet = houseRecordStatement.executeQuery("select * from HOUSE_OWNER_RECORD.HOUSE_RECORD as HR where HR.HOUSE_STATUS='OWNERED' AND HR.HOUSE_CODE ='0021-0'");
+            houseRecordResultSet = houseRecordStatement.executeQuery("select HR.* FROM HOUSE_OWNER_RECORD.HOUSE_RECORD AS HR LEFT JOIN HOUSE_INFO.HOUSE AS H ON HR.HOUSE_CODE=H.ID " +
+                    "WHERE HR.HOUSE_STATUS='OWNERED' AND H.ID IS NOT NULL; "); //AND HR.HOUSE_CODE ='0021-0'
             houseRecordResultSet.last();
             int sumCount = houseRecordResultSet.getRow(), i = 0;
             System.out.println("记录总数-" + sumCount);
