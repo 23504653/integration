@@ -102,7 +102,8 @@ public class limitBusinessMain3 {
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null;
         try {
 
-            lockedHouseResultSet = lockedHouseStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.LOCKED_HOUSE ORDER BY HOUSE_CODE");
+            lockedHouseResultSet = lockedHouseStatement.executeQuery("SELECT * FROM LOCKED_HOUSE AS L LEFT JOIN HOUSE_INFO.HOUSE AS H " +
+                    "ON L.HOUSE_CODE = H.ID WHERE H.ID IS NOT NULL order by length(HOUSE_CODE)");
             lockedHouseResultSet.last();
             int sumCount = lockedHouseResultSet.getRow(),i=0;
 
