@@ -19,8 +19,8 @@ import java.sql.Statement;
 public class corpMain {
     private static final String BEGIN_DATE = "2023-03-09";
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_INFO?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
-    private static final String CORP_ERROR_FILE="/corpError0.sql";
-    private static final String CORP_FILE="/corpRecord0.sql";
+    private static final String CORP_ERROR_FILE="/corp_Error0.sql";
+    private static final String CORP_FILE="/record_corp.sql";
     private static BufferedWriter cropWriterError;
     private static BufferedWriter cropWriter;
     private static File cropFileError;

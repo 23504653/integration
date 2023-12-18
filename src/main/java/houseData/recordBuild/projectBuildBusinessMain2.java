@@ -251,10 +251,13 @@ public class projectBuildBusinessMain2 {
 
                         //project_construct_snapshot
                         projectBusinessWriter.newLine();
+                        //project_design_license(建设工程规划许可证号) = CREATE_PREPARE_CARD_CODE
+                        //construct_license(建设工程施工许可证号) = CREATE_CARD_CODE
+                        //land_design_license(建设用地规划许可证号) = CREATE_LAND_CARD_CODE
                         projectBusinessWriter.write("INSERT record_building.project_construct_snapshot (build_count, size_type, project_design_license, design_license_date, construct_license, land_design_license, construct_info_id, total_area) value ");
                         projectBusinessWriter.write("(" + Q.v(Q.p(projectBusinessResultSet.getString("BUILD_COUNT")),Q.p(FindWorkBook.projectSizeType(projectBusinessResultSet.getString("BUILD_SIZE")).getId())
                                 ,Q.pm(projectBusinessResultSet.getString("CREATE_PREPARE_CARD_CODE")),Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME"))
-                                ,Q.pm(projectBusinessResultSet.getString("CREATE_CARD_CODE")),Q.pm(projectBusinessResultSet.getString("CREATE_PREPARE_CARD_CODE"))
+                                ,Q.pm(projectBusinessResultSet.getString("CREATE_CARD_CODE")),Q.pm(projectBusinessResultSet.getString("CREATE_LAND_CARD_CODE"))
                                 ,Long.toString(ownerRecordProjectId.getId()),Q.pm(projectBusinessResultSet.getBigDecimal("AREA"))
                         )+ ");");
 
