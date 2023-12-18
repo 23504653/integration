@@ -101,7 +101,7 @@ public class limitBusinessCancelMain4 {
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null;
 
         try {
-            lockedHouseCancelResultSet = lockedHouseCancelStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.LOCKED_HOUSE_CANCEL where HOUSE_CODE='110291' ORDER BY HOUSE_CODE");
+            lockedHouseCancelResultSet = lockedHouseCancelStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.LOCKED_HOUSE_CANCEL ORDER BY HOUSE_CODE");// where HOUSE_CODE='110291'
             lockedHouseCancelResultSet.last();
             int sumCount = lockedHouseCancelResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
