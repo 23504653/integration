@@ -34,7 +34,7 @@ public class createHouseRecordId14 {
             if (j != null) {
                 j = j.intValue() + 1;
             } else {
-                j = 2400000; //共计143505      下一个2,600,000
+                j = 2150000; //最大  2293504    下一个 2300000
             }
 
             System.out.println("记录总数-" + sumCount);
@@ -49,10 +49,10 @@ public class createHouseRecordId14 {
 
                     houseRecordIdMapper.addHouseRecordId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i + "/" + String.valueOf(sumCount));
             }
         } catch (Exception e) {

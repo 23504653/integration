@@ -34,7 +34,7 @@ public class createBusiness4 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j =250000;//共385597条 下一其实  690000
+                j =15000;//最大400596 下一起始 410000
             }
 
             System.out.println("记录总数-"+sumCount);
@@ -48,10 +48,10 @@ public class createBusiness4 {
                     map.put("oid",businessResultSet.getString("ID"));
                     businessIdMapper.addBusinessId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
         }catch (Exception e){

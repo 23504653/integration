@@ -35,7 +35,7 @@ public class createOwnerRecordProjectId7 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 690000;//共 2998 下一起始 695000
+                j = 600000;// 最大 602997 下一604000
             }
 
             System.out.println("记录总数-"+sumCount);
@@ -49,10 +49,10 @@ public class createOwnerRecordProjectId7 {
                     map.put("oid",resultSet.getString("ID"));
                     ownerRecordProjectIdMapper.addProjectId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
         }catch (Exception e){

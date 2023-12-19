@@ -39,7 +39,7 @@ public class createCorpId1  {
             if (j!=null){
                 j = j.intValue()+1;
             }else {//流出俩个给建立一个空开发商
-                j = 100;
+                j = 100; //最大519  下一个 800
             }
 
             System.out.println("记录总数-"+sumCount);
@@ -54,10 +54,10 @@ public class createCorpId1  {
                     map.put("name",cropResultSet.getString("name"));
                     jointCorpDevelopMapper.addJointCorpDevelopMapper(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
         }catch (Exception e){

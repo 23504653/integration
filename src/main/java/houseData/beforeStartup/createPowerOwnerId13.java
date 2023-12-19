@@ -34,7 +34,7 @@ public class createPowerOwnerId13 {
             if (j != null) {
                 j = j.intValue() + 1;
             } else {
-                j = 1780000; //共计 578707     下一个2,400,000
+                j = 1560000; //最大2138706   下一个2150000
             }
 
             System.out.println("记录总数-" + sumCount);
@@ -49,10 +49,10 @@ public class createPowerOwnerId13 {
 
                     powerOwnerIdMapper.addPowerOwnerId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i + "/" + String.valueOf(sumCount));
             }
         } catch (Exception e) {

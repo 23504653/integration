@@ -34,7 +34,7 @@ public class createLockedHouseCancelId11 {
             if (j != null) {
                 j = j.intValue() + 1;
             } else {
-                j = 1450000; //共计8067 1460000
+                j = 1280000; //最大 1285730 下一 1287000
             }
 
             System.out.println("记录总数-" + sumCount);
@@ -48,10 +48,10 @@ public class createLockedHouseCancelId11 {
                     map.put("oid", businessResultSet.getString("ID"));
                     lockedHouseCancelIdMapper.addLockedHouseCancelId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i + "/" + String.valueOf(sumCount));
             }
         } catch (Exception e) {

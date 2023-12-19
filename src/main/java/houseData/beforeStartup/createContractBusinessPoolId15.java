@@ -35,7 +35,7 @@ public class createContractBusinessPoolId15 {
             if (j != null) {
                 j = j.intValue() + 1;
             } else {
-                j = 2600000; //共计56722      下一个2,680,000
+                j = 2300000; //最大 2356721  下一个2380000
             }
 
             System.out.println("记录总数-" + sumCount);
@@ -50,10 +50,10 @@ public class createContractBusinessPoolId15 {
 
                     contractBusinessPoolIdMapper.addId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i + "/" + String.valueOf(sumCount));
             }
         } catch (Exception e) {

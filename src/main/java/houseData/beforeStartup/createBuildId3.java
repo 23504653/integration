@@ -35,7 +35,7 @@ public class createBuildId3 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 3500;//共 8131条 下一起始 11000
+                j = 5000;//最大13158 下一起始 15000
             }
 
             System.out.println("记录总数-"+sumCount);
@@ -50,10 +50,10 @@ public class createBuildId3 {
                     map.put("name",buildResultSet.getString("name"));
                     buildIdMapper.addBuildId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
         }catch (Exception e){

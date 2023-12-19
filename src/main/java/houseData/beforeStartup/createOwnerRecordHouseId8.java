@@ -36,7 +36,7 @@ public class createOwnerRecordHouseId8 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 695000;//共 559609 下一起始 1，300，000
+                j = 608000;//最大 1167608 下一起始 1200000
             }
 
             System.out.println("记录总数-"+sumCount);
@@ -50,10 +50,10 @@ public class createOwnerRecordHouseId8 {
                     map.put("oid",resultSet.getString("ID"));
                     ownerRecordHouseIdMapper.addHouseId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
         }catch (Exception e){

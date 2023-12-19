@@ -36,7 +36,7 @@ public class createHouseId6 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 30000; //共175456 条 下一 250000
+                j = 412000; //最大588680 下一 600000
             }
 
             System.out.println("记录总数-"+sumCount);
@@ -50,10 +50,10 @@ public class createHouseId6 {
                     map.put("oid",resultSet.getString("ID"));
                     houseIdMapper.addHouseId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
         }catch (Exception e){

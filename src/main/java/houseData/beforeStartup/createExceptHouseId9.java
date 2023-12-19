@@ -33,7 +33,7 @@ public class createExceptHouseId9 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 1300000;//共 2998 下一起始 1350000
+                j = 1200000;//最大 1201905 下一起始 1205900
             }
             System.out.println("记录总数-"+sumCount);
             resultSet.beforeFirst();
@@ -46,10 +46,10 @@ public class createExceptHouseId9 {
                     map.put("oid",resultSet.getString("ID"));
                     exceptHouseIdMapper.addExceptHouseId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
         }catch (Exception e){

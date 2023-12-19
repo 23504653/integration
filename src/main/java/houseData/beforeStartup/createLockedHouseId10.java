@@ -33,7 +33,7 @@ public class createLockedHouseId10 {
             if (j != null) {
                 j = j.intValue() + 1;
             } else {
-                j = 1350000; //共计72970 145 0000
+                j = 1205900; //最大 1278869  下一 1280000
             }
 
             System.out.println("记录总数-" + sumCount);
@@ -47,10 +47,10 @@ public class createLockedHouseId10 {
                     map.put("oid", businessResultSet.getString("ID"));
                     lockedHouseIdMapper.addLockedHouseId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i + "/" + String.valueOf(sumCount));
             }
         } catch (Exception e) {

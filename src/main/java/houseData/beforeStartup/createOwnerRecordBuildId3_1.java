@@ -35,7 +35,7 @@ public class createOwnerRecordBuildId3_1 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 17000; //共
+                j = 604000; //最大607038  下一608000
             }
 
             System.out.println("记录总数-"+sumCount);
@@ -50,10 +50,10 @@ public class createOwnerRecordBuildId3_1 {
                     map.put("name",buildResultSet.getString("name"));
                     buildIdMapper.addBuildId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
         }catch (Exception e){

@@ -32,28 +32,29 @@ public class createProjectId2 {
 
             int sumCount = projectResultSet.getRow(),i=0;
             Integer j = projectIdMapper.findMaxId();
+
+
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 300; //共2176 条 下一其实2500
+                j = 800; //最大3518 条 下一其实5000
             }
-
+            System.out.println("j---"+j);
             System.out.println("记录总数-"+sumCount);
             projectResultSet.beforeFirst();
             while(projectResultSet.next()){
                 map.clear();
                 if(projectIdMapper.selectByOldProjectId(projectResultSet.getString("ID")) == null) {
-                    System.out.println("j-"+j);
-
+                    System.out.println("1111-"+projectResultSet.getString("ID"));
                     map.put("id",j.intValue());
                     map.put("oid",projectResultSet.getString("ID"));
                     map.put("name",projectResultSet.getString("name"));
                     projectIdMapper.addProjectId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
         }catch (Exception e){

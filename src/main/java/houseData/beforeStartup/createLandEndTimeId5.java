@@ -36,7 +36,7 @@ public class createLandEndTimeId5 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j =0;
+                j =410000;  // 最大 411839 下一步 412000
             }
 
             System.out.println("记录总数-"+sumCount);
@@ -50,10 +50,10 @@ public class createLandEndTimeId5 {
                     map.put("oid",businessResultSet.getString("ID"));
                     landEndTimeIdMapper.addLandEndTimeId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
         }catch (Exception e){

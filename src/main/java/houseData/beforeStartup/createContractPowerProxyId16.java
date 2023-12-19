@@ -36,7 +36,7 @@ public class createContractPowerProxyId16 {
             if (j != null) {
                 j = j.intValue() + 1;
             } else {
-                j = 2680000; //共计 603     下一个 2682000
+                j = 2380000; //最大 2380602     下一个 2384000
             }
 
             System.out.println("记录总数-" + sumCount);
@@ -51,10 +51,10 @@ public class createContractPowerProxyId16 {
 
                     contractPowerProxyIdMapper.addId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i + "/" + String.valueOf(sumCount));
             }
         } catch (Exception e) {

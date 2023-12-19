@@ -34,7 +34,7 @@ public class createHouseContractId12 {
             if (j != null) {
                 j = j.intValue() + 1;
             } else {
-                j = 1460000; //共计263397 下一个1780000
+                j = 1287000; //最大  1550396  下一个 1560000
             }
 
             System.out.println("记录总数-" + sumCount);
@@ -49,10 +49,10 @@ public class createHouseContractId12 {
                     map.put("contractNumber", businessResultSet.getString("CONTRACT_NUMBER"));
                     houseContractIdMapper.addHouseContractId(map);
                     sqlSession.commit();
-
+                    j++;
                 }
                 i++;
-                j++;
+
                 System.out.println(i + "/" + String.valueOf(sumCount));
             }
         } catch (Exception e) {
