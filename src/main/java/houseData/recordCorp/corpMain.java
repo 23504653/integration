@@ -61,6 +61,17 @@ public class corpMain {
             cropWriter.newLine();
             cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (3,0,'1990-01-01:08:00:00',3,'1990-01-01:08:00:00');");
             cropWriter.flush();
+//            alter table record_building.apartment_snapshot modify floor_name VARCHAR(50) not null;
+//            alter table record_building.apartment_snapshot modify apartment_number VARCHAR(40) not null;
+//            alter table record_building.build modify build_name VARCHAR(85) not null;
+//            alter table record_building.build modify mapping_name VARCHAR(50) null;
+//            alter table record_building.build modify door_number VARCHAR(20) null;
+//            alter table record_building.project modify project_name VARCHAR(68) not null;
+//            alter table record_building.project_base_snapshot modify project_name VARCHAR(68) not null;
+//            alter table record_building.project_construct_snapshot modify project_design_license VARCHAR(60) not null;
+//            alter table record_contract.contract_house_snapshot modify project_name VARCHAR(68) not null;
+//            alter table record_contract.contract_house_snapshot modify build_name VARCHAR(85) not null;
+//            alter table record_contract.contract_house_snapshot modify apartment_number VARCHAR(40) not null;
 
 
 //            cropWriter.newLine();
