@@ -127,11 +127,14 @@ public class corpMain {
                         UNIFIED_ID = Long.toString(jointCorpDevelop.getCorpId());
                     }
 
-                    cropWriter.write("INSERT corp_snapshot(CORP_NAME,TEL,OWNER_NAME,OWNER_ID_TYPE,OWNER_ID_NUMBER,ADDRESS,UNIFIED_ID,SNAPSHOT_ID) VALUE ");
+
+
+                    cropWriter.write("INSERT corp_snapshot(CORP_NAME,TEL,OWNER_NAME,OWNER_ID_TYPE,OWNER_ID_NUMBER,ADDRESS,UNIFIED_ID,SNAPSHOT_ID,post_code) VALUE ");
                     cropWriter.write("(" +Q.v(Q.pm(cropResultSet.getString("NAME")),Q.pm(cropResultSet.getString("PHONE"))
-                            ,Q.pm(cropResultSet.getString("OWNER_NAME")),Q.pm("COMPANY")
-                            ,Q.pm(cropResultSet.getString("COMPANY_CER_CODE")),Q.pm(cropResultSet.getString("ADDRESS"))
+                            ,Q.pm(cropResultSet.getString("OWNER_NAME")),Q.pm("RESIDENT_ID")
+                            ,Q.pm(cropResultSet.getString("OWNER_CARD")),Q.pm(cropResultSet.getString("ADDRESS"))
                             ,Q.pm(UNIFIED_ID),Long.toString(jointCorpDevelop.getCorpId())
+                            ,Q.p(cropResultSet.getString("POST_CODE"))
                     )+ ");");
 
 
@@ -143,37 +146,60 @@ public class corpMain {
                     )+ ");");
 
 
-//                    cropWriter.newLine();
-//                    cropWriter.write("INSERT qualification_snapshot (qualification_id, level, level_number, expire_at, register_gov) VALUE ");
-//                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"1"
-//                            ,Q.pm("企业资质证书好"),Q.pm(cropResultSet.getTimestamp("CREATE_TIME"))
-//                            ,Q.pm("颁发机构")
-//                    )+ ");");
-//
-//                    cropWriter.newLine();
-//                    cropWriter.write("INSERT corp_record_snapshot (INFO_ID, QUALIFICATION_ID, RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE ");
-//                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
-//                            ,Long.toString(jointCorpDevelop.getCorpId()),"0",Long.toString(jointCorpDevelop.getCorpId())
-//                            ,Q.pm("DEVELOPER")
-//                    )+ ");");
-//
-//
-//
-//                    cropWriter.newLine();
-//                    cropWriter.write("INSERT joint_corp (record_id, unified_id, type, enabled, version, updated_at, created_at, info_id, pin) VALUE ");
-//                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Q.pm(UNIFIED_ID)
-//                            ,Q.pm("DEVELOPER"),"true","0",Q.pm(cropResultSet.getTimestamp("CREATE_TIME")),Q.pm(cropResultSet.getTimestamp("CREATE_TIME"))
-//                            ,Long.toString(jointCorpDevelop.getCorpId()),Q.pm(cropResultSet.getString("PYCODE"))
-//                    )+ ");");
-//
-//                    cropWriter.newLine();
-//                    cropWriter.write("INSERT corp_business(business_id, work_id, before_info_id, info_id, type, unified_id, updated_at, work_type) VALUE ");
-//                    cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"0"
-//                            ,Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
-//                            ,Q.pm("DEVELOPER"),Q.pm(UNIFIED_ID)
-//                            ,Q.pm(cropResultSet.getTimestamp("CREATE_TIME")),Q.pm("BUSINESS")
-//
-//                    )+ ");");
+
+
+                    if(cropResultSet.getString("COMPANY_CER_CODE")!=null &&
+                            !cropResultSet.getString("COMPANY_CER_CODE").equals("")){
+//                        System.out.println(cropResultSet.getString("COMPANY_CER_CODE"));
+
+                        cropWriter.newLine();
+                        cropWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
+                        cropWriter.write("(" + Q.v(Long.toString(jointCorpDevelop.getCorpId()),Q.pm("OLD")
+                                ,Q.pm(cropResultSet.getString("CREATE_TIME")),Q.pm(cropResultSet.getString("CREATE_TIME"))
+                                ,Q.pm("导入开发商机构备案"),Q.pm("COMPLETED")
+                                ,Q.pm(cropResultSet.getString("CREATE_TIME")),Q.pm(cropResultSet.getString("CREATE_TIME"))
+                                ,"0",Q.pm("func.corp.record.create")
+                                ,"true",Q.pm("data")
+                        )+ ");");
+
+                        cropWriter.newLine();
+                        cropWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,work_time) VALUE ");
+                        cropWriter.write("(" + Q.v(Long.toString(jointCorpDevelop.getCorpId()),Q.pm("CREATE")
+                                ,"0",Q.pm("root"),Q.pm("root")
+                                ,Q.pm(cropResultSet.getString("CREATE_TIME"))
+                        )+ ");");
+
+                        cropWriter.newLine();
+                        cropWriter.write("INSERT joint_corp (record_id, unified_id, type, enabled, version, updated_at, created_at, info_id, pin) VALUE ");
+                        cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Q.pm(UNIFIED_ID)
+                                ,Q.pm("DEVELOPER"),"true","0",Q.pm(cropResultSet.getTimestamp("CREATE_TIME")),Q.pm(cropResultSet.getTimestamp("CREATE_TIME"))
+                                ,Long.toString(jointCorpDevelop.getCorpId()),Q.pm(cropResultSet.getString("PYCODE"))
+                        )+ ");");
+
+                        cropWriter.newLine();
+                        cropWriter.write("INSERT qualification_snapshot (qualification_id, level, level_number, expire_at, register_gov) VALUE ");
+                        cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"1"
+                                ,Q.pm(cropResultSet.getString("COMPANY_CER_CODE")),Q.pm(cropResultSet.getTimestamp("CREATE_TIME"))
+                                ,Q.pm("未知")
+                        )+ ");");
+
+                        cropWriter.newLine();
+                        cropWriter.write("INSERT corp_record_snapshot (INFO_ID, QUALIFICATION_ID, RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE ");
+                        cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
+                                ,Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
+                                ,Long.toString(jointCorpDevelop.getCorpId()),Q.pm("DEVELOPER")
+                        )+ ");");
+
+                        cropWriter.newLine();
+                        cropWriter.write("INSERT corp_business(business_id, work_id, before_info_id, info_id, type, unified_id, updated_at, work_type) VALUE ");
+                        cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
+                                ,Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
+                                ,Q.pm("DEVELOPER"),Q.pm(UNIFIED_ID)
+                                ,Q.pm(cropResultSet.getTimestamp("CREATE_TIME")),Q.pm("BUSINESS")
+
+                        )+ ");");
+
+                    }
 
                     cropWriter.flush();
                 }else{
