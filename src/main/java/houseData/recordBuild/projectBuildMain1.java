@@ -108,13 +108,14 @@ public class projectBuildMain1 {
         HouseUseType houseUseType= new HouseUseType();
         OtherHouseType otherHouseType = null;
         FloorBeginEnd floorBeginEnd = new FloorBeginEnd();
+        String developer_info_id = null;
 
         String developName=null,UNIFIED_ID=null,districtCode=null;
 
 
 
         try {
-            projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
+            projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,A.COMPANY_CER_CODE,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
                     "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID  WHERE P.ID='115' ORDER BY P.NAME");//N6477 115 1 ,206 WHERE P.ID<>'206'
             projectResultSet.last();
@@ -140,10 +141,16 @@ public class projectBuildMain1 {
                     UNIFIED_ID ="0";
                     developName = "未知";
                 }
+                developer_info_id = null;
+                if(projectResultSet.getString("COMPANY_CER_CODE")!=null &&
+                        !projectResultSet.getString("COMPANY_CER_CODE").equals("")){
+                    developer_info_id = Long.toString(jointCorpDevelop.getCorpId());
+
+                }
 //              work projectId 作为workId
                 projectWriter.newLine();
                 projectWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
-                projectWriter.write("(" + Q.v(Q.pm(Long.toString(projectId.getId())),Q.pm("OLD")
+                projectWriter.write("(" + Q.v(Long.toString(projectId.getId()),Q.pm("OLD")
                         ,Q.pm(projectResultSet.getString("CREATE_TIME")),Q.pm(projectResultSet.getString("CREATE_TIME"))
                         ,Q.pm("导入工程项目"),Q.pm("COMPLETED")
                         ,Q.pm(projectResultSet.getString("CREATE_TIME")),Q.pm(projectResultSet.getString("CREATE_TIME"))
@@ -153,7 +160,7 @@ public class projectBuildMain1 {
                //work_operator projectId 作为task_id
                 projectWriter.newLine();
                 projectWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,work_time) VALUE ");
-                projectWriter.write("(" + Q.v(Q.pm(Long.toString(projectId.getId())),Q.pm("CREATE")
+                projectWriter.write("(" + Q.v(Long.toString(projectId.getId()),Q.pm("CREATE")
                         ,"0",Q.pm("root"),Q.pm(Long.toString(projectId.getId()))
                         ,Q.pm(projectResultSet.getString("CREATE_TIME"))
                 )+ ");");
@@ -222,15 +229,18 @@ public class projectBuildMain1 {
                         ,Q.pm(projectResultSet.getString("CREATE_TIME"))
                 )+ ");");
 
-                //project_business
+                //project_business developer_info_id
+
+
                 projectWriter.newLine();
                 projectWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                        "developer_name, work_type,business_id,updated_at) VALUE ");
+                        "developer_name, work_type,business_id,updated_at,developer_info_id) VALUE ");
                 projectWriter.write("(" + Q.v(Long.toString(projectId.getId()),Long.toString(projectId.getId())
                         ,Q.pm(UNIFIED_ID),Long.toString(projectId.getId())
                         ,Q.pm(developName),Q.pm("CREATE")
                         ,Long.toString(projectId.getId())
                         ,Q.pm(projectResultSet.getTimestamp("CREATE_TIME"))
+                        ,developer_info_id
                 )+ ");");
 
 
@@ -342,11 +352,12 @@ public class projectBuildMain1 {
                         //project_business
                         projectWriter.newLine();
                         projectWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                                "developer_name, work_type,business_id,updated_at) VALUE ");
+                                "developer_name, work_type,business_id,updated_at,developer_info_id) VALUE ");
                         projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Long.toString(projectId.getId())
                                 ,Q.pm(UNIFIED_ID),Long.toString(projectId.getId())
                                 ,Q.pm(developName),Q.pm("REFER")
                                 ,Long.toString(buildId.getId()),Q.pm(projectResultSet.getString("CREATE_TIME"))
+                                ,developer_info_id
                         )+ ");");
 
                         //build_business

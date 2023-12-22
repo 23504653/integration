@@ -99,6 +99,7 @@ public class limitBusinessCancelMain4 {
         HouseId houseId = null;
         ProjectId projectId = null;
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null;
+        String developer_info_id = null;
 
         try {
             lockedHouseCancelResultSet = lockedHouseCancelStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.LOCKED_HOUSE_CANCEL ORDER BY HOUSE_CODE");// where HOUSE_CODE='110291'
@@ -127,7 +128,7 @@ public class limitBusinessCancelMain4 {
                 buildResultSet = buildStatement.executeQuery("SELECT * FROM HOUSE_INFO.BUILD WHERE ID='"+houseResultSet.getString("BuildID")+"'");
                 buildResultSet.next();
 
-                projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
+                projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,A.COMPANY_CER_CODE,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                         "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
                         "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID ='"+buildResultSet.getString("PROJECT_ID")+"'  ORDER BY P.NAME");
 
@@ -148,6 +149,13 @@ public class limitBusinessCancelMain4 {
                 }else{
                     UNIFIED_ID ="0";
                     developName = "未知";
+                }
+
+                developer_info_id = null;
+                if(projectResultSet.getString("COMPANY_CER_CODE")!=null &&
+                        !projectResultSet.getString("COMPANY_CER_CODE").equals("")){
+                    developer_info_id = Long.toString(jointCorpDevelop.getCorpId());
+
                 }
                 //work lockedHouseId 作为workId
                 limitCancelBusinessWriter.newLine();
@@ -191,11 +199,12 @@ public class limitBusinessCancelMain4 {
                 //project_business
                 limitCancelBusinessWriter.newLine();
                 limitCancelBusinessWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                        "developer_name, work_type,business_id,before_info_id) VALUE ");
+                        "developer_name, work_type,business_id,before_info_id,developer_info_id) VALUE ");
                 limitCancelBusinessWriter.write("(" + Q.v(Long.toString(lockedHouseCancelId.getId()),Long.toString(projectId.getId())
                         ,Q.pm(UNIFIED_ID),Long.toString(projectId.getId())
                         ,Q.pm(developName),Q.pm("REFER")
                         ,Long.toString(lockedHouseCancelId.getId()),Long.toString(projectId.getId())
+                        ,developer_info_id
                 )+ ");");
 
                 //build_business

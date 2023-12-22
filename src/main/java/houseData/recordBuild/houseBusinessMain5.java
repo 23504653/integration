@@ -161,8 +161,9 @@ public class houseBusinessMain5 {
         ContractBusinessPoolId contractBusinessPoolId = null;
         ContractPowerProxyId contractPowerProxyId = null;
         boolean house_registered = false,build_completed=false;
+        String developer_info_id = null;
         try{
-            houseResultSet = houseStatement.executeQuery("SELECT HH.ID AS HID,HH.BUILDID,HB.PROJECT_ID,HB.MAP_CORP,HP.DEVELOPERID,HD.NAME,HC.LICENSE_NUMBER," +
+            houseResultSet = houseStatement.executeQuery("SELECT HH.ID AS HID,HH.BUILDID,HB.PROJECT_ID,HB.MAP_CORP,HP.DEVELOPERID,HD.NAME,HC.LICENSE_NUMBER,HC.COMPANY_CER_CODE" +
                     "HP.NAME AS DNAME,HS.DISTRICT,HH.DESIGN_USE_TYPE,HH.IN_FLOOR_NAME FROM " +
                     "HOUSE_INFO.HOUSE AS HH LEFT JOIN HOUSE_INFO.BUILD AS HB ON HH.BUILDID=HB.ID " +
                     "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " +
@@ -192,6 +193,11 @@ public class houseBusinessMain5 {
                 }else{
                     UNIFIED_ID ="0";
                     developName = "未知";
+                }
+                developer_info_id = null;
+                if(houseResultSet.getString("COMPANY_CER_CODE")!=null &&
+                        !houseResultSet.getString("COMPANY_CER_CODE").equals("")){
+                    developer_info_id = Long.toString(jointCorpDevelop.getCorpId());
                 }
                 buildId = buildIdMapper.selectByOldBuildId(houseResultSet.getString("BUILDID"));
                 if(buildId==null){
@@ -435,12 +441,13 @@ public class houseBusinessMain5 {
                                 //project_business
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                                        "developer_name, work_type,business_id,before_info_id,updated_at) VALUE ");
+                                        "developer_name, work_type,business_id,before_info_id,updated_at,developer_info_id) VALUE ");
                                 houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Long.toString(projectId.getId())
                                         ,Q.pm(UNIFIED_ID),Long.toString(ownerRecordProjectId.getId())
                                         ,Q.pm(developName),Q.pm("REFER")
                                         ,Long.toString(ownerRecordHouseId.getId()),before_info_id
                                         ,Q.pm(houseBusinessResultSet.getTimestamp("CREATE_TIME"))
+                                        ,developer_info_id
                                 )+ ");");
 
                                 //build_business
@@ -824,12 +831,13 @@ public class houseBusinessMain5 {
                                 //project_business
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                                        "developer_name, work_type,business_id,before_info_id,updated_at) VALUE ");
+                                        "developer_name, work_type,business_id,before_info_id,updated_at,developer_info_id) VALUE ");
                                 houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Long.toString(projectId.getId())
                                         ,Q.pm(UNIFIED_ID),Long.toString(ownerRecordProjectId.getId())
                                         ,Q.pm(developName),Q.pm("REFER")
                                         ,Long.toString(ownerRecordHouseId.getId()),before_info_id
                                         ,Q.pm(houseBusinessResultSet.getTimestamp("CREATE_TIME"))
+                                        ,developer_info_id
                                 )+ ");");
 
                                 //build_business
@@ -939,12 +947,13 @@ public class houseBusinessMain5 {
                                 //project_business
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                                        "developer_name, work_type,business_id,before_info_id,updated_at) VALUE ");
+                                        "developer_name, work_type,business_id,before_info_id,updated_at,developer_info_id) VALUE ");
                                 houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Long.toString(projectId.getId())
                                         ,Q.pm(UNIFIED_ID),Long.toString(ownerRecordProjectId.getId())
                                         ,Q.pm(developName),Q.pm("REFER")
                                         ,Long.toString(ownerRecordHouseId.getId()),before_info_id
                                         ,Q.pm(houseBusinessResultSet.getTimestamp("CREATE_TIME"))
+                                        ,developer_info_id
                                 )+ ");");
 
                                 //build_business

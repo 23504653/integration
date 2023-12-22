@@ -133,10 +133,10 @@ public class projectBuildBusinessMain2 {
         String developName=null,UNIFIED_ID=null,districtCode=null,before_info_id=null;
         Calendar calendar = Calendar.getInstance();
         String before_info_id_build = null,oldProjectId=null,APPLY_EMP=null,EMP_NAME=null;
-        Set<String> projectCardNumber = new HashSet<>();
+        String developer_info_id = null;
         int cardNmuber = 0;
         try {
-            projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
+            projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,A.COMPANY_CER_CODE,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
                     "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='115'  ORDER BY P.NAME");//N6477 115 1 WHERE P.ID<>'206'
             projectResultSet.last();
@@ -149,6 +149,24 @@ public class projectBuildBusinessMain2 {
                 if(projectId == null){
                     System.out.println("没有找到对应记录检查jproject_Id--:"+projectResultSet.getString("ID"));
                     return;
+                }
+                //获取开发新ID=UNIFIED_ID 营业执照号，没有的用开发商新ID替代 没有开发商用未知开发商
+                if(projectResultSet.getString("DEVELOPERID")!=null && !projectResultSet.getString("DEVELOPERID").isBlank()){
+                    jointCorpDevelop = jointCorpDevelopMapper.selectByDevelopId(projectResultSet.getString("DEVELOPERID"));
+                    UNIFIED_ID = projectResultSet.getString("LICENSE_NUMBER");
+                    developName = projectResultSet.getString("DNAME");
+                    if (UNIFIED_ID==null || UNIFIED_ID.isBlank()){
+                        UNIFIED_ID = Long.toString(jointCorpDevelop.getCorpId());
+                    }
+                }else{
+                    UNIFIED_ID ="0";
+                    developName = "未知";
+                }
+                developer_info_id = null;
+                if(projectResultSet.getString("COMPANY_CER_CODE")!=null &&
+                        !projectResultSet.getString("COMPANY_CER_CODE").equals("")){
+                    developer_info_id = Long.toString(jointCorpDevelop.getCorpId());
+
                 }
                 projectBusinessResultSet = projectBusinessStatement.executeQuery("SELECT P.ID AS PID,P.*,PI.*,O.*,O.ID AS OID FROM HOUSE_OWNER_RECORD.PROJECT AS P "
                         +"LEFT JOIN HOUSE_OWNER_RECORD.PROJECT_SELL_INFO AS PI ON P.ID = PI.ID LEFT JOIN HOUSE_OWNER_RECORD.OWNER_BUSINESS AS O ON P.BUSINESS = O.ID "
@@ -291,18 +309,7 @@ public class projectBuildBusinessMain2 {
                         projectBusinessWriter.write("UPDATE project SET updated_at = '" + projectBusinessResultSet.getString("CREATE_TIME")+"',status='PUBLIC" +"',project_info_id='"+ownerRecordProjectId.getId()+"' WHERE project_id='" + projectId.getId() + "';");
 
 
-                        //获取开发新ID=UNIFIED_ID 营业执照号，没有的用开发商新ID替代 没有开发商用未知开发商
-                        if(projectResultSet.getString("DEVELOPERID")!=null && !projectResultSet.getString("DEVELOPERID").isBlank()){
-                            jointCorpDevelop = jointCorpDevelopMapper.selectByDevelopId(projectResultSet.getString("DEVELOPERID"));
-                            UNIFIED_ID = projectResultSet.getString("LICENSE_NUMBER");
-                            developName = projectResultSet.getString("DNAME");
-                            if (UNIFIED_ID==null || UNIFIED_ID.isBlank()){
-                                UNIFIED_ID = Long.toString(jointCorpDevelop.getCorpId());
-                            }
-                        }else{
-                            UNIFIED_ID ="0";
-                            developName = "未知";
-                        }
+
                         //project_business
 
 
@@ -332,12 +339,13 @@ public class projectBuildBusinessMain2 {
 
                         projectBusinessWriter.newLine();
                         projectBusinessWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                                "developer_name, work_type,business_id,before_info_id,updated_at) VALUE ");
+                                "developer_name, work_type,business_id,before_info_id,updated_at,developer_info_id) VALUE ");
                         projectBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordProjectId.getId()),Long.toString(projectId.getId())
                                 ,Q.pm(UNIFIED_ID),Long.toString(ownerRecordProjectId.getId())
                                 ,Q.pm(developName),Q.pm("REFER")
                                 ,Long.toString(ownerRecordProjectId.getId()),before_info_id
                                 ,Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME"))
+                                ,developer_info_id
                         )+ ");");
                         boolean valid = false;
                         if(projectBusinessResultSet.getString("STATUS")!=null &&
