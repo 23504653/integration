@@ -147,6 +147,14 @@ public class projectBuildMain1 {
                     developer_info_id = Long.toString(jointCorpDevelop.getCorpId());
 
                 }
+                workbookResultSet = workbookStatement.executeQuery("select MC.NAME,MC.CODE FROM HOUSE_OWNER_RECORD.PROJECT AS HP LEFT JOIN HOUSE_OWNER_RECORD.MAPPING_CORP AS MC ON HP.BUSINESS=MC.BUSINESS_ID WHERE HP.PROJECT_CODE='"+projectResultSet.getString("ID")+"'");
+                String mapping_name="未知";
+                int mapping_corp_id=3;
+                if(workbookResultSet.next()){
+                    mapping_name = workbookResultSet.getString("NAME");
+                    mapping_corp_id = workbookResultSet.getInt("CODE");
+                }
+
 //              work projectId 作为workId
                 projectWriter.newLine();
                 projectWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
@@ -316,8 +324,11 @@ public class projectBuildMain1 {
                         //project_sell_license project_license_builds license_id = buildId.getId() = work_id
                         System.out.println("楼id--"+buildResultSet.getString("ID"));
                         projectCardResultSet = projectCardStatement.executeQuery("SELECT HB.BUILD_CODE FROM HOUSE_OWNER_RECORD.PROJECT_CARD AS PC LEFT JOIN HOUSE_OWNER_RECORD.MAKE_CARD AS MA ON PC.ID = MA.ID " +
-                                "LEFT  JOIN  HOUSE_OWNER_RECORD.PROJECT AS P ON PC.PROJECT= P.ID LEFT JOIN HOUSE_OWNER_RECORD.BUILD AS HB ON P.ID = HB.PROJECT " +
-                                "WHERE MA.TYPE='PROJECT_RSHIP' and HB.BUILD_CODE='"+buildResultSet.getString("ID") +"'");
+                                "LEFT JOIN  HOUSE_OWNER_RECORD.PROJECT AS P ON PC.PROJECT= P.ID " +
+                                "LEFT JOIN HOUSE_OWNER_RECORD.BUILD AS HB ON P.ID = HB.PROJECT " +
+                                "LEFT JOIN HOUSE_OWNER_RECORD.OWNER_BUSINESS AS O ON P.BUSINESS = O.ID " +
+                                "WHERE MA.TYPE='PROJECT_RSHIP' AND O.DEFINE_ID IN ('WP50') AND O.STATUS IN ('COMPLETE','COMPLETE_CANCEL','MODIFYING') " +
+                                "and HB.BUILD_CODE='"+buildResultSet.getString("ID") +"'");
                         projectCardResultSet.last();
                         if(projectCardResultSet.getRow()==0){
                             projectWriter.newLine();
@@ -442,8 +453,8 @@ public class projectBuildMain1 {
                                 projectWriter.newLine();
                                 projectWriter.write("INSERT house (HOUSE_ID, BUILD_ID, HOUSE_INFO_ID, STATUS, MAPPING_CORP_ID, MAPPING_CORP_NAME, VERSION,created_at) value ");
                                 projectWriter.write("(" + Q.v(Long.toString(houseId.getId()),Long.toString(buildId.getId())
-                                        ,Long.toString(houseId.getId()),Q.pm("SALE"),Q.p(FindWorkBook.getMappingCorpId(buildResultSet.getString("MAP_CORP")).getId())
-                                        ,Q.p(FindWorkBook.getMappingCorpId(buildResultSet.getString("MAP_CORP")).getValue()),"0"
+                                        ,Long.toString(houseId.getId()),Q.pm("SALE"),Integer.toString(mapping_corp_id)
+                                        ,Q.p(mapping_name),"0"
                                         ,Q.p(houseResultSet.getTimestamp("CREATE_TIME"))
                                 )+ ");");
 

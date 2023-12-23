@@ -133,6 +133,19 @@ public class FindWorkBook {
         }
     }
 
+    public static boolean isNumeric(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+
+        for (char c : str.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * @param id
      * @return 土地权证类型转换

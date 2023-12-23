@@ -183,11 +183,15 @@ public class projectBuildBusinessMain2 {
                             System.out.println("没有找到对应记录检查ownerRecordProjectId--:"+projectBusinessResultSet.getString("PID"));
                             return;
                         }
-                        businessId = businessIdMapper.selectByOldBusinessId(projectBusinessResultSet.getString("OID"));
-                        if(businessId==null){
-                            System.out.println("没有找到对应记录检查businessId--:"+projectBusinessResultSet.getString("OID"));
-                            return;
+                        workbookResultSet = workbookStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.MAPPING_CORP WHERE BUSINESS_ID='"+projectBusinessResultSet.getString("OID")+"'");
+                        String mapping_name="未知";
+                        int mapping_corp_id=3;
+                        if(workbookResultSet.next()){
+                            mapping_name = workbookResultSet.getString("NAME");
+                            mapping_corp_id = workbookResultSet.getInt("CODE");
                         }
+//                        System.out.println(mapping_name);
+
                         //work projectId 作为workId
                         projectBusinessWriter.newLine();
                         projectBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
@@ -462,7 +466,8 @@ public class projectBuildBusinessMain2 {
                                 //BUILD
                                 projectBusinessWriter.newLine();
                                 //PROJECT updated_at project_info_id
-                                projectBusinessWriter.write("update build set updated_at = '" + projectBusinessResultSet.getString("CREATE_TIME")+"',status='"+buildStatus+"',build_info_id='"+ownerRecordBuildId.getId()+"' WHERE build_id='" + buildId.getId() + "';");
+                                projectBusinessWriter.write("update build set updated_at = '" + projectBusinessResultSet.getString("CREATE_TIME")
+                                        +"',mapping_name='"+mapping_name +"',status='"+buildStatus+"',build_info_id='"+ownerRecordBuildId.getId()+"' WHERE build_id='" + buildId.getId() + "';");
 
                                 //project_builds_snapshot
                                 projectBusinessWriter.newLine();
