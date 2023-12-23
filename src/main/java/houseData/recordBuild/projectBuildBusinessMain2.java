@@ -28,11 +28,8 @@ public class projectBuildBusinessMain2 {
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_OWNER_RECORD?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
     private final static String PASSWORD ="dgsoft";
-    private static final String PROJECT_ERROR_FILE="/projectBusinessError2.sql";
     private static final String PROJECT_FILE="/projectBusinessRecord2.sql";
-    private static File projectBusinessFileError;
     private static File projectBusinessFile;
-    private static BufferedWriter projectBusinessWriterError;
     private static BufferedWriter projectBusinessWriter;
     private static Statement projectBusinessStatement;
     private static ResultSet projectBusinessResultSet;
@@ -57,10 +54,6 @@ public class projectBuildBusinessMain2 {
 
     public static void main(String agr[]) throws SQLException {
 
-        projectBusinessFileError = new File(PROJECT_ERROR_FILE);
-        if(projectBusinessFileError.exists()){
-            projectBusinessFileError.delete();
-        }
         projectBusinessFile = new File(PROJECT_FILE);
         if(projectBusinessFile.exists()){
             projectBusinessFile.delete();
@@ -83,18 +76,7 @@ public class projectBuildBusinessMain2 {
             return;
         }
 
-        try{
-            projectBusinessFileError.createNewFile();
-            FileWriter fw = new FileWriter(projectBusinessFileError.getAbsoluteFile());
-            projectBusinessWriterError = new BufferedWriter(fw);
-            projectBusinessWriterError.write("project--错误记录:");
-            projectBusinessWriterError.newLine();
-            projectBusinessWriterError.flush();
-        }catch (IOException e){
-            System.out.println("projectWriterError 文件创建失败");
-            e.printStackTrace();
-            return;
-        }
+
 
         projectStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
         projectBusinessStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
@@ -138,7 +120,7 @@ public class projectBuildBusinessMain2 {
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,A.COMPANY_CER_CODE,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='115'  ORDER BY P.NAME");//N6477 115 1 WHERE P.ID<>'206'
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID  ORDER BY P.NAME");//N6477 115 1 WHERE P.ID<>'206' WHERE P.ID='115'
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0,onNumber=1;;
             System.out.println("记录总数-"+sumCount);
@@ -228,6 +210,7 @@ public class projectBuildBusinessMain2 {
                         }
 
 
+
                         //land_snapshot land_info_id 取HOUSE_OWNER_RECORD.PROJECT.ID
                         projectBusinessWriter.newLine();
                         projectBusinessWriter.write("INSERT record_building.land_snapshot (CAPARCEL_NUMBER, LAND_NUMBER, PROPERTY,BEGIN_DATE, TAKE_TYPE_KEY, TAKE_TYPE, AREA, ADDRESS, LICENSE_NUMBER, LICENSE_TYPE, LICENSE_TYPE_KEY, LAND_INFO_ID) VALUE ");
@@ -240,34 +223,65 @@ public class projectBuildBusinessMain2 {
                                 ,Long.toString(ownerRecordProjectId.getId())
                         )+ ");");
 
-                        //land_use_type_snapshot project 只有一种土地用途的，ID 跟业务走，
-                        projectBusinessWriter.newLine();
-                        projectBusinessWriter.write("INSERT record_building.land_use_type_snapshot (end_date, use_type, land_info_id, id) value ");
-                        projectBusinessWriter.write("(" + Q.v(Q.pm(projectBusinessResultSet.getTimestamp("END_USE_TIME")),Q.pm(FindWorkBook.landUseType2(projectBusinessResultSet.getString("USE_TYPE")))
-                                ,Long.toString(ownerRecordProjectId.getId())
-                                ,Long.toString(ownerRecordProjectId.getId())
-                        )+ ");");
+                        workbookResultSet = workbookStatement.executeQuery("SELECT * FROM LAND_END_TIME WHERE USE_TYPE='DWELLING_KEY' AND PROJECT_ID='"+projectBusinessResultSet.getString("PID")+"'");
+                        if (workbookResultSet.next()){
+                            //LAND_END_TIME 同一项目么有土地用途有住宅的，土地用途多余一种的，INTEGRATION.landEndTimeId 码表取得 ，直接从LAND_END_TIME读取，
+                            landEndTimeResultSet = landEndTimeStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.LAND_END_TIME WHERE PROJECT_ID='"+projectBusinessResultSet.getString("PID")+"'");
+                            if(landEndTimeResultSet.next()){
+                                landEndTimeResultSet.beforeFirst();
+                                while (landEndTimeResultSet.next()){
+                                    landEndTimeId = landEndTimeIdMapper.selectByOldId(landEndTimeResultSet.getString("ID"));
+                                    if (landEndTimeId==null){
+                                        System.out.println("没有找到对应记录检查jlandEndTimeId:"+landEndTimeResultSet.getString("ID"));
+                                        return;
+                                    }
+                                    projectBusinessWriter.newLine();
+                                    projectBusinessWriter.write("INSERT record_building.land_use_type_snapshot (end_date, use_type, land_info_id, id) value ");
+                                    projectBusinessWriter.write("(" + Q.v(Q.pm(landEndTimeResultSet.getTimestamp("END_TIME")),Q.pm(FindWorkBook.landUseType2(landEndTimeResultSet.getString("USE_TYPE")))
+                                            ,Long.toString(ownerRecordProjectId.getId())
+                                            ,Long.toString(landEndTimeId.getId())
+                                    )+ ");");
 
-
-                        //LAND_END_TIME 土地用途多余一种的，INTEGRATION.landEndTimeId 码表取得
-                        landEndTimeResultSet = landEndTimeStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.LAND_END_TIME WHERE PROJECT_ID='"+projectBusinessResultSet.getString("PID")+"'");
-                        if(landEndTimeResultSet.next()){
-                            landEndTimeResultSet.beforeFirst();
-                            while (landEndTimeResultSet.next()){
-                                landEndTimeId = landEndTimeIdMapper.selectByOldId(landEndTimeResultSet.getString("ID"));
-                                if (landEndTimeId==null){
-                                    System.out.println("没有找到对应记录检查jlandEndTimeId:"+landEndTimeResultSet.getString("ID"));
-                                    return;
                                 }
-                                projectBusinessWriter.newLine();
-                                projectBusinessWriter.write("INSERT record_building.land_use_type_snapshot (end_date, use_type, land_info_id, id) value ");
-                                projectBusinessWriter.write("(" + Q.v(Q.pm(landEndTimeResultSet.getTimestamp("END_TIME")),Q.pm(FindWorkBook.landUseType2(landEndTimeResultSet.getString("USE_TYPE")))
-                                       ,Long.toString(ownerRecordProjectId.getId())
-                                       ,Long.toString(landEndTimeId.getId())
-                                )+ ");");
-
                             }
+                        }else{
+                            //land_use_type_snapshot project 只有一种土地用途的，ID 跟业务走，LAND_END_TIME 表里同一项目么有土地用途等于住宅的
+                            projectBusinessWriter.newLine();
+                            projectBusinessWriter.write("INSERT record_building.land_use_type_snapshot (end_date, use_type, land_info_id, id) value ");
+                            projectBusinessWriter.write("(" + Q.v(Q.pm(projectBusinessResultSet.getTimestamp("END_USE_TIME")),Q.pm(FindWorkBook.landUseType2(projectBusinessResultSet.getString("USE_TYPE")))
+                                    ,Long.toString(ownerRecordProjectId.getId())
+                                    ,Long.toString(ownerRecordProjectId.getId())
+                            )+ ");");
+
+
+                            //LAND_END_TIME 表里同一项目么有土地用途等于住宅的， 土地用途多余一种的，INTEGRATION.landEndTimeId 码表取得
+                            landEndTimeResultSet = landEndTimeStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.LAND_END_TIME WHERE USE_TYPE<>'DWELLING_KEY'  AND  PROJECT_ID='"+projectBusinessResultSet.getString("PID")+"'");
+                            if(landEndTimeResultSet.next()){
+                                landEndTimeResultSet.beforeFirst();
+                                while (landEndTimeResultSet.next()){
+                                    landEndTimeId = landEndTimeIdMapper.selectByOldId(landEndTimeResultSet.getString("ID"));
+                                    if (landEndTimeId==null){
+                                        System.out.println("没有找到对应记录检查jlandEndTimeId:"+landEndTimeResultSet.getString("ID"));
+                                        return;
+                                    }
+                                    projectBusinessWriter.newLine();
+                                    projectBusinessWriter.write("INSERT record_building.land_use_type_snapshot (end_date, use_type, land_info_id, id) value ");
+                                    projectBusinessWriter.write("(" + Q.v(Q.pm(landEndTimeResultSet.getTimestamp("END_TIME")),Q.pm(FindWorkBook.landUseType2(landEndTimeResultSet.getString("USE_TYPE")))
+                                            ,Long.toString(ownerRecordProjectId.getId())
+                                            ,Long.toString(landEndTimeId.getId())
+                                    )+ ");");
+
+                                }
+                            }
+
+
+
+
                         }
+
+
+
+
 
                         //project_construct_snapshot
                         projectBusinessWriter.newLine();
