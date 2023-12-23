@@ -19,9 +19,7 @@ import java.sql.Statement;
 public class corpMain {
     private static final String BEGIN_DATE = "2023-03-09";
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_INFO?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
-    private static final String CORP_ERROR_FILE="/corp_Error0.sql";
     private static final String CORP_FILE="/record_corp.sql";
-    private static BufferedWriter cropWriterError;
     private static BufferedWriter cropWriter;
     private static File cropFileError;
     private static File cropFile;
@@ -29,10 +27,7 @@ public class corpMain {
     private static ResultSet cropResultSet;
 
     public static void main(String agr[]) throws SQLException {
-        cropFileError = new File(CORP_ERROR_FILE);
-        if(cropFileError.exists()){
-            cropFileError.delete();
-        }
+
         cropFile = new File(CORP_FILE);
         if(cropFile.exists()){
             cropFile.delete();
@@ -93,18 +88,7 @@ public class corpMain {
         }
 
 
-        try{
-            cropFileError.createNewFile();
-            FileWriter fw = new FileWriter(cropFileError.getAbsoluteFile());
-            cropWriterError = new BufferedWriter(fw);
-            cropWriterError.write("corp--错误记录:");
-            cropWriterError.newLine();
-            cropWriterError.flush();
-        }catch (IOException e){
-            System.out.println("cropWriterError 文件创建失败");
-            e.printStackTrace();
-            return;
-        }
+
         cropStatement = MyConnection.getStatement(DB_URL,"root","dgsoft");
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         JointCorpDevelopMapper jointCorpDevelopMapper =  sqlSession.getMapper(JointCorpDevelopMapper.class);
@@ -129,12 +113,13 @@ public class corpMain {
 
 
 
-                    cropWriter.write("INSERT corp_snapshot(CORP_NAME,TEL,OWNER_NAME,OWNER_ID_TYPE,OWNER_ID_NUMBER,ADDRESS,UNIFIED_ID,SNAPSHOT_ID,post_code) VALUE ");
+                    cropWriter.write("INSERT corp_snapshot(CORP_NAME,TEL,OWNER_NAME,OWNER_ID_TYPE,OWNER_ID_NUMBER,ADDRESS,UNIFIED_ID,SNAPSHOT_ID,post_code,owner_tel,corp_id_type) VALUE ");
                     cropWriter.write("(" +Q.v(Q.pm(cropResultSet.getString("NAME")),Q.pm(cropResultSet.getString("PHONE"))
                             ,Q.pm(cropResultSet.getString("OWNER_NAME")),Q.pm("RESIDENT_ID")
                             ,Q.pm(cropResultSet.getString("OWNER_CARD")),Q.pm(cropResultSet.getString("ADDRESS"))
                             ,Q.pm(UNIFIED_ID),Long.toString(jointCorpDevelop.getCorpId())
-                            ,Q.p(cropResultSet.getString("POST_CODE"))
+                            ,Q.p(cropResultSet.getString("POST_CODE")),Q.p(cropResultSet.getString("owner_tel"))
+                            ,Q.p("COMPANY")
                     )+ ");");
 
 
@@ -165,15 +150,8 @@ public class corpMain {
                         cropWriter.newLine();
                         cropWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,work_time) VALUE ");
                         cropWriter.write("(" + Q.v(Long.toString(jointCorpDevelop.getCorpId()),Q.pm("CREATE")
-                                ,"0",Q.pm("root"),Q.pm("root")
+                                ,"0",Q.pm("root"),Long.toString(jointCorpDevelop.getCorpId())
                                 ,Q.pm(cropResultSet.getString("CREATE_TIME"))
-                        )+ ");");
-
-                        cropWriter.newLine();
-                        cropWriter.write("INSERT joint_corp (record_id, unified_id, type, enabled, version, updated_at, created_at, info_id, pin) VALUE ");
-                        cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Q.pm(UNIFIED_ID)
-                                ,Q.pm("DEVELOPER"),"true","0",Q.pm(cropResultSet.getTimestamp("CREATE_TIME")),Q.pm(cropResultSet.getTimestamp("CREATE_TIME"))
-                                ,Long.toString(jointCorpDevelop.getCorpId()),Q.pm(cropResultSet.getString("PYCODE"))
                         )+ ");");
 
                         cropWriter.newLine();
@@ -183,12 +161,23 @@ public class corpMain {
                                 ,Q.pm("未知")
                         )+ ");");
 
+
                         cropWriter.newLine();
                         cropWriter.write("INSERT corp_record_snapshot (INFO_ID, QUALIFICATION_ID, RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE ");
                         cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
                                 ,Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
                                 ,Long.toString(jointCorpDevelop.getCorpId()),Q.pm("DEVELOPER")
                         )+ ");");
+
+
+                        cropWriter.newLine();
+                        cropWriter.write("INSERT joint_corp (record_id, unified_id, type, enabled, version, updated_at, created_at, info_id, pin) VALUE ");
+                        cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),Q.pm(UNIFIED_ID)
+                                ,Q.pm("DEVELOPER"),"true","0",Q.pm(cropResultSet.getTimestamp("CREATE_TIME")),Q.pm(cropResultSet.getTimestamp("CREATE_TIME"))
+                                ,Long.toString(jointCorpDevelop.getCorpId()),Q.pm(cropResultSet.getString("PYCODE"))
+                        )+ ");");
+
+
 
                         cropWriter.newLine();
                         cropWriter.write("INSERT corp_business(business_id, work_id, before_info_id, info_id, type, unified_id, updated_at, work_type) VALUE ");
@@ -203,9 +192,7 @@ public class corpMain {
 
                     cropWriter.flush();
                 }else{
-                    cropWriterError.newLine();
-                    cropWriterError.write("没有找到对应记录检查jointCorpDevelop--:"+cropResultSet.getString("DID"));
-                    cropWriterError.flush();
+
                     System.out.println("jointCorpDevelop表么有对应的ID");
                 }
 

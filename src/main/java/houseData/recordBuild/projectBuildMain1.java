@@ -19,11 +19,8 @@ public class projectBuildMain1 {
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_INFO?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
     private final static String PASSWORD ="dgsoft";
-    private static final String PROJECT_ERROR_FILE="/projectError1.sql";
     private static final String PROJECT_FILE="/projectRecord1.sql";
-    private static BufferedWriter projectWriterError;
     private static BufferedWriter projectWriter;
-    private static File projectFileError;
     private static File projectFile;
     private static Statement projectStatement;
     private static ResultSet projectResultSet;
@@ -48,10 +45,7 @@ public class projectBuildMain1 {
 
     public static void main(String agr[]) throws SQLException {
 
-        projectFileError = new File(PROJECT_ERROR_FILE);
-        if(projectFileError.exists()){
-            projectFileError.delete();
-        }
+
         projectFile = new File(PROJECT_FILE);
         if(projectFile.exists()){
             projectFile.delete();
@@ -74,18 +68,7 @@ public class projectBuildMain1 {
         }
 
 
-        try{
-            projectFileError.createNewFile();
-            FileWriter fw = new FileWriter(projectFileError.getAbsoluteFile());
-            projectWriterError = new BufferedWriter(fw);
-            projectWriterError.write("project--错误记录:");
-            projectWriterError.newLine();
-            projectWriterError.flush();
-        }catch (IOException e){
-            System.out.println("projectWriterError 文件创建失败");
-            e.printStackTrace();
-            return;
-        }
+
         projectStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
         buildStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
         workbookStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
@@ -117,7 +100,7 @@ public class projectBuildMain1 {
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,A.COMPANY_CER_CODE,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID  WHERE P.ID='115' ORDER BY P.NAME");//N6477 115 1 ,206 WHERE P.ID<>'206'
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID ORDER BY P.NAME");//N6477 115 1 ,206 WHERE P.ID<>'206' WHERE P.ID='115'
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -387,17 +370,13 @@ public class projectBuildMain1 {
                             while(houseResultSet.next()){
                                 houseId = houseIdMapper.selectByOldHouseId(houseResultSet.getString("ID"));
                                 if(houseId==null){
-                                    projectWriterError.newLine();
-                                    projectWriterError.write("没有找到对应记录检查houseID:"+houseResultSet.getString("ID"));
-                                    projectWriterError.flush();
+
                                     System.out.println("没有找到对应记录检查houseID:"+houseResultSet.getString("ID"));
                                     return;
                                 }
                                 houseUseType = houseUseTypeMapper.selectByDesignUseType(houseResultSet.getString("DESIGN_USE_TYPE"));
                                 if(houseUseType ==null){//房屋类型不是其它
-                                    projectWriterError.newLine();
-                                    projectWriterError.write("没有找到对应记录检查houseUseType:"+houseResultSet.getString("ID"));
-                                    projectWriterError.flush();
+
                                     System.out.println("没有找到对应记录检查houseUseType:"+houseResultSet.getString("ID"));
                                     return;
                                 }
@@ -414,9 +393,7 @@ public class projectBuildMain1 {
                                 // workid,用build的workId，和defineID buildid
                                 floorBeginEnd = floorBeginEndMapper.selectByName(houseResultSet.getString("IN_FLOOR_NAME"));
                                 if(floorBeginEnd==null){
-                                    projectWriterError.newLine();
-                                    projectWriterError.write("没有找到对应记录检查floorBeginEndMapper:"+houseResultSet.getString("ID"));
-                                    projectWriterError.flush();
+
                                     System.out.println("没有找到对应记录检查floorBeginEndMapper:"+houseResultSet.getString("ID"));
                                     return;
                                 }
