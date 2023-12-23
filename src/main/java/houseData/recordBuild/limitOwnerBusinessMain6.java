@@ -213,12 +213,12 @@ public class limitOwnerBusinessMain6 {
                 //project_business
                 limitOwnerBusinessWriter.newLine();
                 limitOwnerBusinessWriter.write("INSERT project_business (work_id, project_id, developer_id, info_id, " +
-                        "developer_name, work_type,business_id,before_info_id,developer_info_id) VALUE ");
+                        "developer_name, work_type,business_id,before_info_id,developer_info_id,updated_at) VALUE ");
                 limitOwnerBusinessWriter.write("(" + Q.v(Long.toString(houseRecordId.getId()),Long.toString(projectId.getId())
                         ,Q.pm(UNIFIED_ID),Long.toString(projectId.getId())
                         ,Q.pm(developName),Q.pm("REFER")
                         ,Long.toString(houseRecordId.getId()),Long.toString(projectId.getId())
-                        ,developer_info_id
+                        ,developer_info_id,Q.pm(Q.nowFormatTime())
                 )+ ");");
 
                 //build_business
