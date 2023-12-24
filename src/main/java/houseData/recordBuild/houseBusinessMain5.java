@@ -169,7 +169,7 @@ public class houseBusinessMain5 {
                     "HOUSE_INFO.HOUSE AS HH LEFT JOIN HOUSE_INFO.BUILD AS HB ON HH.BUILDID=HB.ID " +
                     "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS HD ON HP.DEVELOPERID=HD.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID " +
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID " +             //WHERE HH.ID IN('66072','66071','66073')
                     "ORDER BY HB.PROJECT_ID,HH.BUILDID,HH.ID"); //'210603103001252','B544N1-4-02','0020-25','0030-0','0182-21',133939 WHERE HB.PROJECT_ID IN ('206') WHERE HH.ID='21068110141843255051200488' 21.34 WHERE HB.PROJECT_ID='115'
             houseResultSet.last();
             int sumCount = houseResultSet.getRow(),i=0;
@@ -376,7 +376,7 @@ public class houseBusinessMain5 {
 
                                 //操作人员记录
                                 //开发商合同提交人
-                                taskOperBusinessResultSet = taskOperBusinessStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.TASK_OPER WHERE OPER_TYPE='CREATE' AND BUSINESS='" + houseBusinessResultSet.getString("OID") + "'");
+                                taskOperBusinessResultSet = taskOperBusinessStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.TASK_OPER WHERE OPER_TYPE='CREATE' AND TASK_NAME='提交合同' AND BUSINESS='" + houseBusinessResultSet.getString("OID") + "'");
                                 if (taskOperBusinessResultSet.next()){
                                     houseBusinessWriter.newLine();
                                     houseBusinessWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,WORK_TIME) VALUE ");
@@ -909,16 +909,20 @@ public class houseBusinessMain5 {
                                     taskOperBusinessResultSet.beforeFirst();
                                     while (taskOperBusinessResultSet.next()) {
 
+//                                        System.out.println("ownerRecordHouseId----"+ownerRecordHouseId.getId()+"--taskOperBusinessResultSet.getRow()---"+ taskOperBusinessResultSet.getRow());
+
+                                        String task_id=Long.toString(ownerRecordHouseId.getId())+"-"+Integer.toString(taskOperBusinessResultSet.getRow());
+//                                        System.out.println("task_id--"+task_id);
                                         houseBusinessWriter.newLine();
                                         houseBusinessWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,WORK_TIME) VALUE ");
                                         houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()), Q.pm("TASK")
                                                 , Q.pm(taskOperBusinessResultSet.getString("EMP_CODE")), Q.pm(taskOperBusinessResultSet.getString("EMP_NAME"))
-                                                , Q.pm(taskOperBusinessResultSet.getString("ID")), Q.pm(taskOperBusinessResultSet.getTimestamp("OPER_TIME"))
+                                                , Q.pm(task_id), Q.pm(taskOperBusinessResultSet.getTimestamp("OPER_TIME"))
                                         ) + ");");
 
                                         houseBusinessWriter.newLine();
                                         houseBusinessWriter.write("INSERT work_task (task_id, message, task_name, pass) VALUE ");
-                                        houseBusinessWriter.write("(" + Q.v(Q.pm(taskOperBusinessResultSet.getString("ID")), Q.pm("同意")
+                                        houseBusinessWriter.write("(" + Q.v(Q.pm(task_id), Q.pm("同意")
                                                 , Q.pm(FindWorkBook.getEmpType(taskOperBusinessResultSet.getString("TYPE"))), Q.p(true)
                                         ) + ");");
                                     }
