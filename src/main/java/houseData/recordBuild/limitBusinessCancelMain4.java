@@ -20,11 +20,8 @@ public class limitBusinessCancelMain4 {
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_OWNER_RECORD?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
     private final static String PASSWORD ="dgsoft";
-    private static final String Limit_ERROR_FILE="/limitBusinessCancelError4.sql";
     private static final String Limit_FILE="/limitBusinessCancelRecord4.sql";
-    private static File limitCancelBusinessFileError;
     private static File limitCancelBusinessFile;
-    private static BufferedWriter limitCancelBusinessWriterError;
     private static BufferedWriter limitCancelBusinessWriter;
 
     private static Statement houseStatement;
@@ -42,10 +39,6 @@ public class limitBusinessCancelMain4 {
 
     public static void main(String agr[]) throws SQLException {
 
-        limitCancelBusinessFileError = new File(Limit_ERROR_FILE);
-        if (limitCancelBusinessFileError.exists()) {
-            limitCancelBusinessFileError.delete();
-        }
 
         limitCancelBusinessFile = new File(Limit_FILE);
         if (limitCancelBusinessFile.exists()) {
@@ -68,18 +61,6 @@ public class limitBusinessCancelMain4 {
         }
 
 
-        try{
-            limitCancelBusinessFileError.createNewFile();
-            FileWriter fw = new FileWriter(limitCancelBusinessFileError.getAbsoluteFile());
-            limitCancelBusinessWriterError = new BufferedWriter(fw);
-            limitCancelBusinessWriterError.write("limitBusiness--错误记录:");
-            limitCancelBusinessWriterError.newLine();
-            limitCancelBusinessWriterError.flush();
-        }catch (IOException e){
-            System.out.println("limitBusinessFileError 文件创建失败");
-            e.printStackTrace();
-            return;
-        }
 
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         ProjectIdMapper projectIdMapper =  sqlSession.getMapper(ProjectIdMapper.class);
@@ -173,12 +154,12 @@ public class limitBusinessCancelMain4 {
                 limitCancelBusinessWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,WORK_TIME) VALUE ");
                 limitCancelBusinessWriter.write("(" + Q.v(Long.toString(lockedHouseCancelId.getId()),Q.pm("TASK")
                         ,Q.pm(lockedHouseCancelResultSet.getString("EMP_CODE")),Q.pm(lockedHouseCancelResultSet.getString("EMP_NAME"))
-                        ,Q.pm(lockedHouseCancelResultSet.getString("ID")),Q.pm(lockedHouseCancelResultSet.getTimestamp("CANCEL_TIME"))
+                        ,Long.toString(lockedHouseCancelId.getId()),Q.pm(lockedHouseCancelResultSet.getTimestamp("CANCEL_TIME"))
                 )+ ");");
 
                 limitCancelBusinessWriter.newLine();
                 limitCancelBusinessWriter.write("INSERT work_task (task_id, message, task_name, pass) VALUE ");
-                limitCancelBusinessWriter.write("(" + Q.v(Q.pm(lockedHouseCancelResultSet.getString("ID")),Q.pm("同意")
+                limitCancelBusinessWriter.write("(" + Q.v(Long.toString(lockedHouseCancelId.getId()),Q.pm("解除预警")
                         ,Q.pm("建立"),Q.p(true)
                 )+ ");");
 

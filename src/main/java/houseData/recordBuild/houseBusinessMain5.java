@@ -27,11 +27,8 @@ public class houseBusinessMain5 {
     private static String CONTRACT_DB_URL = "jdbc:mysql://127.0.0.1:3306/CONTRACT?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
     private final static String PASSWORD ="dgsoft";
-    private static final String house_ERROR_FILE="/houseBusinessError5.sql";
     private static final String house_FILE="/hoseBusinessRecord5.sql";
-    private static File houseBusinessFileError;
     private static File houseBusinessFile;
-    private static BufferedWriter houseBusinessWriterError;
     private static BufferedWriter houseBusinessWriter;
 
     private static Statement houseBusinessStatement;
@@ -68,10 +65,7 @@ public class houseBusinessMain5 {
 
 
     public static void main(String agr[]) throws SQLException {
-        houseBusinessFileError = new File(house_ERROR_FILE);
-        if (houseBusinessFileError.exists()) {
-            houseBusinessFileError.delete();
-        }
+
 
         houseBusinessFile = new File(house_FILE);
         if (houseBusinessFile.exists()) {
@@ -96,18 +90,7 @@ public class houseBusinessMain5 {
             e.printStackTrace();
             return;
         }
-        try{
-            houseBusinessFileError.createNewFile();
-            FileWriter fw = new FileWriter(houseBusinessFileError.getAbsoluteFile());
-            houseBusinessWriterError = new BufferedWriter(fw);
-            houseBusinessWriterError.write("houseBusiness--错误记录:");
-            houseBusinessWriterError.newLine();
-            houseBusinessWriterError.flush();
-        }catch (IOException e){
-            System.out.println("limitBusinessFileError 文件创建失败");
-            e.printStackTrace();
-            return;
-        }
+
 
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         LockedHouseIdMapper lockedHouseIdMapper = sqlSession.getMapper(LockedHouseIdMapper.class);
@@ -169,7 +152,7 @@ public class houseBusinessMain5 {
                     "HOUSE_INFO.HOUSE AS HH LEFT JOIN HOUSE_INFO.BUILD AS HB ON HH.BUILDID=HB.ID " +
                     "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS HD ON HP.DEVELOPERID=HD.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID WHERE HH.ID IN('8827','B87N2-6-02','138345')" +             //WHERE HH.ID IN('66072','66071','66073')
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID " +             //WHERE HH.ID IN('8827','B87N2-6-02','138345') WHERE HH.ID IN('66072','66071','66073')
                     "ORDER BY HB.PROJECT_ID,HH.BUILDID,HH.ID"); //'210603103001252','B544N1-4-02','0020-25','0030-0','0182-21',133939 WHERE HB.PROJECT_ID IN ('206') WHERE HH.ID='21068110141843255051200488' 21.34 WHERE HB.PROJECT_ID='115'
             houseResultSet.last();
             int sumCount = houseResultSet.getRow(),i=0;

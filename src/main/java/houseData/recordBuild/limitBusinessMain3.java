@@ -22,11 +22,8 @@ public class limitBusinessMain3 {
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_OWNER_RECORD?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
     private final static String PASSWORD ="dgsoft";
-    private static final String Limit_ERROR_FILE="/limitBusinessError3.sql";
     private static final String Limit_FILE="/limitBusinessRecord3.sql";
-    private static File limitBusinessFileError;
     private static File limitBusinessFile;
-    private static BufferedWriter limitBusinessWriterError;
     private static BufferedWriter limitBusinessWriter;
 
     private static Statement houseStatement;
@@ -43,10 +40,7 @@ public class limitBusinessMain3 {
 
     public static void main(String agr[]) throws SQLException {
 
-        limitBusinessFileError = new File(Limit_ERROR_FILE);
-        if (limitBusinessFileError.exists()) {
-            limitBusinessFileError.delete();
-        }
+
 
         limitBusinessFile = new File(Limit_FILE);
         if (limitBusinessFile.exists()) {
@@ -69,18 +63,7 @@ public class limitBusinessMain3 {
         }
 
 
-        try{
-            limitBusinessFileError.createNewFile();
-            FileWriter fw = new FileWriter(limitBusinessFileError.getAbsoluteFile());
-            limitBusinessWriterError = new BufferedWriter(fw);
-            limitBusinessWriterError.write("limitBusiness--错误记录:");
-            limitBusinessWriterError.newLine();
-            limitBusinessWriterError.flush();
-        }catch (IOException e){
-            System.out.println("limitBusinessFileError 文件创建失败");
-            e.printStackTrace();
-            return;
-        }
+
 
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         LockedHouseIdMapper lockedHouseIdMapper = sqlSession.getMapper(LockedHouseIdMapper.class);
@@ -181,12 +164,12 @@ public class limitBusinessMain3 {
                 limitBusinessWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,WORK_TIME) VALUE ");
                 limitBusinessWriter.write("(" + Q.v(Long.toString(lockedHouseId.getId()),Q.pm("TASK")
                         ,Q.pm(lockedHouseResultSet.getString("EMP_CODE")),Q.pm(lockedHouseResultSet.getString("EMP_NAME"))
-                        ,Q.pm(lockedHouseResultSet.getString("ID")),Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME"))
+                        ,Long.toString(lockedHouseId.getId()),Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME"))
                 )+ ");");
 
                 limitBusinessWriter.newLine();
                 limitBusinessWriter.write("INSERT work_task (task_id, message, task_name, pass) VALUE ");
-                limitBusinessWriter.write("(" + Q.v(Q.pm(lockedHouseResultSet.getString("ID")),Q.pm("同意")
+                limitBusinessWriter.write("(" + Q.v(Long.toString(lockedHouseId.getId()),Q.pm("预警建立")
                         ,Q.pm("建立"),Q.p(true)
                 )+ ");");
 

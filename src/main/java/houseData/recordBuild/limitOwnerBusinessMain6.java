@@ -22,11 +22,8 @@ public class limitOwnerBusinessMain6 {
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_OWNER_RECORD?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
     private final static String PASSWORD ="dgsoft";
-    private static final String Limit_ERROR_FILE="/limitOwnerBusinessError6.sql";
     private static final String Limit_FILE="/limitOwnerBusinessRecord6.sql";
-    private static File limitOwnerBusinessFileError;
     private static File limitOwnerBusinessFile;
-    private static BufferedWriter limitOwnerBusinessWriterError;
     private static BufferedWriter limitOwnerBusinessWriter;
 
 
@@ -43,11 +40,6 @@ public class limitOwnerBusinessMain6 {
     private static ResultSet projectResultSet;
 
     public static void main(String agr[]) throws SQLException {
-
-        limitOwnerBusinessFileError = new File(Limit_ERROR_FILE);
-        if (limitOwnerBusinessFileError.exists()) {
-            limitOwnerBusinessFileError.delete();
-        }
 
         limitOwnerBusinessFile = new File(Limit_FILE);
         if (limitOwnerBusinessFile.exists()) {
@@ -67,18 +59,7 @@ public class limitOwnerBusinessMain6 {
         }
 
 
-        try{
-            limitOwnerBusinessFileError.createNewFile();
-            FileWriter fw = new FileWriter(limitOwnerBusinessFileError.getAbsoluteFile());
-            limitOwnerBusinessWriterError = new BufferedWriter(fw);
-            limitOwnerBusinessWriterError.write("limitBusiness--错误记录:");
-            limitOwnerBusinessWriterError.newLine();
-            limitOwnerBusinessWriterError.flush();
-        }catch (IOException e){
-            System.out.println("limitBusinessFileError 文件创建失败");
-            e.printStackTrace();
-            return;
-        }
+
         SqlSession sqlSession = MybatisUtils.getSqlSession();
         ProjectIdMapper projectIdMapper =  sqlSession.getMapper(ProjectIdMapper.class);
         BuildIdMapper buildIdMapper = sqlSession.getMapper(BuildIdMapper.class);
@@ -101,7 +82,7 @@ public class limitOwnerBusinessMain6 {
         houseRecordStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
         try {
             houseRecordResultSet = houseRecordStatement.executeQuery("select HR.* FROM HOUSE_OWNER_RECORD.HOUSE_RECORD AS HR LEFT JOIN HOUSE_INFO.HOUSE AS H ON HR.HOUSE_CODE=H.ID " +
-                    "WHERE HR.HOUSE_STATUS='OWNERED' AND H.ID IS NOT NULL; "); //AND HR.HOUSE_CODE ='0021-0'
+                    "WHERE (HR.HOUSE_STATUS='OWNERED' OR HR.HOUSE_STATUS='COURT_CLOSE') AND H.ID IS NOT NULL; "); //AND HR.HOUSE_CODE ='0021-0'
             houseRecordResultSet.last();
             int sumCount = houseRecordResultSet.getRow(), i = 0;
             System.out.println("记录总数-" + sumCount);
@@ -175,19 +156,19 @@ public class limitOwnerBusinessMain6 {
                 limitOwnerBusinessWriter.write("INSERT work_operator (work_id, type, user_id, user_name, task_id,WORK_TIME) VALUE ");
                 limitOwnerBusinessWriter.write("(" + Q.v(Long.toString(houseRecordId.getId()),Q.pm("TASK")
                         ,Q.pm("root"),Q.pm("管理员")
-                        ,Q.pm("root"),Q.pm(Q.nowFormatTime())
+                        ,Long.toString(houseRecordId.getId()),Q.pm(Q.nowFormatTime())
                 )+ ");");
 
                 limitOwnerBusinessWriter.newLine();
                 limitOwnerBusinessWriter.write("INSERT work_task (task_id, message, task_name, pass) VALUE ");
-                limitOwnerBusinessWriter.write("(" + Q.v(Long.toString(houseRecordId.getId()),Q.pm("同意")
+                limitOwnerBusinessWriter.write("(" + Q.v(Long.toString(houseRecordId.getId()),Q.pm("已办产权或查封的房屋建立业务预警")
                         ,Q.pm("建立"),Q.p(true)
                 )+ ");");
 
                 //limit_business
                 limitOwnerBusinessWriter.newLine();
                 limitOwnerBusinessWriter.write("INSERT limit_business (work_id, explanation, way, from_id, limit_from) value ");
-                limitOwnerBusinessWriter.write("(" + Q.v(Long.toString(houseRecordId.getId()),Q.pm("由管理员将原系统已办产权的房屋建立预警！ 原房屋编号："+houseRecordResultSet.getString("HOUSE_CODE"))
+                limitOwnerBusinessWriter.write("(" + Q.v(Long.toString(houseRecordId.getId()),Q.pm("由管理员将原系统中已办产权或查封的房屋建立预警！ 原房屋编号："+houseRecordResultSet.getString("HOUSE_CODE"))
                         ,Q.pm("HOUSE"),Long.toString(buildId.getId())
                         ,Q.pm("MANUAL")
                 )+ ");");
