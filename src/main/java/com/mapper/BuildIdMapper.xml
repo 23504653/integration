@@ -8,8 +8,8 @@
       select * from INTEGRATION.build_id where oid = #{BuildIdOldId};
     </select>
     <insert id="addBuildId" parameterType="map">
-        insert INTO INTEGRATION.build_id (id, oid,name)
-         VALUE (#{id},#{oid},#{name});
+        insert INTO INTEGRATION.build_id (id, oid,name,buildName)
+         VALUE (#{id},#{oid},#{name},#{buildName});
     </insert>
     <select id="findMaxId" resultType="Integer">
         select max(INTEGRATION.build_id.id) from INTEGRATION.build_id;

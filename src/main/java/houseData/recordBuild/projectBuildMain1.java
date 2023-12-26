@@ -100,7 +100,7 @@ public class projectBuildMain1 {
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,A.COMPANY_CER_CODE,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID ORDER BY P.NAME");//N6477 115 1 ,206 WHERE P.ID<>'206' WHERE P.ID='115'
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID ORDER BY P.NAME");//N6477 115 1 ,206 WHERE P.ID<>'206' WHERE P.ID='115' WHERE P.ID='N4862'
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
@@ -131,10 +131,8 @@ public class projectBuildMain1 {
 
                 }
                 workbookResultSet = workbookStatement.executeQuery("select MC.NAME,MC.CODE FROM HOUSE_OWNER_RECORD.PROJECT AS HP LEFT JOIN HOUSE_OWNER_RECORD.MAPPING_CORP AS MC ON HP.BUSINESS=MC.BUSINESS_ID WHERE HP.PROJECT_CODE='"+projectResultSet.getString("ID")+"'");
-                String mapping_name="未知";
                 int mapping_corp_id=3;
                 if(workbookResultSet.next()){
-                    mapping_name = workbookResultSet.getString("NAME");
                     mapping_corp_id = workbookResultSet.getInt("CODE");
                 }
 
@@ -293,14 +291,27 @@ public class projectBuildMain1 {
                                         ,Long.toString(buildId.getId())
 
                         )+ ");");
+                        String mapping_name="";
+                        if(buildResultSet.getString("MAP_NUMBER")!=null && !buildResultSet.getString("MAP_NUMBER").equals("")){
+                            mapping_name=buildResultSet.getString("MAP_NUMBER")+".";
+                        }
+                        if(buildResultSet.getString("BLOCK_NO")!=null && !buildResultSet.getString("BLOCK_NO").equals("")){
+                            mapping_name=mapping_name+buildResultSet.getString("BLOCK_NO")+".";
+                        }
+                        if(buildResultSet.getString("BUILD_NO")!=null && !buildResultSet.getString("BUILD_NO").equals("")){
+                            mapping_name=mapping_name+buildResultSet.getString("BUILD_NO");
+                        }
+
+
                         //BUILD
                         projectWriter.newLine();
-                        projectWriter.write("INSERT build (BUILD_ID, PROJECT_ID, STATUS, BUILD_INFO_ID, BUILD_NAME, VERSION, created_at, DOOR_NUMBER,updated_at) VALUE");
+                        projectWriter.write("INSERT build (BUILD_ID, PROJECT_ID, STATUS, BUILD_INFO_ID, BUILD_NAME, VERSION, created_at, DOOR_NUMBER,updated_at,mapping_name,on_address) VALUE");
                         projectWriter.write("(" + Q.v(Long.toString(buildId.getId()),Long.toString(projectId.getId())
                                 ,Q.pm("PREPARE"),Long.toString(buildId.getId())
-                                ,Q.pm(buildResultSet.getString("NAME")),"0"
+                                ,Q.pm(buildId.getBuildName()),"0"
                                 ,Q.pm(buildResultSet.getTimestamp("MAP_TIME")),Q.pm(buildResultSet.getString("DOOR_NO"))
-                                ,Q.pm(buildResultSet.getTimestamp("MAP_TIME"))
+                                ,Q.pm(buildResultSet.getTimestamp("MAP_TIME")),Q.pm(mapping_name)
+                                ,Q.p(buildResultSet.getString("NAME"))
                         )+ ");");
 
                         //没有预售许可证的补录一个作废的预售许可证 为了已办产权等业务能够导入进去，有备案没有预售许可证
@@ -399,6 +410,11 @@ public class projectBuildMain1 {
                                 }
 
                                 //apartment_snapshot
+                                String unit = null;
+                                if(houseResultSet.getString("HOUSE_UNIT_NAME")!=null && !houseResultSet.getString("HOUSE_UNIT_NAME").equals("")){
+                                    unit = houseResultSet.getString("HOUSE_UNIT_NAME").replace("单元", "");
+                                }
+//                                System.out.println("unit-"+unit);
                                 projectWriter.newLine();
                                 projectWriter.write("INSERT apartment_snapshot (apartment_info_id,layer_type, layer_type_key," +
                                         " house_type, floor_begin, floor_end, floor_name," +
@@ -407,7 +423,7 @@ public class projectBuildMain1 {
                                         ,Q.p(FindWorkBook.structure(houseResultSet.getString("STRUCTURE")).getId()),Q.pm(houseUseType.getHouseType())
                                         ,Integer.toString(floorBeginEnd.getBeginFloor())
                                         ,Integer.toString(floorBeginEnd.getEndFloor()),Q.pm(houseResultSet.getString("IN_FLOOR_NAME"))
-                                        ,Q.pm(houseResultSet.getString("HOUSE_UNIT_NAME")),Q.pm(houseUseType.getLabel())
+                                        ,Q.pm(unit),Q.pm(houseUseType.getLabel())
                                         ,Integer.toString(houseUseType.getValue()),Q.pm(houseResultSet.getString("HOUSE_ORDER"))
                                 )+ ");");
 

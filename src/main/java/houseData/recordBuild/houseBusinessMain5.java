@@ -152,7 +152,7 @@ public class houseBusinessMain5 {
                     "HOUSE_INFO.HOUSE AS HH LEFT JOIN HOUSE_INFO.BUILD AS HB ON HH.BUILDID=HB.ID " +
                     "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS HD ON HP.DEVELOPERID=HD.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID " +             //WHERE HH.ID IN('8827','B87N2-6-02','138345') WHERE HH.ID IN('66072','66071','66073')
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID  " +             //where HB.PROJECT_ID='206' WHERE HH.ID IN('8827','B87N2-6-02','138345') WHERE HH.ID IN('66072','66071','66073')
                     "ORDER BY HB.PROJECT_ID,HH.BUILDID,HH.ID"); //'210603103001252','B544N1-4-02','0020-25','0030-0','0182-21',133939 WHERE HB.PROJECT_ID IN ('206') WHERE HH.ID='21068110141843255051200488' 21.34 WHERE HB.PROJECT_ID='115'
             houseResultSet.last();
             int sumCount = houseResultSet.getRow(),i=0;
@@ -209,6 +209,10 @@ public class houseBusinessMain5 {
 
                     houseBusinessResultSet.beforeFirst();
                     while (houseBusinessResultSet.next()){
+                        String unit = null;
+                        if(houseBusinessResultSet.getString("HOUSE_UNIT_NAME")!=null && !houseBusinessResultSet.getString("HOUSE_UNIT_NAME").equals("")){
+                            unit = houseBusinessResultSet.getString("HOUSE_UNIT_NAME").replace("单元", "");
+                        }
                         DEFINE_ID = houseBusinessResultSet.getString("DEFINE_ID");
                         if(DEFINE_ID.equals("WP42") || DEFINE_ID.equals("BL42") || DEFINE_ID.equals("WP43")|| DEFINE_ID.equals("WP40")){
                             build_completed = false;
@@ -405,7 +409,7 @@ public class houseBusinessMain5 {
                                         ,Q.p(FindWorkBook.structure(houseBusinessResultSet.getString("STRUCTURE")).getId()),Q.pm(houseUseType.getHouseType())
                                         ,Integer.toString(floorBeginEnd.getBeginFloor())
                                         ,Integer.toString(floorBeginEnd.getEndFloor()),Q.pm(houseBusinessResultSet.getString("IN_FLOOR_NAME"))
-                                        ,Q.pm(houseBusinessResultSet.getString("HOUSE_UNIT_NAME")),Q.pm(houseUseType.getLabel())
+                                        ,Q.pm(unit),Q.pm(houseUseType.getLabel())
                                         ,Integer.toString(houseUseType.getValue()),Q.pm(houseBusinessResultSet.getString("HOUSE_ORDER"))
                                 )+ ");");
 
@@ -618,8 +622,8 @@ public class houseBusinessMain5 {
                                                    ,Long.toString(buildId.getId()),Long.toString(ownerRecordBuildId.getId())
                                                    ,Long.toString(projectId.getId()),Long.toString(ownerRecordProjectId.getId())
                                                    ,Q.pm(houseResultSet.getString("DISTRICT")),Q.pm(houseBusinessResultSet.getString("DISTRICT_NAME"))
-                                                   ,Q.pm(houseBusinessResultSet.getString("BUILD_NAME")),Q.pm(houseBusinessResultSet.getString("HOUSE_ORDER"))
-                                                   ,Q.pm(houseBusinessResultSet.getString("HOUSE_UNIT_NAME")),Q.pm(houseBusinessResultSet.getString("ADDRESS"))
+                                                   ,Q.pm(buildId.getBuildName()),Q.pm(houseBusinessResultSet.getString("HOUSE_ORDER"))
+                                                   ,Q.pm(unit),Q.pm(houseBusinessResultSet.getString("ADDRESS"))
                                                    ,Q.pm(houseBusinessResultSet.getBigDecimal("HOUSE_AREA")),Q.pm(houseBusinessResultSet.getBigDecimal("USE_AREA"))
                                                    ,Boolean.toString(build_completed),Boolean.toString(house_registered),Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
                                            ) + ");");
@@ -748,8 +752,8 @@ public class houseBusinessMain5 {
                                             ,Long.toString(buildId.getId()),Long.toString(ownerRecordBuildId.getId())
                                             ,Long.toString(projectId.getId()),Long.toString(ownerRecordProjectId.getId())
                                             ,Q.pm(houseResultSet.getString("DISTRICT")),Q.pm(houseBusinessResultSet.getString("DISTRICT_NAME"))
-                                            ,Q.pm(houseBusinessResultSet.getString("BUILD_NAME")),Q.pm(houseBusinessResultSet.getString("HOUSE_ORDER"))
-                                            ,Q.pm(houseBusinessResultSet.getString("HOUSE_UNIT_NAME")),Q.pm(houseBusinessResultSet.getString("ADDRESS"))
+                                            ,Q.pm(buildId.getBuildName()),Q.pm(houseBusinessResultSet.getString("HOUSE_ORDER"))
+                                            ,Q.pm(unit),Q.pm(houseBusinessResultSet.getString("ADDRESS"))
                                             ,Q.pm(houseBusinessResultSet.getBigDecimal("HOUSE_AREA")),Q.pm(houseBusinessResultSet.getBigDecimal("USE_AREA"))
                                             ,Boolean.toString(build_completed),Boolean.toString(house_registered),Q.pm(houseBusinessResultSet.getString("CREATE_TIME"))
                                     ) + ");");
@@ -797,7 +801,7 @@ public class houseBusinessMain5 {
                                         ,Q.p(FindWorkBook.structure(houseBusinessResultSet.getString("STRUCTURE")).getId()),Q.pm(houseUseType.getHouseType())
                                         ,Integer.toString(floorBeginEnd.getBeginFloor())
                                         ,Integer.toString(floorBeginEnd.getEndFloor()),Q.pm(houseBusinessResultSet.getString("IN_FLOOR_NAME"))
-                                        ,Q.pm(houseBusinessResultSet.getString("HOUSE_UNIT_NAME")),Q.pm(houseUseType.getLabel())
+                                        ,Q.pm(unit),Q.pm(houseUseType.getLabel())
                                         ,Integer.toString(houseUseType.getValue()),Q.pm(houseBusinessResultSet.getString("HOUSE_ORDER"))
                                 )+ ");");
 
@@ -920,7 +924,7 @@ public class houseBusinessMain5 {
                                         ,Q.p(FindWorkBook.structure(houseBusinessResultSet.getString("STRUCTURE")).getId()),Q.pm(houseUseType.getHouseType())
                                         ,Integer.toString(floorBeginEnd.getBeginFloor())
                                         ,Integer.toString(floorBeginEnd.getEndFloor()),Q.pm(houseBusinessResultSet.getString("IN_FLOOR_NAME"))
-                                        ,Q.pm(houseBusinessResultSet.getString("HOUSE_UNIT_NAME")),Q.pm(houseUseType.getLabel())
+                                        ,Q.pm(unit),Q.pm(houseUseType.getLabel())
                                         ,Integer.toString(houseUseType.getValue()),Q.pm(houseBusinessResultSet.getString("HOUSE_ORDER"))
                                 )+ ");");
 

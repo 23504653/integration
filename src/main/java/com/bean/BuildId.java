@@ -7,15 +7,17 @@ public class BuildId {
     private long id;
     private String oid;
     private String name;
+    private String buildName;
 
     public BuildId() {
 
     }
 
-    public BuildId(long id, String oid, String name) {
+    public BuildId(long id, String oid, String name,String buildName) {
         this.id = id;
         this.oid = oid;
         this.name = name;
+        this.buildName = buildName;
     }
 
     public long getId() {
@@ -40,5 +42,13 @@ public class BuildId {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getBuildName() {
+        return buildName;
+    }
+
+    public void setBuildName(String buildName) {
+        this.buildName = buildName;
     }
 }

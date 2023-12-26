@@ -120,7 +120,7 @@ public class projectBuildBusinessMain2 {
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,A.COMPANY_CER_CODE,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID  ORDER BY P.NAME");//N6477 115 1 WHERE P.ID<>'206' WHERE P.ID='115'
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID ORDER BY P.NAME");//N6477 115 1 WHERE P.ID<>'206' WHERE P.ID='115' WHERE P.ID='xhyy
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0,onNumber=1;;
             System.out.println("记录总数-"+sumCount);
@@ -166,12 +166,12 @@ public class projectBuildBusinessMain2 {
                             return;
                         }
                         workbookResultSet = workbookStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.MAPPING_CORP WHERE BUSINESS_ID='"+projectBusinessResultSet.getString("OID")+"'");
-                        String mapping_name="未知";
+                        ;
                         int mapping_corp_id=3;
                         if(workbookResultSet.next()){
-                            mapping_name = workbookResultSet.getString("NAME");
                             mapping_corp_id = workbookResultSet.getInt("CODE");
                         }
+
 //                        System.out.println(mapping_name);
 
                         //work projectId 作为workId
@@ -412,6 +412,7 @@ public class projectBuildBusinessMain2 {
                         projectBusinessWriter.flush();
                         //record_BUILD ownerRecordBuildId 作为ID
                         buildBusinessResultSet = buildBusinessStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.BUILD AS OB WHERE OB.PROJECT='"+projectBusinessResultSet.getString("PID")+"'");
+
                         if(buildBusinessResultSet.next()){
                             buildBusinessResultSet.beforeFirst();
                             while (buildBusinessResultSet.next()){
@@ -427,6 +428,16 @@ public class projectBuildBusinessMain2 {
                                     return;
                                 }
 
+                                String mapping_name="";
+                                if(buildBusinessResultSet.getString("MAP_NUMBER")!=null && !buildBusinessResultSet.getString("MAP_NUMBER").equals("")){
+                                    mapping_name=buildBusinessResultSet.getString("MAP_NUMBER")+".";
+                                }
+                                if(buildBusinessResultSet.getString("BLOCK_NO")!=null && !buildBusinessResultSet.getString("BLOCK_NO").equals("")){
+                                    mapping_name=mapping_name+buildBusinessResultSet.getString("BLOCK_NO")+".";
+                                }
+                                if(buildBusinessResultSet.getString("BUILD_NO")!=null && !buildBusinessResultSet.getString("BUILD_NO").equals("")){
+                                    mapping_name=mapping_name+buildBusinessResultSet.getString("BUILD_NO");
+                                }
 
                                 //build_construct_snapshot
                                 projectBusinessWriter.newLine();
@@ -538,7 +549,7 @@ public class projectBuildBusinessMain2 {
                                     workbookResultSet.beforeFirst();
                                     while (workbookResultSet.next()){
                                         projectBusinessWriter.newLine();
-                                        projectBusinessWriter.write("INSERT build_use_type_total_snapshot (count, area, use_area, house_type, build_id, work_id) VALUE ");
+                                        projectBusinessWriter.write("INSERT     build_use_type_total_snapshot (count, area, use_area, house_type, build_id, work_id) VALUE ");
                                         projectBusinessWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("COUNT")),Q.pm(workbookResultSet.getBigDecimal("AREA"))
                                                 ,Q.pm(workbookResultSet.getBigDecimal("AREA")),Q.pm(FindWorkBook.changeLandSnapshot(workbookResultSet.getString("USE_TYPE")).getId())
                                                 ,Long.toString(buildId.getId()),Long.toString(ownerRecordProjectId.getId())

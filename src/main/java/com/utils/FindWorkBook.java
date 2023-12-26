@@ -60,23 +60,23 @@ public class FindWorkBook {
             return workBook;
         }
         if(id.equals("DWELLING_KEY")){
-            workBook.setId("01");
+            workBook.setId("DWELLING");
             workBook.setValue("住宅");
             return workBook;
         }else if(id.equals("SHOP_HOUSE_KEY")){
-            workBook.setId("02");
+            workBook.setId("SHOP");
             workBook.setValue("商业用房");
             return workBook;
         }else if(id.equals("CAR_STORE")) {
-            workBook.setId("06");
+            workBook.setId("GARAGE");
             workBook.setValue("车库");
             return workBook;
         }else if(id.equals("OFFICE")) {
-            workBook.setId("03");
+            workBook.setId("OFFICE");
             workBook.setValue("办公");
             return workBook;
         }else if(id.equals("STORE_HOUSE")) {
-            workBook.setId("05");
+            workBook.setId("STORE");
             workBook.setValue("仓储");
             return workBook;
         }else {

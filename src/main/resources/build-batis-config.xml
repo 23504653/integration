@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--引用外部配置文件-->
+    <properties resource="build-db.properties"></properties>
+  <settings>
+           <!--   开启将数据库中下划线连接的字段自动映射为Java的小驼峰命名-->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+    <!--针对一个包下所有的类统一起别名  默认别名为类名 首字母不区分大小写-->
+    <typeAliases>
+        <package name="com.bean.build"/>
+    </typeAliases>
+
+
+    <!--连接数据库环境配置-->
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <!--sql文件位置-->
+    <mappers>
+        <mapper resource="com/mapper/build/RBHouseIdMapper.xml"/>
+        <mapper resource="com/mapper/build/RBBuildIdMapper.xml"/>
+        <mapper resource="com/mapper/build/RBProjectIdMapper.xml"/>
+
+    </mappers>
+</configuration>
