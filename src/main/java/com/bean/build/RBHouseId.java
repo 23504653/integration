@@ -1,6 +1,6 @@
 package com.bean.build;
 
-public class BuildId {
+public class RBHouseId {
     private long id;
     private String oid;
 
@@ -21,6 +21,6 @@ public class BuildId {
         this.oid = oid;
     }
 
-    public BuildId() {
+    public RBHouseId() {
     }
 }

@@ -32,6 +32,6 @@
         <mapper resource="com/mapper/build/RBHouseIdMapper.xml"/>
         <mapper resource="com/mapper/build/RBBuildIdMapper.xml"/>
         <mapper resource="com/mapper/build/RBProjectIdMapper.xml"/>
-
+        <mapper resource="com/mapper/build/BizIdMapper.xml"/>
     </mappers>
 </configuration>

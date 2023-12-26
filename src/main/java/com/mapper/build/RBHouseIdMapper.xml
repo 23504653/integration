@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--命令空间 对应数据接口操作-->
 <mapper namespace="com.mapper.build.RBHouseIdMapper">
-    <select id="selectByOldHouseId" resultType="com.bean.build.HouseId">
+    <select id="selectByOldHouseId" resultType="com.bean.build.RBHouseId">
       select * from record_building.house_id where oid = #{HouseOldId};
     </select>
     <insert id="addHouseId" parameterType="map">

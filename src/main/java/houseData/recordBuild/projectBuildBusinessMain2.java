@@ -174,6 +174,8 @@ public class projectBuildBusinessMain2 {
 
 //                        System.out.println(mapping_name);
 
+
+
                         //work projectId 作为workId
                         projectBusinessWriter.newLine();
                         projectBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");

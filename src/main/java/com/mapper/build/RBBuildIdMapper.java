@@ -1,10 +1,10 @@
 package com.mapper.build;
-import com.bean.build.BuildId;
+import com.bean.build.RBBuildId;
 
 import java.util.Map;
 
 public interface RBBuildIdMapper{
-        BuildId selectByOldBuildId(String BuildIdOldId);
+        RBBuildId selectByOldBuildId(String BuildIdOldId);
         int addBuildId(Map<String,Object> map);
         Integer findMaxId();
 }
