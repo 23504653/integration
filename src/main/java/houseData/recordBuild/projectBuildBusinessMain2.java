@@ -99,6 +99,7 @@ public class projectBuildBusinessMain2 {
         HouseIdMapper houseIdMapper = sqlSession.getMapper(HouseIdMapper.class);
         ExceptHouseIdMapper exceptHouseIdMapper = sqlSession.getMapper(ExceptHouseIdMapper.class);
         BusinessIdMapper businessIdMapper = sqlSession.getMapper(BusinessIdMapper.class);
+        BizFileIdMapper bizFileIdMapper = sqlSession.getMapper(BizFileIdMapper.class);
 
         BusinessId businessId = null;
         ProjectId projectId = null;
@@ -117,6 +118,7 @@ public class projectBuildBusinessMain2 {
         String before_info_id_build = null,oldProjectId=null,APPLY_EMP=null,EMP_NAME=null;
         String developer_info_id = null;
         int cardNmuber = 0;
+        BizFileId bizFileId = null;
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,A.COMPANY_CER_CODE,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
@@ -187,6 +189,7 @@ public class projectBuildBusinessMain2 {
                                 ,"true",Q.pm("business")
                         )+ ");");
                         //操作人员记录
+                        String task_id_sl=null;
                         taskOperBusinessResultSet = taskOperBusinessStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.BUSINESS_EMP WHERE BUSINESS_ID='"+projectBusinessResultSet.getString("BUSINESS")+"'");
                         if(taskOperBusinessResultSet.next()){
                             taskOperBusinessResultSet.beforeFirst();
@@ -201,6 +204,7 @@ public class projectBuildBusinessMain2 {
 
                                 if(taskOperBusinessResultSet.getString("TYPE").equals("APPLY_EMP")){
                                     EMP_NAME = taskOperBusinessResultSet.getString("EMP_NAME");
+                                    task_id_sl = taskOperBusinessResultSet.getString("ID");
                                 }
                                 projectBusinessWriter.newLine();
                                 projectBusinessWriter.write("INSERT work_task (task_id, message, task_name, pass) VALUE ");
@@ -211,6 +215,42 @@ public class projectBuildBusinessMain2 {
                             }
                         }
 
+
+                        taskOperBusinessResultSet=taskOperBusinessStatement.executeQuery("select * from BUSINESS_FILE WHERE BUSINESS_ID ='"+projectBusinessResultSet.getString("OID")+"'");
+                        if (taskOperBusinessResultSet.next()){
+                            taskOperBusinessResultSet.beforeFirst();
+                            while (taskOperBusinessResultSet.next()){
+                                bizFileId = bizFileIdMapper.selectByOldId(taskOperBusinessResultSet.getString("ID"));
+                                if (bizFileId==null){
+                                    System.out.println("没有找到对应记录检查bizFileId:"+taskOperBusinessResultSet.getString("ID"));
+                                    return;
+                                }
+                                1111
+                                //work.attachment
+                                projectBusinessWriter.newLine();
+                                projectBusinessWriter.write("INSERT work.attachment (id, name, must, have, work_id, version) VALUE ");
+                                projectBusinessWriter.write("(" + Q.v(Long.toString(bizFileId.getId()),Q.pm(taskOperBusinessResultSet.getString("NAME"))
+                                        ,"true","true"
+                                        ,Long.toString(ownerRecordProjectId.getId()),"0"
+                                )+ ");");
+                                workbookResultSet = workbookStatement.executeQuery("SELECT FL.FID,FL.SHA256,FL.SIZE,FL.MIME,FL.E_TAG FROM UPLOAD_FILE AS UF  " +
+                                        "LEFT JOIN FILE_LINK FL ON UF.ID=FL.OLD WHERE FL.FID IS NOT NULL AND BUSINESS_FILE_ID='"+taskOperBusinessResultSet.getString("ID")+"'");
+                                if(workbookResultSet.next()){
+                                    workbookResultSet.beforeFirst();
+                                    while (workbookResultSet.next()){
+                                        //work.work_file
+                                        projectBusinessWriter.newLine();
+                                        projectBusinessWriter.write("INSERT work.work_file(fid, sha256, attach_id, size, mime, e_tag, order_num, filename, task_id) value ");
+                                        projectBusinessWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("FID")),Q.p(workbookResultSet.getString("SHA256"))
+                                                ,Long.toString(bizFileId.getId()),Q.p(workbookResultSet.getString("SIZE"))
+                                                ,Q.p(workbookResultSet.getString("MIME")),Q.p(workbookResultSet.getString("E_TAG"))
+                                                ,Q.pm(workbookResultSet.getString("PRI")),Q.p(workbookResultSet.getString("FILE_NAME"))
+                                                ,Q.p(task_id_sl)
+                                        )+ ");");
+                                    }
+                                }
+                            }
+                        }
 
 
                         //land_snapshot land_info_id 取HOUSE_OWNER_RECORD.PROJECT.ID
