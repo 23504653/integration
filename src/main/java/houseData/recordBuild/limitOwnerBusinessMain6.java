@@ -149,7 +149,7 @@ public class limitOwnerBusinessMain6 {
                         ,Q.pm("已办产权建立预警"),Q.pm("COMPLETED")
                         ,Q.pm(Q.nowFormatTime()),Q.pm(Q.nowFormatTime())
                         ,"0",Q.pm("func.limit.create")
-                        ,"true",Q.pm("business")
+                        ,"true",Q.pm("action")
                 )+ ");");
                 //work_operator
                 limitOwnerBusinessWriter.newLine();

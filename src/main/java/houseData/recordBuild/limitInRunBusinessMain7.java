@@ -157,7 +157,7 @@ public class limitInRunBusinessMain7 {
                         ,Q.pm("原系统未完成的业务建立预警"),Q.pm("COMPLETED")
                         ,Q.pm(lockedHouseResultSet.getTimestamp("CREATE_TIME")),Q.pm(lockedHouseResultSet.getTimestamp("CREATE_TIME"))
                         ,"0",Q.pm("func.limit.create")
-                        ,"true",Q.pm("business")
+                        ,"true",Q.pm("action")
                 )+ ");");
                 //work_operator
                 limitBusinessWriter.newLine();

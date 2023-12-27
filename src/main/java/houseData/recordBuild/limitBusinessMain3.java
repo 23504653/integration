@@ -156,7 +156,7 @@ public class limitBusinessMain3 {
                         ,Q.pm("房屋预警导入"),Q.pm("COMPLETED")
                         ,Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME")),Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME"))
                         ,"0",Q.pm("func.limit.create")
-                        ,"true",Q.pm("business")
+                        ,"true",Q.pm("action")
                 )+ ");");
 
                 //work_operator
@@ -194,7 +194,7 @@ public class limitBusinessMain3 {
                 limitBusinessWriter.write("INSERT sale_limit (limit_id, house_id,  type, status, version, " +
                         "created_at, explanation, date_to, limit_begin, work_id) value ");
                 limitBusinessWriter.write("(" + Q.v(Long.toString(lockedHouseId.getId()),Long.toString(houseId.getId())
-                        ,Q.pm(FindWorkBook.getLockedHouseType(lockedHouseResultSet.getString("TYPE"))),Q.pm("VALID"),"0"
+                        ,Q.pm(" FREEZE"),Q.pm("VALID"),"0"
                         ,Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME")),Q.pm(lockedHouseResultSet.getString("DESCRIPTION"))
                         ,Q.pm("2123-01-01:08:00:00"),Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME"))
                         ,Long.toString(lockedHouseId.getId())

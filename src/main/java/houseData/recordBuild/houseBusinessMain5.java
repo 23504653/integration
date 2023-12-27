@@ -152,7 +152,7 @@ public class houseBusinessMain5 {
                     "HOUSE_INFO.HOUSE AS HH LEFT JOIN HOUSE_INFO.BUILD AS HB ON HH.BUILDID=HB.ID " +
                     "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS HD ON HP.DEVELOPERID=HD.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID  " +             //where HB.PROJECT_ID='206' WHERE HH.ID IN('8827','B87N2-6-02','138345') WHERE HH.ID IN('66072','66071','66073')
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID " +             //where HB.PROJECT_ID='206' WHERE HH.ID IN('8827','B87N2-6-02','138345') WHERE HH.ID IN('66072','66071','66073')
                     "ORDER BY HB.PROJECT_ID,HH.BUILDID,HH.ID"); //'210603103001252','B544N1-4-02','0020-25','0030-0','0182-21',133939 WHERE HB.PROJECT_ID IN ('206') WHERE HH.ID='21068110141843255051200488' 21.34 WHERE HB.PROJECT_ID='115'
             houseResultSet.last();
             int sumCount = houseResultSet.getRow(),i=0;
@@ -643,7 +643,7 @@ public class houseBusinessMain5 {
                                         ) + ");");
                                     }
 
-                                    System.out.println("123123-"+houseContractResultSet.getString("TYPE"));
+                                    //System.out.println("123123-"+houseContractResultSet.getString("TYPE"));
                                     //house_contract
                                     houseBusinessWriter.newLine();
                                     houseBusinessWriter.write("INSERT record_contract.house_contract (contract_id, status, type, created_at, updated_at, version, unified_id, record_at) value ");
@@ -850,7 +850,7 @@ public class houseBusinessMain5 {
                                 )+ ");");
 
 
-//                                System.out.println("111110-"+houseBusinessResultSet.getString("SELECT_BUSINESS"));
+                                System.out.println("111110-"+houseBusinessResultSet.getString("SELECT_BUSINESS"));
                                 workbookResultSet=workbookStatement.executeQuery("select BH.AFTER_HOUSE from OWNER_BUSINESS AS O LEFT JOIN BUSINESS_HOUSE AS BH ON O.ID=BH.BUSINESS_ID " +
                                         "WHERE O.ID = '"+houseBusinessResultSet.getString("SELECT_BUSINESS")+"'");
                                 if(workbookResultSet.next()){
@@ -914,6 +914,7 @@ public class houseBusinessMain5 {
                                         ) + ");");
                                     }
                                 }
+
 
                                 //apartment_snapshot
                                 houseBusinessWriter.newLine();

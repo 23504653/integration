@@ -143,10 +143,10 @@ public class limitBusinessCancelMain4 {
                 limitCancelBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
                 limitCancelBusinessWriter.write("(" + Q.v(Long.toString(lockedHouseCancelId.getId()),Q.pm("OLD")
                         ,Q.pm(lockedHouseCancelResultSet.getTimestamp("CANCEL_TIME")),Q.pm(lockedHouseCancelResultSet.getTimestamp("CANCEL_TIME"))
-                        ,Q.pm("房屋预警导入"),Q.pm("COMPLETED")
+                        ,Q.pm("房屋解除预警导入"),Q.pm("COMPLETED")
                         ,Q.pm(lockedHouseCancelResultSet.getTimestamp("CANCEL_TIME")),Q.pm(lockedHouseCancelResultSet.getTimestamp("CANCEL_TIME"))
                         ,"0",Q.pm("func.limit.cancel")
-                        ,"true",Q.pm("business")
+                        ,"true",Q.pm("action")
                 )+ ");");
 
                 //work_operator

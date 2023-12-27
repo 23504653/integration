@@ -215,42 +215,41 @@ public class projectBuildBusinessMain2 {
                             }
                         }
 
-
-                        taskOperBusinessResultSet=taskOperBusinessStatement.executeQuery("select * from BUSINESS_FILE WHERE BUSINESS_ID ='"+projectBusinessResultSet.getString("OID")+"'");
-                        if (taskOperBusinessResultSet.next()){
-                            taskOperBusinessResultSet.beforeFirst();
-                            while (taskOperBusinessResultSet.next()){
-                                bizFileId = bizFileIdMapper.selectByOldId(taskOperBusinessResultSet.getString("ID"));
-                                if (bizFileId==null){
-                                    System.out.println("没有找到对应记录检查bizFileId:"+taskOperBusinessResultSet.getString("ID"));
-                                    return;
-                                }
-                                1111
-                                //work.attachment
-                                projectBusinessWriter.newLine();
-                                projectBusinessWriter.write("INSERT work.attachment (id, name, must, have, work_id, version) VALUE ");
-                                projectBusinessWriter.write("(" + Q.v(Long.toString(bizFileId.getId()),Q.pm(taskOperBusinessResultSet.getString("NAME"))
-                                        ,"true","true"
-                                        ,Long.toString(ownerRecordProjectId.getId()),"0"
-                                )+ ");");
-                                workbookResultSet = workbookStatement.executeQuery("SELECT FL.FID,FL.SHA256,FL.SIZE,FL.MIME,FL.E_TAG FROM UPLOAD_FILE AS UF  " +
-                                        "LEFT JOIN FILE_LINK FL ON UF.ID=FL.OLD WHERE FL.FID IS NOT NULL AND BUSINESS_FILE_ID='"+taskOperBusinessResultSet.getString("ID")+"'");
-                                if(workbookResultSet.next()){
-                                    workbookResultSet.beforeFirst();
-                                    while (workbookResultSet.next()){
-                                        //work.work_file
-                                        projectBusinessWriter.newLine();
-                                        projectBusinessWriter.write("INSERT work.work_file(fid, sha256, attach_id, size, mime, e_tag, order_num, filename, task_id) value ");
-                                        projectBusinessWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("FID")),Q.p(workbookResultSet.getString("SHA256"))
-                                                ,Long.toString(bizFileId.getId()),Q.p(workbookResultSet.getString("SIZE"))
-                                                ,Q.p(workbookResultSet.getString("MIME")),Q.p(workbookResultSet.getString("E_TAG"))
-                                                ,Q.pm(workbookResultSet.getString("PRI")),Q.p(workbookResultSet.getString("FILE_NAME"))
-                                                ,Q.p(task_id_sl)
-                                        )+ ");");
-                                    }
-                                }
-                            }
-                        }
+//
+//                        taskOperBusinessResultSet=taskOperBusinessStatement.executeQuery("select * from BUSINESS_FILE WHERE BUSINESS_ID ='"+projectBusinessResultSet.getString("OID")+"'");
+//                        if (taskOperBusinessResultSet.next()){
+//                            taskOperBusinessResultSet.beforeFirst();
+//                            while (taskOperBusinessResultSet.next()){
+//                                bizFileId = bizFileIdMapper.selectByOldId(taskOperBusinessResultSet.getString("ID"));
+//                                if (bizFileId==null){
+//                                    System.out.println("没有找到对应记录检查bizFileId:"+taskOperBusinessResultSet.getString("ID"));
+//                                    return;
+//                                }
+//                                //work.attachment
+//                                projectBusinessWriter.newLine();
+//                                projectBusinessWriter.write("INSERT work.attachment (id, name, must, have, work_id, version) VALUE ");
+//                                projectBusinessWriter.write("(" + Q.v(Long.toString(bizFileId.getId()),Q.pm(taskOperBusinessResultSet.getString("NAME"))
+//                                        ,"true","true"
+//                                        ,Long.toString(ownerRecordProjectId.getId()),"0"
+//                                )+ ");");
+//                                workbookResultSet = workbookStatement.executeQuery("SELECT FL.FID,FL.SHA256,FL.SIZE,FL.MIME,FL.E_TAG,UF.PRI,UF.FILE_NAME FROM UPLOAD_FILE AS UF,  " +
+//                                        "FILE_LINK AS FL  WHERE UF.ID=FL.OLD AND BUSINESS_FILE_ID='"+taskOperBusinessResultSet.getString("ID")+"'");
+//                                if(workbookResultSet.next()){
+//                                    workbookResultSet.beforeFirst();
+//                                    while (workbookResultSet.next()){
+//                                        //work.work_file
+//                                        projectBusinessWriter.newLine();
+//                                        projectBusinessWriter.write("INSERT work.work_file(fid, sha256, attach_id, size, mime, e_tag, order_num, filename, task_id) value ");
+//                                        projectBusinessWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("FID")),Q.p(workbookResultSet.getString("SHA256"))
+//                                                ,Long.toString(bizFileId.getId()),Q.p(workbookResultSet.getString("SIZE"))
+//                                                ,Q.pm(workbookResultSet.getString("MIME")),Q.p(workbookResultSet.getString("E_TAG"))
+//                                                ,Q.pm(workbookResultSet.getString("PRI")),Q.p(workbookResultSet.getString("FILE_NAME"))
+//                                                ,Q.p(task_id_sl)
+//                                        )+ ");");
+//                                    }
+//                                }
+//                            }
+//                        }
 
 
                         //land_snapshot land_info_id 取HOUSE_OWNER_RECORD.PROJECT.ID
@@ -591,7 +590,7 @@ public class projectBuildBusinessMain2 {
                                     workbookResultSet.beforeFirst();
                                     while (workbookResultSet.next()){
                                         projectBusinessWriter.newLine();
-                                        projectBusinessWriter.write("INSERT     build_use_type_total_snapshot (count, area, use_area, house_type, build_id, work_id) VALUE ");
+                                        projectBusinessWriter.write("INSERT build_use_type_total_snapshot (count, area, use_area, house_type, build_id, work_id) VALUE ");
                                         projectBusinessWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("COUNT")),Q.pm(workbookResultSet.getBigDecimal("AREA"))
                                                 ,Q.pm(workbookResultSet.getBigDecimal("AREA")),Q.pm(FindWorkBook.changeLandSnapshot(workbookResultSet.getString("USE_TYPE")).getId())
                                                 ,Long.toString(buildId.getId()),Long.toString(ownerRecordProjectId.getId())
