@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命令空间 对应数据接口操作-->
+<mapper namespace="com.mapper.BizFileIdMapper">
+    <select id="selectByOldId" resultType="com.bean.BizFileId">
+      select * from INTEGRATION.bizFileId where oid = #{OldId};
+    </select>
+    <insert id="addFileId" parameterType="map">
+        insert INTO INTEGRATION.bizFileId (id, oid)
+         VALUE (#{id},#{oid});
+    </insert>
+    <select id="findMaxId" resultType="Integer">
+        select max(INTEGRATION.bizFileId.id) from INTEGRATION.bizFileId;
+    </select>
+</mapper>

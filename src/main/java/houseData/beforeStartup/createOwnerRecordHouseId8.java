@@ -36,7 +36,7 @@ public class createOwnerRecordHouseId8 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 608000;//最大 1167608 下一起始 1200000
+                j = 608000;//最大 1167608 1170520 下一起始 1200000
             }
 
             System.out.println("记录总数-"+sumCount);

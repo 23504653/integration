@@ -35,7 +35,7 @@ public class createOwnerRecordProjectId7 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 600000;// 最大 602997 下一604000
+                j = 600000;// 最大 602997 600499 下一604000
             }
 
             System.out.println("记录总数-"+sumCount);
