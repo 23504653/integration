@@ -83,26 +83,32 @@ public class businessFileMain8 {
         BizFileId bizFileId = null;
 
         try {
+
             projectBusinessResultSet = projectBusinessStatement.executeQuery("SELECT O.ID AS OID,P.ID AS PID FROM HOUSE_OWNER_RECORD.PROJECT AS P "
                     +"LEFT JOIN HOUSE_OWNER_RECORD.PROJECT_SELL_INFO AS PI ON P.ID = PI.ID LEFT JOIN HOUSE_OWNER_RECORD.OWNER_BUSINESS AS O ON P.BUSINESS = O.ID "
                     +"WHERE O.STATUS IN('COMPLETE','COMPLETE_CANCEL') AND DEFINE_ID='WP50' "
                     +"ORDER BY P.NAME,O.ID,O.APPLY_TIME;");
 
             projectBusinessResultSet.last();
-            int sumCount = projectResultSet.getRow(),i=0;
-            projectBusinessResultSet.beforeFirst();
+            int sumCount = projectBusinessResultSet.getRow(),i=0;
+
             System.out.println("记录总数-"+sumCount);
+            projectBusinessResultSet.beforeFirst();
+
             while (projectBusinessResultSet.next()) {
+
                 ownerRecordProjectId = ownerRecordProjectIdMapper.selectByOldId(projectBusinessResultSet.getString("PID"));
                 if(ownerRecordProjectId == null){
                     System.out.println("businessFileMain8有找到对应记录检查ownerRecordProjectId--:"+projectBusinessResultSet.getString("PID"));
                     return;
                 }
-                landEndTimeResultSet = landEndTimeStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.BUSINESS_EMP WHERE (TYPE ='APPLY_EMP') and BUSINESS_ID='"+projectBusinessResultSet.getString("BUSINESS")+"'");
+
+                landEndTimeResultSet = landEndTimeStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.BUSINESS_EMP WHERE (TYPE ='APPLY_EMP') and BUSINESS_ID='"+projectBusinessResultSet.getString("OID")+"'");
                 String task_id_sl=null;
                 if(landEndTimeResultSet.next()) {
                     if(landEndTimeResultSet.getString("TYPE").equals("APPLY_EMP")){
-                        task_id_sl = taskOperBusinessResultSet.getString("ID");
+                        task_id_sl = landEndTimeResultSet.getString("ID");
+
                     }else {
                         task_id_sl = null;
                     }
@@ -128,13 +134,17 @@ public class businessFileMain8 {
                         if(workbookResultSet.next()){
                             workbookResultSet.beforeFirst();
                             while (workbookResultSet.next()){
+                                String order_num="1";
+                                if(workbookResultSet.getString("PRI")!=null && !workbookResultSet.getString("PRI").equals("")){
+                                    order_num = workbookResultSet.getString("PRI");
+                                }
 
                                 businessFileWriter.newLine();
                                 businessFileWriter.write("INSERT work.work_file(fid, sha256, attach_id, size, mime, e_tag, order_num, filename, task_id) value ");
                                 businessFileWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("FID")),Q.p(workbookResultSet.getString("SHA256"))
                                         ,Long.toString(bizFileId.getId()),Q.p(workbookResultSet.getString("SIZE"))
                                         ,Q.pm(workbookResultSet.getString("MIME")),Q.p(workbookResultSet.getString("E_TAG"))
-                                        ,Q.pm(workbookResultSet.getString("PRI")),Q.p(workbookResultSet.getString("FILE_NAME"))
+                                        ,Q.pm(order_num),Q.p(workbookResultSet.getString("FILE_NAME"))
                                         ,Q.p(task_id_sl)
                                 )+ ");");
                             }
@@ -161,24 +171,29 @@ public class businessFileMain8 {
                 houseBusinessResultSet.beforeFirst();
                 while (houseBusinessResultSet.next()) {
 
+
                     ownerRecordHouseId = ownerRecordHouseIdMapper.selectByOldId(houseBusinessResultSet.getString("houseBId"));
                     if(ownerRecordHouseId==null){
                         System.out.println("businessFileMain8没有找到对应记录检查ownerRecordHouseId:"+houseBusinessResultSet.getString("houseBId"));
                         return;
                     }
+
+
                     landEndTimeResultSet = landEndTimeStatement.executeQuery("SELECT * FROM HOUSE_OWNER_RECORD.BUSINESS_EMP WHERE (TYPE ='APPLY_EMP' OR TYPE='RECORD_EMP' ) and BUSINESS_ID='"+houseBusinessResultSet.getString("OID")+"'");
                     String task_id_sl=null;
                     if(landEndTimeResultSet.next()) {
                         if(landEndTimeResultSet.getString("TYPE").equals("APPLY_EMP")){
-                            task_id_sl = taskOperBusinessResultSet.getString("ID");
+                            task_id_sl = landEndTimeResultSet.getString("ID");
                         }else if(landEndTimeResultSet.getString("TYPE").equals("RECORD_EMP")) {
-                            task_id_sl = taskOperBusinessResultSet.getString("ID");
+                            task_id_sl = landEndTimeResultSet.getString("ID");
                         }else{
                             task_id_sl = null;
                         }
                     }
-                    taskOperBusinessResultSet=taskOperBusinessStatement.executeQuery("select * from BUSINESS_FILE WHERE BUSINESS_ID ='"+projectBusinessResultSet.getString("OID")+"'");
+
+                    taskOperBusinessResultSet=taskOperBusinessStatement.executeQuery("select * from BUSINESS_FILE WHERE BUSINESS_ID ='"+houseBusinessResultSet.getString("OID")+"'");
                     if (taskOperBusinessResultSet.next()){
+
                         taskOperBusinessResultSet.beforeFirst();
                         while (taskOperBusinessResultSet.next()){
                             bizFileId = bizFileIdMapper.selectByOldId(taskOperBusinessResultSet.getString("ID"));
@@ -186,25 +201,32 @@ public class businessFileMain8 {
                                 System.out.println("没有找到对应记录检查bizFileId:"+taskOperBusinessResultSet.getString("ID"));
                                 return;
                             }
+
                             //work.attachment
                             businessFileWriter.newLine();
                             businessFileWriter.write("INSERT work.attachment (id, name, must, have, work_id, version) VALUE ");
                             businessFileWriter.write("(" + Q.v(Long.toString(bizFileId.getId()),Q.pm(taskOperBusinessResultSet.getString("NAME"))
                                     ,"true","true"
-                                    ,Long.toString(ownerRecordProjectId.getId()),"0"
+                                    ,Long.toString(ownerRecordHouseId.getId()),"0"
                             )+ ");");
+
                             workbookResultSet = workbookStatement.executeQuery("SELECT FL.FID,FL.SHA256,FL.SIZE,FL.MIME,FL.E_TAG,UF.PRI,UF.FILE_NAME FROM UPLOAD_FILE AS UF,  " +
                                     "FILE_LINK AS FL  WHERE UF.ID=FL.OLD AND BUSINESS_FILE_ID='"+taskOperBusinessResultSet.getString("ID")+"'");
                             if(workbookResultSet.next()){
                                 workbookResultSet.beforeFirst();
                                 while (workbookResultSet.next()){
 
+                                    String order_num="1";
+                                    if(workbookResultSet.getString("PRI")!=null && !workbookResultSet.getString("PRI").equals("")){
+                                        order_num = workbookResultSet.getString("PRI");
+                                    }
+
                                     businessFileWriter.newLine();
                                     businessFileWriter.write("INSERT work.work_file(fid, sha256, attach_id, size, mime, e_tag, order_num, filename, task_id) value ");
                                     businessFileWriter.write("(" + Q.v(Q.pm(workbookResultSet.getString("FID")),Q.p(workbookResultSet.getString("SHA256"))
                                             ,Long.toString(bizFileId.getId()),Q.p(workbookResultSet.getString("SIZE"))
                                             ,Q.pm(workbookResultSet.getString("MIME")),Q.p(workbookResultSet.getString("E_TAG"))
-                                            ,Q.pm(workbookResultSet.getString("PRI")),Q.p(workbookResultSet.getString("FILE_NAME"))
+                                            ,Q.pm(order_num),Q.p(workbookResultSet.getString("FILE_NAME"))
                                             ,Q.p(task_id_sl)
                                     )+ ");");
                                 }
@@ -213,7 +235,7 @@ public class businessFileMain8 {
                     }
                     businessFileWriter.flush();
                     j++;
-                    System.out.println(i+"/"+String.valueOf(sumCount2));
+                    System.out.println(j+"/"+String.valueOf(sumCount2));
                 }
             }
         }catch (Exception e){
