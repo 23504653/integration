@@ -44,42 +44,29 @@ public class corpMain {
             cropWriter.newLine();
             cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (0,0,'1990-01-01:08:00:00',0,'1990-01-01:08:00:00');");
             cropWriter.newLine();
+            cropWriter.write("INSERT corp_record_snapshot (INFO_ID,  RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE (0,0,0,0,'DEVELOPER');");
+
+            cropWriter.newLine();
             cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('东港市房产测绘中心','13333333333','未知','RESIDENT_ID','未知','未知','012',1);");
             cropWriter.newLine();
             cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (1,0,'1990-01-01:08:00:00',1,'1990-01-01:08:00:00');");
+            cropWriter.newLine();
+            cropWriter.write("INSERT corp_record_snapshot (INFO_ID,  RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE (1,1,1,1,'MAPPING');");
+
             cropWriter.newLine();
             cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('东港市村镇建设管理处测绘队','13333333333','未知','RESIDENT_ID','未知','未知','013',2);");
             cropWriter.newLine();
             cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (2,0,'1990-01-01:08:00:00',2,'1990-01-01:08:00:00');");
             cropWriter.newLine();
+            cropWriter.write("INSERT corp_record_snapshot (INFO_ID,  RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE (2,2,2,2,'MAPPING');");
+
+            cropWriter.newLine();
             cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('未知测绘机构','13333333333','未知','RESIDENT_ID','未知','未知','014',3);");
             cropWriter.newLine();
             cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (3,0,'1990-01-01:08:00:00',3,'1990-01-01:08:00:00');");
             cropWriter.flush();
-//            alter table record_building.apartment_snapshot modify floor_name VARCHAR(50) not null;
-//            alter table record_building.apartment_snapshot modify apartment_number VARCHAR(40) not null;
-//            alter table record_building.build modify build_name VARCHAR(85) not null;
-//            alter table record_building.build modify mapping_name VARCHAR(50) null;
-//            alter table record_building.build modify door_number VARCHAR(20) null;
-//            alter table record_building.project modify project_name VARCHAR(68) not null;
-//            alter table record_building.project_base_snapshot modify project_name VARCHAR(68) not null;
-//            alter table record_building.project_construct_snapshot modify project_design_license VARCHAR(60) not null;
-//            alter table record_contract.contract_house_snapshot modify project_name VARCHAR(68) not null;
-//            alter table record_contract.contract_house_snapshot modify build_name VARCHAR(85) not null;
-//            alter table record_contract.contract_house_snapshot modify apartment_number VARCHAR(40) not null;
-
-
-//            cropWriter.newLine();
-//            cropWriter.write("INSERT work.work_define (define_id, work_name, process, enabled, version, type) VALUE ('func.corp.record.import','从业机构导入',false,true,0,'data');");
-//            cropWriter.newLine();
-//            cropWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) "
-//            +"value (0,'OLD','2023-10-28 18:30:45','2023-10-28 18:30:45','从业机构导入','COMPLETED','2023-10-28 18:30:45','2023-10-28 18:30:45',0,'func.corp.record.create',false,'data');");
-//            cropWriter.newLine();
-//            cropWriter.write("INSERT work_operator (work_id, type, user_id, user_name, org_name, task_id) "
-//                    +"VALUE (0,'CREATE','0','root','从业机构导入','wxy');");
-//            cropWriter.newLine();
-//            cropWriter.write("INSERT work_task (TASK_ID, MESSAGE, TASK_NAME, PASS) "
-//                    +"VALUE ('wxy','从业机构导入','从业机构导入',true);");
+            cropWriter.newLine();
+            cropWriter.write("INSERT corp_record_snapshot (INFO_ID,  RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE (3,3,3,3,'MAPPING');");
 
         }catch (IOException e){
             System.out.println("cropWriter 文件创建失败");
@@ -129,8 +116,6 @@ public class corpMain {
                             ,Q.pm(cropResultSet.getTimestamp("CREATE_TIME")),Q.pm(cropResultSet.getTimestamp("CREATE_TIME"))
                             ,Long.toString(jointCorpDevelop.getCorpId())
                     )+ ");");
-
-
 
 
                     if(cropResultSet.getString("COMPANY_CER_CODE")!=null &&
@@ -187,6 +172,21 @@ public class corpMain {
                                 ,Q.pm(cropResultSet.getTimestamp("CREATE_TIME")),Q.pm("BUSINESS")
 
                         )+ ");");
+
+                    }else{
+                        cropWriter.newLine();
+                        cropWriter.write("INSERT qualification_snapshot (qualification_id, level, level_number, expire_at, register_gov) VALUE ");
+                        cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId()),"1"
+                                ,Q.pm("未知"),Q.pm(cropResultSet.getTimestamp("CREATE_TIME"))
+                                ,Q.pm("未知")
+                        )+ ");");
+                        cropWriter.newLine();
+                        cropWriter.write("INSERT corp_record_snapshot (INFO_ID,  RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE ");
+                        cropWriter.write("(" +Q.v(Long.toString(jointCorpDevelop.getCorpId())
+                                ,Long.toString(jointCorpDevelop.getCorpId()),Long.toString(jointCorpDevelop.getCorpId())
+                                ,Long.toString(jointCorpDevelop.getCorpId()),Q.pm("DEVELOPER")
+                        )+ ");");
+
 
                     }
 
