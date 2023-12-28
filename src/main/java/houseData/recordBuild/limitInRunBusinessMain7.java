@@ -201,8 +201,8 @@ public class limitInRunBusinessMain7 {
                         "created_at, explanation, date_to, limit_begin, work_id) value ");
                 limitBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()),Long.toString(houseId.getId())
                         ,Q.pm("FREEZE"),Q.pm("VALID"),"0"
-                        ,Q.pm(lockedHouseResultSet.getTimestamp("CREATE_TIME")),Q.pm(explanation)
-                        ,Q.pm("2123-01-01:08:00:00"),Q.pm(lockedHouseResultSet.getTimestamp("CREATE_TIME"))
+                        ,Q.pm(lockedHouseResultSet.getTimestamp("CREATE_TIME")),Q.pm("{\"explanation\":\""+explanation+"\"}")
+                        ,"null",Q.pm(lockedHouseResultSet.getTimestamp("CREATE_TIME"))
                         ,Long.toString(ownerRecordHouseId.getId())
                 )+ ");");
 

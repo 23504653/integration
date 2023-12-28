@@ -195,8 +195,8 @@ public class limitBusinessMain3 {
                         "created_at, explanation, date_to, limit_begin, work_id) value ");
                 limitBusinessWriter.write("(" + Q.v(Long.toString(lockedHouseId.getId()),Long.toString(houseId.getId())
                         ,Q.pm(" FREEZE"),Q.pm("VALID"),"0"
-                        ,Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME")),Q.pm(lockedHouseResultSet.getString("DESCRIPTION"))
-                        ,Q.pm("2123-01-01:08:00:00"),Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME"))
+                        ,Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME")),Q.pm("{\"explanation\":\""+lockedHouseResultSet.getString("DESCRIPTION")+"\"}")
+                        ,"null",Q.pm(lockedHouseResultSet.getTimestamp("LOCKED_TIME"))
                         ,Long.toString(lockedHouseId.getId())
                 )+ ");");
 

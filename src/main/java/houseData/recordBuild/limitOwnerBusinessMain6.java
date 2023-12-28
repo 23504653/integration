@@ -186,8 +186,8 @@ public class limitOwnerBusinessMain6 {
                         "created_at, explanation, date_to, limit_begin, work_id) value ");
                 limitOwnerBusinessWriter.write("(" + Q.v(Long.toString(houseRecordId.getId()),Long.toString(houseId.getId())
                         ,Q.pm("FREEZE"),Q.pm("VALID"),"0"
-                        ,Q.pm(Q.nowFormatTime()),Q.pm("由管理员将原系统已办产权的房屋建立预警！ 原房屋编号："+houseRecordResultSet.getString("HOUSE_CODE"))
-                        ,Q.pm("2123-01-01:08:00:00"),Q.pm(Q.nowFormatTime())
+                        ,Q.pm(Q.nowFormatTime()),Q.pm("{\"explanation\":\""+"由管理员将原系统已办产权的房屋建立预警！ 原房屋编号："+houseRecordResultSet.getString("HOUSE_CODE")+"\"}")
+                        ,"null",Q.pm(Q.nowFormatTime())
                         ,Long.toString(houseRecordId.getId())
                 )+ ");");
 

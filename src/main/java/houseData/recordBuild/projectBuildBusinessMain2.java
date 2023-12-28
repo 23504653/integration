@@ -646,8 +646,8 @@ public class projectBuildBusinessMain2 {
                                                 "created_at, explanation, date_to, limit_begin, work_id) value ");
                                         projectBusinessWriter.write("(" + Q.v(Long.toString(exceptHouseId.getId()),Long.toString(houseId.getId())
                                                 ,Q.pm("FREEZE"),Q.pm("VALID"),"0"
-                                                ,Q.pm(projectResultSet.getString("CREATE_TIME")),Q.pm("预售不可售")
-                                                ,Q.pm("2123-01-01:08:00:00"),Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME"))
+                                                ,Q.pm(projectResultSet.getString("CREATE_TIME")),Q.pm("{\"explanation\":\""+"预售不可售"+"\"}")
+                                                ,"null",Q.pm(projectBusinessResultSet.getTimestamp("CREATE_TIME"))
                                                 ,Long.toString(ownerRecordProjectId.getId())
                                         )+ ");");
 
