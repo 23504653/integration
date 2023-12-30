@@ -34,7 +34,7 @@ public class createBizFileId17 {
             if (j!=null){
                 j = j.intValue()+1;
             }else {
-                j = 2384000;//最大 下一起始
+                j = 2384000;//最大3638072 共 1254073  下一起始 7280144
             }
 
             System.out.println("记录总数-"+sumCount);

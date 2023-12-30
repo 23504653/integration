@@ -72,34 +72,34 @@ public class createBizId {
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
 
-
-
-            houseBusinessResultSet = houseBusinessStatement.executeQuery("SELECT O.ID AS OID,H.ID AS HID FROM OWNER_BUSINESS AS O LEFT JOIN BUSINESS_HOUSE AS BH ON O.ID=BH.BUSINESS_ID " +
-                    "LEFT JOIN HOUSE AS H ON BH.AFTER_HOUSE=H.ID " +
-                    "WHERE O.STATUS IN ('COMPLETE','COMPLETE_CANCEL','MODIFYING') AND DEFINE_ID <> 'WP50' " +
-                    "AND BH.BUSINESS_ID IS NOT NULL " +
-                    "ORDER BY H.HOUSE_CODE,O.CREATE_TIME");
-            houseBusinessResultSet.last();
-           int sumCount2 = houseBusinessResultSet.getRow(),j=0;
-            houseBusinessResultSet.beforeFirst();
-            while(houseBusinessResultSet.next()){
-                ownerRecordHouseId = ownerRecordHouseIdMapper.selectByOldId(houseBusinessResultSet.getString("HID"));
-                if(ownerRecordHouseId == null){
-                    System.out.println("没有找到对应记录检查ownerRecordProjectId--:"+houseBusinessResultSet.getString("HID"));
-                    return;
-                }
-                if(bizIdMapper.selectByOldId(houseBusinessResultSet.getString("OID")) == null) {
-                    map.put("work_id",ownerRecordHouseId.getId());
-                    map.put("business_id",houseBusinessResultSet.getString("OID"));
-                    bizIdMapper.addBizId(map);
-                    bsqlSession.commit();
-                }
-
-
-                j++;
-                System.out.println(j+"/"+String.valueOf(sumCount2));
-
-            }
+//
+//
+//            houseBusinessResultSet = houseBusinessStatement.executeQuery("SELECT O.ID AS OID,H.ID AS HID FROM OWNER_BUSINESS AS O LEFT JOIN BUSINESS_HOUSE AS BH ON O.ID=BH.BUSINESS_ID " +
+//                    "LEFT JOIN HOUSE AS H ON BH.AFTER_HOUSE=H.ID " +
+//                    "WHERE O.STATUS IN ('COMPLETE','COMPLETE_CANCEL','MODIFYING') AND DEFINE_ID IN ('WP42','BL42','WP40','WP43') " +
+//                    "AND BH.BUSINESS_ID IS NOT NULL " +
+//                    "ORDER BY H.HOUSE_CODE,O.CREATE_TIME");
+//            houseBusinessResultSet.last();
+//           int sumCount2 = houseBusinessResultSet.getRow(),j=0;
+//            houseBusinessResultSet.beforeFirst();
+//            while(houseBusinessResultSet.next()){
+//                ownerRecordHouseId = ownerRecordHouseIdMapper.selectByOldId(houseBusinessResultSet.getString("HID"));
+//                if(ownerRecordHouseId == null){
+//                    System.out.println("没有找到对应记录检查ownerRecordProjectId--:"+houseBusinessResultSet.getString("HID"));
+//                    return;
+//                }
+//                if(bizIdMapper.selectByOldId(houseBusinessResultSet.getString("OID")) == null) {
+//                    map.put("work_id",ownerRecordHouseId.getId());
+//                    map.put("business_id",houseBusinessResultSet.getString("OID"));
+//                    bizIdMapper.addBizId(map);
+//                    bsqlSession.commit();
+//                }
+//
+//
+//                j++;
+//                System.out.println(j+"/"+String.valueOf(sumCount2));
+//
+//            }
 
 
 
