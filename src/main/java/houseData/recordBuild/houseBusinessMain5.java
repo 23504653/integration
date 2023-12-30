@@ -151,7 +151,7 @@ public class houseBusinessMain5 {
             houseResultSet = houseStatement.executeQuery("SELECT HH.ID AS HID,HH.BUILDID,HB.PROJECT_ID,HB.MAP_CORP,HP.DEVELOPERID,HD.NAME,HC.LICENSE_NUMBER,HC.COMPANY_CER_CODE," +
                     "HP.NAME AS DNAME,HS.DISTRICT,HH.DESIGN_USE_TYPE,HH.IN_FLOOR_NAME FROM " +
                     "HOUSE_INFO.HOUSE AS HH LEFT JOIN HOUSE_INFO.BUILD AS HB ON HH.BUILDID=HB.ID " +
-                    "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " +
+                    "LEFT JOIN HOUSE_INFO.PROJECT AS HP ON HB.PROJECT_ID=HP.ID LEFT JOIN HOUSE_INFO.SECTION AS HS ON HP.SECTIONID=HS.ID " + //WHERE HH.ID in ('210681104029358','210603103001252','B544N1-4-02','0020-25','0030-0','0182-21')
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS HD ON HP.DEVELOPERID=HD.ID " +
                     "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS HC ON HD.ATTACH_ID=HC.ID " +             //where HB.PROJECT_ID='206' WHERE HH.ID IN('8827','B87N2-6-02','138345') WHERE HH.ID IN('66072','66071','66073')
                     "ORDER BY HB.PROJECT_ID,HH.BUILDID,HH.ID"); //'210603103001252','B544N1-4-02','0020-25','0030-0','0182-21',133939 WHERE HB.PROJECT_ID IN ('206') WHERE HH.ID='21068110141843255051200488' 21.34 WHERE HB.PROJECT_ID='115'
@@ -352,7 +352,7 @@ public class houseBusinessMain5 {
 //                            System.out.println("license_id--:"+license_id);
                             if( DEFINE_ID.equals("WP42") || (DEFINE_ID.equals("BL42") && HOUSE_STATUS!=null && !HOUSE_STATUS.equals("INIT_REG"))) {
                                 //work ownerRecordHouseId.getId() 作为workId
-                               // System.out.println("STATUS--"+houseBusinessResultSet.getString("STATUS"));
+                                System.out.println("STATUS--"+houseBusinessResultSet.getString("STATUS"));
                                 if(houseBusinessResultSet.getString("STATUS").equals("COMPLETE")){
                                     ba_biz_id = houseBusinessResultSet.getString("OID");
                                 }
@@ -501,6 +501,42 @@ public class houseBusinessMain5 {
                                         ) + ");");
                                     }
                                 }
+
+                                //System.out.println("wp42-houseCode----"+houseResultSet.getString("HID"));
+                                //只有一条补录或者备案业务时，写入
+                                taskOperBusinessResultSet = taskOperBusinessStatement.executeQuery("select DEFINE_ID from OWNER_BUSINESS as O left join BUSINESS_HOUSE as BH " +
+                                        "on O.ID = BH.BUSINESS_ID WHERE O.STATUS='COMPLETE' and HOUSE_CODE='"+houseResultSet.getString("HID")+"' GROUP BY O.DEFINE_ID");
+                                if(taskOperBusinessResultSet.next()){
+                                    taskOperBusinessResultSet.last();
+                                    int count=taskOperBusinessResultSet.getRow();
+                                    if(count == 1 && (taskOperBusinessResultSet.getString("DEFINE_ID").equals("WP42")
+                                            || taskOperBusinessResultSet.getString("DEFINE_ID").equals("BL42"))){
+                                       // System.out.println("wp42-houseCode----"+houseResultSet.getString("HID")+taskOperBusinessResultSet.getString("DEFINE_ID"));
+                                       //house_rights
+                                        powerOwnerResultSet = powerOwnerStatement.executeQuery("SELECT PO.* from HOUSE_OWNER AS HO LEFT JOIN POWER_OWNER PO ON HO.POOL =PO.ID " +
+                                                "WHERE PO.TYPE='CONTRACT' AND HO.HOUSE = '"+houseBusinessResultSet.getString("houseBId")+"'");
+                                        if(powerOwnerResultSet.next()){
+                                            powerOwnerResultSet.beforeFirst();
+                                            while (powerOwnerResultSet.next()){
+                                                powerOwnerId = powerOwnerIdMapper.selectByOldId(powerOwnerResultSet.getString("ID"));
+                                                if(powerOwnerId == null){
+                                                    System.out.println("houseBusinessMain5-house_rights没有找到对应记录检查powerOwnerId:--:"+powerOwnerResultSet.getString("ID"));
+                                                    return;
+                                                }
+                                                houseBusinessWriter.newLine();
+                                                houseBusinessWriter.write("INSERT house_rights (id, house_id, power_type, work_id, id_type, id_number, name, tel) VALUE ");
+                                                houseBusinessWriter.write("(" + Q.v(Long.toString(powerOwnerId.getId()),Long.toString(houseId.getId())
+                                                        ,Q.pm("CONTRACT"),Long.toString(ownerRecordHouseId.getId())
+                                                        ,Q.pm(FindWorkBook.changeIdType(powerOwnerResultSet.getString("ID_TYPE")).getId()),Q.pm(powerOwnerResultSet.getString("ID_NO"))
+                                                        ,Q.pm(powerOwnerResultSet.getString("NAME")),Q.pm(powerOwnerResultSet.getString("PHONE"))
+                                                ) + ");");
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
 
 
                                 //导入开发商客户端合同状态STATUS='SUBMIT'，在内网中业务中的有俩种处理方式一种是直接导入成已备案，一种是不倒 BHID=BUSINESS_HOUSE.ID
@@ -1010,28 +1046,17 @@ public class houseBusinessMain5 {
                                         ,Q.pm("CREATE"),Long.toString(ownerRecordHouseId.getId())
                                 )+ ");");
 
-//                                System.out.println("wp40-houseCode----"+houseResultSet.getString("HID"));
-//                                taskOperBusinessResultSet = taskOperBusinessStatement.executeQuery("select DEFINE_ID from OWNER_BUSINESS as O left join BUSINESS_HOUSE as BH " +
-//                                            "on O.ID = BH.BUSINESS_ID WHERE O.STATUS='COMPLETE' and HOUSE_CODE='"+houseResultSet.getString("HID")+"' GROUP BY O.DEFINE_ID");
-//
-//                                if(taskOperBusinessResultSet.next()){
-//                                    taskOperBusinessResultSet.last();
-//                                    int count=taskOperBusinessResultSet.getRow();
-//                                    if(count == 1){
-//
-//
-//                                    }
-//
-//                                }
+
 
 
                             }
-
+//210681104029358
                             System.out.println("BIZID--"+houseBusinessResultSet.getString("OID")+"-"+houseBusinessResultSet.getString("DEFINE_NAME")+"---houseCode--:"+houseBusinessResultSet.getString("HOUSE_CODE")+"----nowID--:"+nowId+"---beforeId--"+beforeId);
                             String currentHouseCode = houseResultSet.getString("HID");
+                            //System.out.println("previousHouseCode---"+previousHouseCode+"--currentHouseCode--"+currentHouseCode);
                             if(previousHouseCode != null && previousHouseCode.equals(currentHouseCode)){
 
-//                                System.out.println("ba_biz_id--"+ba_biz_id);
+                                System.out.println("ba_biz_id--"+ba_biz_id);
                                if(ba_biz_id!=null) {//最后一手生效的合同备案人
 //                                   System.out.println("HOUSE_CODE changed from " + previousHouseCode + " to " + currentHouseCode +
 //                                           ", BUSINESS_ID of the last record: " + nowId);
