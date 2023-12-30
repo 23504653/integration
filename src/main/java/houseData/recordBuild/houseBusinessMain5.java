@@ -146,6 +146,7 @@ public class houseBusinessMain5 {
         boolean house_registered = false,build_completed=false;
         String developer_info_id = null;
         String license_id;
+        String ba_biz_id = null;
         try{
             houseResultSet = houseStatement.executeQuery("SELECT HH.ID AS HID,HH.BUILDID,HB.PROJECT_ID,HB.MAP_CORP,HP.DEVELOPERID,HD.NAME,HC.LICENSE_NUMBER,HC.COMPANY_CER_CODE," +
                     "HP.NAME AS DNAME,HS.DISTRICT,HH.DESIGN_USE_TYPE,HH.IN_FLOOR_NAME FROM " +
@@ -351,6 +352,11 @@ public class houseBusinessMain5 {
 //                            System.out.println("license_id--:"+license_id);
                             if( DEFINE_ID.equals("WP42") || (DEFINE_ID.equals("BL42") && HOUSE_STATUS!=null && !HOUSE_STATUS.equals("INIT_REG"))) {
                                 //work ownerRecordHouseId.getId() 作为workId
+                               // System.out.println("STATUS--"+houseBusinessResultSet.getString("STATUS"));
+                                if(houseBusinessResultSet.getString("STATUS").equals("COMPLETE")){
+                                    ba_biz_id = houseBusinessResultSet.getString("OID");
+                                }
+
                                 houseBusinessWriter.newLine();
                                 houseBusinessWriter.write("INSERT work (work_id, data_source, created_at, updated_at, work_name, status, validate_at, completed_at, version, define_id, process, type) value ");
                                 houseBusinessWriter.write("(" + Q.v(Long.toString(ownerRecordHouseId.getId()), Q.pm("OLD")
@@ -850,7 +856,7 @@ public class houseBusinessMain5 {
                                 )+ ");");
 
 
-                                System.out.println("111110-"+houseBusinessResultSet.getString("SELECT_BUSINESS"));
+                               // System.out.println("111110-"+houseBusinessResultSet.getString("SELECT_BUSINESS"));
                                 workbookResultSet=workbookStatement.executeQuery("select BH.AFTER_HOUSE from OWNER_BUSINESS AS O LEFT JOIN BUSINESS_HOUSE AS BH ON O.ID=BH.BUSINESS_ID " +
                                         "WHERE O.ID = '"+houseBusinessResultSet.getString("SELECT_BUSINESS")+"'");
                                 if(workbookResultSet.next()){
@@ -1004,6 +1010,19 @@ public class houseBusinessMain5 {
                                         ,Q.pm("CREATE"),Long.toString(ownerRecordHouseId.getId())
                                 )+ ");");
 
+//                                System.out.println("wp40-houseCode----"+houseResultSet.getString("HID"));
+//                                taskOperBusinessResultSet = taskOperBusinessStatement.executeQuery("select DEFINE_ID from OWNER_BUSINESS as O left join BUSINESS_HOUSE as BH " +
+//                                            "on O.ID = BH.BUSINESS_ID WHERE O.STATUS='COMPLETE' and HOUSE_CODE='"+houseResultSet.getString("HID")+"' GROUP BY O.DEFINE_ID");
+//
+//                                if(taskOperBusinessResultSet.next()){
+//                                    taskOperBusinessResultSet.last();
+//                                    int count=taskOperBusinessResultSet.getRow();
+//                                    if(count == 1){
+//
+//
+//                                    }
+//
+//                                }
 
 
                             }
@@ -1011,37 +1030,40 @@ public class houseBusinessMain5 {
                             System.out.println("BIZID--"+houseBusinessResultSet.getString("OID")+"-"+houseBusinessResultSet.getString("DEFINE_NAME")+"---houseCode--:"+houseBusinessResultSet.getString("HOUSE_CODE")+"----nowID--:"+nowId+"---beforeId--"+beforeId);
                             String currentHouseCode = houseResultSet.getString("HID");
                             if(previousHouseCode != null && previousHouseCode.equals(currentHouseCode)){
-                               if(DEFINE_ID.equals("WP42")) {//最后一手生效的合同备案人
+
+//                                System.out.println("ba_biz_id--"+ba_biz_id);
+                               if(ba_biz_id!=null) {//最后一手生效的合同备案人
 //                                   System.out.println("HOUSE_CODE changed from " + previousHouseCode + " to " + currentHouseCode +
 //                                           ", BUSINESS_ID of the last record: " + nowId);
-                                   //house_rights
-                                   powerOwnerResultSet = powerOwnerStatement.executeQuery("SELECT PO.* from HOUSE_OWNER AS HO LEFT JOIN POWER_OWNER PO ON HO.POOL =PO.ID " +
-                                           "WHERE PO.TYPE='CONTRACT' AND HO.HOUSE = '"+houseBusinessResultSet.getString("houseBId")+"'");
-                                   if(powerOwnerResultSet.next()){
-                                       powerOwnerResultSet.beforeFirst();
-                                       while (powerOwnerResultSet.next()){
-                                           powerOwnerId = powerOwnerIdMapper.selectByOldId(powerOwnerResultSet.getString("ID"));
-                                           if(powerOwnerId == null){
-                                               System.out.println("houseBusinessMain5-house_rights没有找到对应记录检查powerOwnerId:--:"+powerOwnerResultSet.getString("ID"));
-                                               return;
-                                           }
+                                    //house_rights
+                                    powerOwnerResultSet = powerOwnerStatement.executeQuery("SELECT PO.* from HOUSE_OWNER AS HO LEFT JOIN POWER_OWNER PO ON HO.POOL =PO.ID " +
+                                            "WHERE PO.TYPE='CONTRACT' AND HO.HOUSE = '"+houseBusinessResultSet.getString("houseBId")+"'");
+                                    if(powerOwnerResultSet.next()){
+                                        powerOwnerResultSet.beforeFirst();
+                                        while (powerOwnerResultSet.next()){
+                                            powerOwnerId = powerOwnerIdMapper.selectByOldId(powerOwnerResultSet.getString("ID"));
+                                            if(powerOwnerId == null){
+                                                System.out.println("houseBusinessMain5-house_rights没有找到对应记录检查powerOwnerId:--:"+powerOwnerResultSet.getString("ID"));
+                                                return;
+                                            }
 
-                                           houseBusinessWriter.newLine();
-                                           houseBusinessWriter.write("INSERT house_rights (id, house_id, power_type, work_id, id_type, id_number, name, tel) VALUE ");
-                                           houseBusinessWriter.write("(" + Q.v(Long.toString(powerOwnerId.getId()),Long.toString(houseId.getId())
-                                                   ,Q.pm("CONTRACT"),Long.toString(ownerRecordHouseId.getId())
-                                                   ,Q.pm(FindWorkBook.changeIdType(powerOwnerResultSet.getString("ID_TYPE")).getId()),Q.pm(powerOwnerResultSet.getString("ID_NO"))
-                                                   ,Q.pm(powerOwnerResultSet.getString("NAME")),Q.pm(powerOwnerResultSet.getString("PHONE"))
-                                           ) + ");");
-                                       }
-                                   }
+                                            houseBusinessWriter.newLine();
+                                            houseBusinessWriter.write("INSERT house_rights (id, house_id, power_type, work_id, id_type, id_number, name, tel) VALUE ");
+                                            houseBusinessWriter.write("(" + Q.v(Long.toString(powerOwnerId.getId()),Long.toString(houseId.getId())
+                                                    ,Q.pm("CONTRACT"),Long.toString(ownerRecordHouseId.getId())
+                                                    ,Q.pm(FindWorkBook.changeIdType(powerOwnerResultSet.getString("ID_TYPE")).getId()),Q.pm(powerOwnerResultSet.getString("ID_NO"))
+                                                    ,Q.pm(powerOwnerResultSet.getString("NAME")),Q.pm(powerOwnerResultSet.getString("PHONE"))
+                                            ) + ");");
+                                        }
+                                    }
 
-                               }
+                                }
 
                             }
                             // 更新前一行的值
                             previousHouseCode = currentHouseCode;
                             beforeId = nowId;
+                            ba_biz_id = null;
                         }
 
                         j++;

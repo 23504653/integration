@@ -23,35 +23,27 @@ public class createRBHouseId {
 
 
         try {
-            resultSet = statement.executeQuery("select * from HOUSE_INFO.HOUSE order by HOUSE_INFO.HOUSE.BUILDID,HOUSE_INFO.HOUSE.IN_FLOOR_NAME,HOUSE_ORDER,HOUSE.ID");
+            resultSet = statement.executeQuery("select * from INTEGRATION.house_id");
 
             Map<String,Object> map = new HashMap<>();
             resultSet.last();
 
 
             int sumCount = resultSet.getRow(),i=0;
-            Integer j = rbHouseIdMapper.findMaxId();
-            if (j!=null){
-                j = j.intValue()+1;
-            }else {
-                j = 412000; //最大588680 下一 600000
-            }
+
+                //j = 412000; //最大588680 下一 600000
 
             System.out.println("记录总数-"+sumCount);
             resultSet.beforeFirst();
             while(resultSet.next()){
                 map.clear();
                 if(rbHouseIdMapper.selectByOldHouseId(resultSet.getString("ID")) == null) {
-                    System.out.println("j-"+j);
-
-                    map.put("id",j.intValue());
-                    map.put("oid",resultSet.getString("ID"));
+                    map.put("id",resultSet.getInt("ID"));
+                    map.put("oid",resultSet.getString("oid"));
                     rbHouseIdMapper.addHouseId(map);
                     sqlSession.commit();
-                    j++;
                 }
                 i++;
-
                 System.out.println(i+"/"+String.valueOf(sumCount));
             }
         }catch (Exception e){

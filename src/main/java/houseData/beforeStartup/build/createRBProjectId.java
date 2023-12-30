@@ -24,33 +24,25 @@ public class createRBProjectId {
         RBProjectIdMapper rbProjectIdMapper =  sqlSession.getMapper(RBProjectIdMapper.class);
 
         try {
-            projectResultSet = projectStatement.executeQuery("select * from PROJECT order by name");
+            projectResultSet = projectStatement.executeQuery("select * from INTEGRATION.project_Id ");
 
             Map<String,Object> map = new HashMap<>();
             projectResultSet.last();
 
 
             int sumCount = projectResultSet.getRow(),i=0;
-            Integer j = rbProjectIdMapper.findMaxId();
 
-
-            if (j!=null){
-                j = j.intValue()+1;
-            }else {
-                j = 800; //最大3518 条 下一其实5000
-            }
-            System.out.println("j---"+j);
             System.out.println("记录总数-"+sumCount);
             projectResultSet.beforeFirst();
             while(projectResultSet.next()){
                 map.clear();
                 if(rbProjectIdMapper.selectByOldProjectId(projectResultSet.getString("ID")) == null) {
-                    System.out.println("1111-"+projectResultSet.getString("ID"));
-                    map.put("id",j.intValue());
-                    map.put("oid",projectResultSet.getString("ID"));
+
+                    map.put("id",projectResultSet.getInt("id"));
+                    map.put("oid",projectResultSet.getString("oid"));
                     rbProjectIdMapper.addProjectId(map);
                     sqlSession.commit();
-                    j++;
+
                 }
                 i++;
 
