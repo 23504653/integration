@@ -101,6 +101,7 @@ public class businessFileMain8 {
             long ysid=2600000;
             while (projectBusinessResultSet.next()) {
 
+
                 ownerRecordProjectId = ownerRecordProjectIdMapper.selectByOldId(projectBusinessResultSet.getString("PID"));
                 if(ownerRecordProjectId == null){
                     System.out.println("businessFileMain8有找到对应记录检查ownerRecordProjectId--:"+projectBusinessResultSet.getString("PID"));
