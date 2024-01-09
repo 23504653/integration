@@ -167,7 +167,7 @@ public class house_rightMain10 {
                         "AND BH.BUSINESS_ID IS NOT NULL AND BH.HOUSE_CODE ='"+houseResultSet.getString("HID")+"'"+
                         "ORDER BY H.HOUSE_CODE,O.APPLY_TIME;");
                 if(houseBusinessResultSet.next()) {
-                    System.out.println("HOUSE_CODE---"+houseBusinessResultSet.getString("HOUSE_CODE"));
+                    //System.out.println("HOUSE_CODE---"+houseBusinessResultSet.getString("HOUSE_CODE"));
                     houseBusinessResultSet.beforeFirst();
                     while (houseBusinessResultSet.next()){
                         ba_biz_id = houseBusinessResultSet.getString("OID");
@@ -181,11 +181,11 @@ public class house_rightMain10 {
                         System.out.println("houseBusinessMain5没有找到对应记录检查ownerRecordHouseId:"+ba_house_id);
                         return;
                     }
-                    houseContractResultSet = houseContractStatement.executeQuery("select * from record_building.house_rights where house_id = '"+houseId.getId()+"'");
-                    houseContractResultSet.last();
-                    if(houseContractResultSet.getRow()<=0){
-                        contractResultSet=contractStatement.executeQuery("SELECT * FROM record_building.house as h left join record_building.house_snapshot as hs on h.house_info_id=hs.house_info_id where hs.house_id = '"+houseId.getId()+"' and hs.work_id='"+ownerRecordHouseId.getId()+"'");
-                        if(contractResultSet.next()){
+                   // houseContractResultSet = houseContractStatement.executeQuery("select * from record_building.house_rights where house_id = '"+houseId.getId()+"'");
+                   // houseContractResultSet.last();
+                   // if(houseContractResultSet.getRow()<=0){
+                    //    contractResultSet=contractStatement.executeQuery("SELECT * FROM record_building.house as h left join record_building.house_snapshot as hs on h.house_info_id=hs.house_info_id where hs.house_id = '"+houseId.getId()+"' and hs.work_id='"+ownerRecordHouseId.getId()+"'");
+                       // if(contractResultSet.next()){
                             powerOwnerResultSet = powerOwnerStatement.executeQuery("SELECT PO.* from HOUSE_OWNER AS HO LEFT JOIN POWER_OWNER PO ON HO.POOL =PO.ID " +
                                     "WHERE PO.TYPE='CONTRACT' AND HO.HOUSE = '"+ba_house_id+"'");
                             if(powerOwnerResultSet.next()){
@@ -209,8 +209,8 @@ public class house_rightMain10 {
 
 
                         }
-                    }
-                }
+                //}
+                //  }
 
 
                 houseBusinessWriter.flush();
