@@ -1,9 +1,10 @@
 package houseData.recordBuild;
 
+import com.bean.OwnerRecordHouseId;
 import com.bean.OwnerRecordProjectId;
+import com.mapper.OwnerRecordHouseIdMapper;
 import com.mapper.OwnerRecordProjectIdMapper;
 import com.mapper.ProjectIdMapper;
-import com.utils.FindWorkBook;
 import com.utils.MyConnection;
 import com.utils.MybatisUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -16,13 +17,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class updateProjectSellLicense12 {
-
+public class deleteDefin {
     private static final String BEGIN_DATE = "2023-03-09";
     private static String DB_URL = "jdbc:mysql://127.0.0.1:3306/HOUSE_OWNER_RECORD?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
     private final static String USER ="root";
     private final static String PASSWORD ="dgsoft";
-    private static final String PROJECT_FILE="/updateProjectSellLicense.sql";
+    private static final String PROJECT_FILE="/deleteDefine40.sql";
     private static File projectBusinessFile;
     private static BufferedWriter projectBusinessWriter;
 
@@ -31,8 +31,8 @@ public class updateProjectSellLicense12 {
 
     private static Statement workbookStatement;
     private static ResultSet workbookResultSet;
-
     public static void main(String agr[]) throws SQLException {
+//删除项目备案业务
         projectBusinessFile = new File(PROJECT_FILE);
         if(projectBusinessFile.exists()){
             projectBusinessFile.delete();
@@ -49,46 +49,49 @@ public class updateProjectSellLicense12 {
             e.printStackTrace();
             return;
         }
-
         workbookStatement = MyConnection.getStatement(DB_URL,USER,PASSWORD);
 
         SqlSession sqlSession = MybatisUtils.getSqlSession();
-        ProjectIdMapper projectIdMapper =  sqlSession.getMapper(ProjectIdMapper.class);
-        OwnerRecordProjectIdMapper ownerRecordProjectIdMapper = sqlSession.getMapper(OwnerRecordProjectIdMapper.class);
-        OwnerRecordProjectId ownerRecordProjectId = null;
+        OwnerRecordHouseIdMapper ownerRecordHouseIdMapper = sqlSession.getMapper(OwnerRecordHouseIdMapper.class);
+        OwnerRecordHouseId ownerRecordHouseId=null;
+
         try {
-            workbookResultSet = workbookStatement.executeQuery("SELECT MA.*,PC.*,P.ID AS PID,CAST(SUBSTRING(MA.NUMBER, 7) AS SIGNED) AS on_number,NUMBER FROM HOUSE_OWNER_RECORD.PROJECT_CARD AS PC LEFT JOIN HOUSE_OWNER_RECORD.MAKE_CARD AS MA ON PC.ID = MA.ID " +
-                    "LEFT  JOIN  PROJECT AS P ON PC.PROJECT= P.ID WHERE MA.TYPE='PROJECT_RSHIP' ORDER BY PRINT_TIME");
+            workbookResultSet = workbookStatement.executeQuery("select rh.id,H.id as houseBId,bh.HOUSE_CODE from OWNER_BUSINESS as o left join BUSINESS_HOUSE as bh on o.ID=bh.BUSINESS_ID " +
+                    "left join HOUSE AS H ON bh.AFTER_HOUSE=H.ID " +
+                    "left join INTEGRATION.ownerRecordHouseId as rh on H.ID=rh.oid " +
+                    "WHERE o.DEFINE_ID = 'WP40' and o.DEFINE_NAME='项目备案' and o.STATUS='COMPLETE';");
+
+
             workbookResultSet.last();
             int sumCount = workbookResultSet.getRow(),i=0;
             System.out.println("记录总数-"+sumCount);
             workbookResultSet.beforeFirst();
             while (workbookResultSet.next()){
-                int year = 0,cardNmuber=0;
-                ownerRecordProjectId = ownerRecordProjectIdMapper.selectByOldId(workbookResultSet.getString("PID"));
-                if(ownerRecordProjectId == null){
-                    System.out.println("没有找到对应记录检查ownerRecordProjectId--:"+workbookResultSet.getString("PID"));
+                ownerRecordHouseId = ownerRecordHouseIdMapper.selectByOldId(workbookResultSet.getString("houseBId"));
+                if(ownerRecordHouseId==null){
+                    System.out.println("deleteDefin没有找到对应记录检查ownerRecordHouseId:"+workbookResultSet.getString("houseBId"));
                     return;
                 }
-                if (workbookResultSet.getString("NUMBER")!=null
-                        && !workbookResultSet.getString("NUMBER").isBlank()){
-                    year = FindWorkBook.getYearMonthFromDate(workbookResultSet.getTimestamp("PRINT_TIME"));
-                    cardNmuber = workbookResultSet.getInt("on_number");
-
-                }
                 projectBusinessWriter.newLine();
-                projectBusinessWriter.write("update project_sell_license set year_number = '"+year+"',on_number ='"+cardNmuber+"' WHERE license_id='" + ownerRecordProjectId.getId() + "';");
+                projectBusinessWriter.write("update record_building.house_snapshot set register_info_id=null where register_info_id='"+ownerRecordHouseId.getId()+"';");
+
+                projectBusinessWriter.newLine();
+                projectBusinessWriter.write("delete from record_building.house_register_snapshot where register_info_id='"+ownerRecordHouseId.getId()+"';");
 
                 projectBusinessWriter.flush();
                 i++;
                 System.out.println(i+"/"+String.valueOf(sumCount));
-            }
-        }catch (Exception e){
 
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
         }finally {
 
         }
 
 
+
     }
+
 }

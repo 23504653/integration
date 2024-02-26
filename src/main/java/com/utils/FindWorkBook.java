@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -338,7 +339,12 @@ public class FindWorkBook {
         calendar.setTime(date);
         return calendar.get(Calendar.YEAR);
     }
-
+    public static int getYearMonthFromDate(java.sql.Timestamp date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMM");
+        String formattedDate = dateFormat.format(date);
+        int yearMonth = Integer.parseInt(formattedDate);
+        return yearMonth;
+    }
     public static String getCardStatus(String id){
         if (id.equals("COMPLETE")){
             return "VALID";
@@ -506,6 +512,26 @@ public class FindWorkBook {
             workBook.setValue("其它");
             return workBook;
         }
+    }
+
+    public static String houseProperty(String id){
+//        if(id==null || id.equals("")|| id.equals("COMM_USE_HOUSE")|| id.equals("SELF_CREATE")
+//        || id.equals("STORE_HOUSE")){
+//            return "null";
+//        }
+        if (id.equals("BACK_HOUSE")){
+            return "RELOCATION";
+        }else if (id.equals("GROUP_HOUSE")){
+            return "RAISE";
+        }else if (id.equals("SALE_HOUSE")){
+            return "SALE";
+        }else if (id.equals("WELFARE_HOUSE")){
+            return "WELFARE";
+        }else {
+            return null;
+        }
+
+
     }
 }
 /**

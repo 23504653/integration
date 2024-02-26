@@ -40,28 +40,28 @@ public class corpMain {
             cropWriter.write("USE record_corp;");
             cropWriter.newLine();
             //创建一个空开发商用于挂没有开发商的项目
-            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('未知开发商','13333333333','未知','RESIDENT_ID','未知','未知','011',0);");
+            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('未知开发商','13333333333','未知','RESIDENT_ID','未知','未知','0',0);");
             cropWriter.newLine();
             cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (0,0,'1990-01-01:08:00:00',0,'1990-01-01:08:00:00');");
             cropWriter.newLine();
             cropWriter.write("INSERT corp_record_snapshot (INFO_ID,  RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE (0,0,0,0,'DEVELOPER');");
 
             cropWriter.newLine();
-            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('东港市房产测绘中心','13333333333','未知','RESIDENT_ID','未知','未知','012',1);");
+            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('东港市房产测绘中心','13333333333','未知','RESIDENT_ID','未知','未知','1',1);");
             cropWriter.newLine();
             cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (1,0,'1990-01-01:08:00:00',1,'1990-01-01:08:00:00');");
             cropWriter.newLine();
             cropWriter.write("INSERT corp_record_snapshot (INFO_ID,  RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE (1,1,1,1,'MAPPING');");
 
             cropWriter.newLine();
-            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('东港市村镇建设管理处测绘队','13333333333','未知','RESIDENT_ID','未知','未知','013',2);");
+            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('东港市村镇建设管理处测绘队','13333333333','未知','RESIDENT_ID','未知','未知','2',2);");
             cropWriter.newLine();
             cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (2,0,'1990-01-01:08:00:00',2,'1990-01-01:08:00:00');");
             cropWriter.newLine();
             cropWriter.write("INSERT corp_record_snapshot (INFO_ID,  RECORD_ID, WORK_ID, SNAPSHOT_ID, TYPE) VALUE (2,2,2,2,'MAPPING');");
 
             cropWriter.newLine();
-            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('未知测绘机构','13333333333','未知','RESIDENT_ID','未知','未知','014',3);");
+            cropWriter.write("INSERT corp_snapshot (corp_name, tel, owner_name, owner_id_type, owner_id_number,address, unified_id, snapshot_id) VALUE ('未知测绘机构','13333333333','未知','RESIDENT_ID','未知','未知','3',3);");
             cropWriter.newLine();
             cropWriter.write("INSERT corp (unified_id, version, created_at,snapshot_id,updated_at) VALUE (3,0,'1990-01-01:08:00:00',3,'1990-01-01:08:00:00');");
             cropWriter.flush();
