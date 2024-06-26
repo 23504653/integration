@@ -122,7 +122,7 @@ public class projectBuildBusinessMain2 {
         try {
             projectResultSet = projectStatement.executeQuery("SELECT P.*,A.LICENSE_NUMBER,A.COMPANY_CER_CODE,D.NAME AS DNAME FROM HOUSE_INFO.PROJECT AS P " +
                     "LEFT JOIN HOUSE_INFO.DEVELOPER AS D ON P.DEVELOPERID=D.ID " +
-                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID ORDER BY P.NAME");//N6477 115 1 WHERE P.ID<>'206' WHERE P.ID='115' WHERE P.ID='xhyy
+                    "LEFT JOIN HOUSE_INFO.ATTACH_CORPORATION AS A ON D.ATTACH_ID=A.ID WHERE P.ID='115' ORDER BY P.NAME");//N6477 115 1 WHERE P.ID<>'206' WHERE P.ID='115' WHERE P.ID='xhyy
             projectResultSet.last();
             int sumCount = projectResultSet.getRow(),i=0,onNumber=1;;
             System.out.println("记录总数-"+sumCount);
